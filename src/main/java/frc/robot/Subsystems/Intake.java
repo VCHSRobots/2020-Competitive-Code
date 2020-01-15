@@ -1,6 +1,7 @@
 package frc.robot.Subsystems;
 
-
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 
 
@@ -10,7 +11,11 @@ package frc.robot.Subsystems;
  
 public class Intake  {
 
+  WPI_TalonSRX intakeMotor;
+
+
   public void robotInit() {
+    intakeMotor = new WPI_TalonSRX(RobotMap.intake1);
     
   }
 
@@ -22,15 +27,6 @@ public class Intake  {
     
   }
 
-  public void followHardPaths(int pathnum) {
-    
-  }
-
- 
-  
-
-  
-  
   public void teleopInit() {
     
   }
