@@ -1,44 +1,29 @@
 package frc.robot.Subsystems;
 
-
-
-
-
-// import edu.wpi.first.wpilibj.shuffleboard.BuiltInTypes;
-
-// import edu.wpi.first.wpilibj.shuffleboard;
- 
-public class Intake  {
+public class Intake {
 
   public void robotInit() {
-    
+
+  }
+
+  public void robotPeriodic() {
+
   }
 
   public void autonomousInit() {
-  
-}
-  
+
+  }
+
   public void autonomousPeriodic() {
-    
+
   }
 
-  public void followHardPaths(int pathnum) {
-    
-  }
-
- 
-  
-
-  
-  
   public void teleopInit() {
-    
+
   }
 
-    public void teleopPeriodic() {
+  public void teleopPeriodic() {
 
-      
-      }
+  }
 
-    
 }
