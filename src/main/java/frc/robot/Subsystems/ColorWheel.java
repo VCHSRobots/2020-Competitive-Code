@@ -8,6 +8,7 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -29,35 +30,20 @@ public class ColorWheel {
     int blueCount, redCount, yellowCount, greenCount;
     boolean colorCheck = false;
     boolean changedColor = true;
+    boolean bumperpressed = false;
     String colorString = "Unknown";
     String pastColor = "Unknown";
     String firstColor = "Unknown";
     private FMSData fmsData = new FMSData();
+    int controlPanelRotationTicks =  16384;
     String fmsColor;
-    /**
-     * Change the I2C port below to match the connection of your color sensor
-     */
+
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
 
-    /**
-     * A Rev Color Sensor V3 object is constructed with an I2C port as a parameter.
-     * The device will be automatically initialized with default parameters.
-     */
     private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
 
-    /**
-     * A Rev Color Match object is used to register and detect known colors. This
-     * can be calibrated ahead of time or during operation.
-     * 
-     * This object uses a simple euclidian distance to estimate the closest match
-     * with given confidence range.
-     */
     private final ColorMatch m_colorMatcher = new ColorMatch();
 
-    /**
-     * Note: Any example colors should be calibrated as the user needs, these are
-     * here as a basic example.
-     */
     private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
     private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
     private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
@@ -69,32 +55,16 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget);
 
-        falcon = new TalonFX(3);
+        falcon = new TalonFX(2);
         xbox = new XboxController(0);
     }
 
     public void robotPeriodic() {
-        /**
-         * The method GetColor() returns a normalized color value from the sensor and
-         * can be useful if outputting the color to an RGB LED or similar. To read the
-         * raw color, use GetRawColor().
-         * 
-         * The color sensor works best when within a few inches from an object in well
-         * lit conditions (the built in LED is a big help here!). The farther an object
-         * is the more light from the surroundings will bleed into the measurements and
-         * make it difficult to accurately determine its color.
-         */
+       
         Color detectedColor = m_colorSensor.getColor();
-
-        /**
-         * Run the color match algorithm on our detected color
-         */
 
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
-        /**
-         * Open Smart Dashboard or Shuffleboard to see the color detected by the sensor.
-         */
         SmartDashboard.putNumber("Red", detectedColor.red);
         SmartDashboard.putNumber("Green", detectedColor.green);
         SmartDashboard.putNumber("Blue", detectedColor.blue);
@@ -114,13 +84,10 @@ public class ColorWheel {
 
     }
 
+
     public void teleopPeriodic() {
         fmsColor = fmsData.getCWColor();
         Color detectedColor = m_colorSensor.getColor();
-
-        /**
-         * Run the color match algorithm on our detected color
-         */
 
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
@@ -135,6 +102,7 @@ public class ColorWheel {
         } else if (changedColor) {
             colorString = "Unknown";
         }
+
         falcon.set(ControlMode.PercentOutput, xbox.getRawAxis(4));
         if (xbox.getAButton()) {
             if (!colorCheck) {
@@ -160,50 +128,43 @@ public class ColorWheel {
             changedColor = false;
         }
 
+        if (xbox.getBumperPressed(GenericHID.Hand.kRight)) {
+            bumperpressed = true;
+          }
+      
+          if (falcon.getSelectedSensorPosition() < controlPanelRotationTicks && bumperpressed) {
+            falcon.set(ControlMode.PercentOutput, 0.25);
+            bumperpressed = false;
+          } else if (falcon.getSelectedSensorPosition() > controlPanelRotationTicks + 2048) {
+            falcon.set(ControlMode.PercentOutput, -0.25);
+            bumperpressed = false;
+          }
+
         if (xbox.getBButton()) {
-            if (colorString == "blue") {
-                if (fmsColor == "green") {
+            // if fmsColor is blue and colorString isnt red then move until then
+            if (fmsColor == "blue" && colorString != "red") {
+                falcon.set(ControlMode.PercentOutput, .25); 
 
-                } else if (fmsColor == "red") {
+            // if fmsColor is green and colorString isnt yellow then move until then
+            } else if (fmsColor == "green" && colorString != "yellow") {
+                falcon.set(ControlMode.PercentOutput, .25); 
 
-                } else if (fmsColor == "yellow") {
+            // if fmsColor is red and colorString isnt blue then move until then
+            } else if (fmsColor == "red" && colorString != "blue") {
+                falcon.set(ControlMode.PercentOutput, .25); 
 
-                } else if (fmsColor == "unknown") {
+            // if fmsColor is yellow and colorString isnt green then move until then
+            } else if (fmsColor == "yellow" && colorString != "green") {
+                falcon.set(ControlMode.PercentOutput, .25); 
 
-                }
-            } else if (colorString == "red") {
-                if (fmsColor == "green") {
+            // if colorString is unknown then move the motor a small portion
+            } else if (colorString == "Unknown") {
+                falcon.set(ControlMode.PercentOutput, 0.01);
 
-                } else if (fmsColor == "blue") {
-
-                } else if (fmsColor == "yellow") {
-
-                } else if (fmsColor == "unknown") {
-
-                }
-
-            } else if (colorString == "green") {
-                if (fmsColor == "blue") {
-
-                } else if (fmsColor == "red") {
-
-                } else if (fmsColor == "yellow") {
-
-                } else if (fmsColor == "unknown") {
-
-                }
-            } else if (colorString == "yellow") {
-                if (fmsColor == "green") {
-
-                } else if (fmsColor == "red") {
-
-                } else if (fmsColor == "blue") {
-
-                } else if (fmsColor == "unknown") {
-
-                }
+            // turn motor off if is on correct fms color
+            } else {
+                falcon.set(ControlMode.PercentOutput, 0);
             }
         }
-
     }
 }

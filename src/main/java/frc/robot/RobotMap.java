@@ -8,7 +8,7 @@ public class RobotMap {
     }
 
     public static class ColorWheelMap {
-
+        public static int controlPanelWheel = 2;
     }
 
     public static class IntakeMap {
