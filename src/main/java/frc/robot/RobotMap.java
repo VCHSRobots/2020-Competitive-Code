@@ -22,7 +22,7 @@ public class RobotMap {
     public static class ShooterMap {
 
     }
-
+    
     public static class DriveTrainMap {
         public static int krFrontFX = 11;
         public static int klFrontFX = 12;

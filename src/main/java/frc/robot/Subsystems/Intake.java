@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Compressor;
 
-  public void robotPeriodic() {
-
 public class Intake {
 
   WPI_TalonSRX intakeBagMotor; 
