@@ -1,9 +1,11 @@
 package frc.robot.Subsystems;
 
+import frc.robot.Robot;
+
 public class Intake {
 
   public void robotInit() {
-
+    
   }
 
   public void robotPeriodic() {

@@ -13,18 +13,20 @@ import frc.robot.Subsystems.Intake;
 import frc.robot.Subsystems.DriveTrain;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ColorWheel;
+import frc.robot.util.FMSData;
 
 public class Robot extends TimedRobot {
 
   // ---------Subsystem Imports---------------
-  Intake intake = new Intake();
-  DriveTrain driveTrain = new DriveTrain();
-  ColorWheel colorWheel = new ColorWheel();
-  Shooter shooter = new Shooter();
+  private FMSData fmsData = new FMSData();
+  private Intake intake = new Intake();
+  private DriveTrain driveTrain = new DriveTrain();
+  private ColorWheel colorWheel = new ColorWheel();
+  private Shooter shooter = new Shooter();
 
   // ---------Controller Imports--------------
-  XboxController driveCtrl;
-  XboxController manipCtrl;
+  public static XboxController driveCtrl;
+  public static XboxController manipCtrl;
 
   @Override
   public void robotInit() {
@@ -40,10 +42,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    //--------------FMS SmartDashboard Send----------------
+    fmsData.smartDashSend(); // edit in FMSData
+
     intake.robotPeriodic();
     driveTrain.robotPeriodic();
     shooter.robotPeriodic();
     colorWheel.robotPeriodic();
+    
   }
 
   @Override

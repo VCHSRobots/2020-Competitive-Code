@@ -1,5 +1,7 @@
 package frc.robot.Subsystems;
 
+import frc.robot.Robot;
+
 public class Shooter {
 
     public void robotInit() {
