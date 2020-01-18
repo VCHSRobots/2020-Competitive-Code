@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Compressor;
 
   public void robotPeriodic() {
 
@@ -16,15 +17,20 @@ public class Intake {
 
   WPI_TalonSRX intakeBagMotor; 
   WPI_TalonFX intakeFalconMotor;
+
   XboxController tempController;
+  
   DoubleSolenoid intakeUpDown;
 
+  
 
   public void robotInit() {
 
     intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor);
     intakeFalconMotor = new WPI_TalonFX(RobotMap.IntakeMap.kIntakeFalconMotor);
+    intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
   
+    intakeUpDown.set(DoubleSolenoid.Value.kForward);
   }
 
   public void robotPeriodic() {
