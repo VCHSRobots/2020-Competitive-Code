@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Compressor;
 
+  public void robotPeriodic() {
 
 public class Intake {
 
@@ -45,7 +46,7 @@ public class Intake {
   }
 
   public void teleopInit() {
-    
+
   }
 
   public void teleopPeriodic() {
