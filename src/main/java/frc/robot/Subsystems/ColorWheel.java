@@ -15,10 +15,13 @@ import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorMatch;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.revrobotics.ColorMatch;
+
 import frc.robot.util.FMSData;
+import frc.robot.RobotMap;
 
 /**
  * This is a simple example to show how the REV Color Sensor V3 can be used to
@@ -55,8 +58,8 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget);
 
-        falcon = new TalonFX(2);
-        xbox = new XboxController(0);
+        falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
+        xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
     }
 
     public void robotPeriodic() {
