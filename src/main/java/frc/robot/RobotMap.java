@@ -20,6 +20,10 @@ public class RobotMap {
     }
 
     public static class DriveTrainMap {
+        public static int krFrontFX = 10;
+        public static int klFrontFX = 10;
+        public static int klBackFX = 10;
+        public static int krBackFX = 10;
 
     }
 
