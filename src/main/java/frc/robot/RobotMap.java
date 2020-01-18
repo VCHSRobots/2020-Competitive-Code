@@ -3,7 +3,7 @@ package frc.robot;
 public class RobotMap {
 
     public static class Controllers {
-        public static int kDriveCtrl = 0;
+        public static int kDriveCtrl = 0; //These are port numbers
         public static int kManipCtrl = 1;
     }
 
@@ -20,10 +20,10 @@ public class RobotMap {
     }
 
     public static class DriveTrainMap {
-        public static int krFrontFX = 10;
-        public static int klFrontFX = 10;
-        public static int klBackFX = 10;
-        public static int krBackFX = 10;
+        public static int krFrontFX = 11;
+        public static int klFrontFX = 12;
+        public static int klBackFX = 13;
+        public static int krBackFX = 14;
 
     }
 

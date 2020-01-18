@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.util.BaseFXConfig;
 
 public class DriveTrain {
     // ----Drive-Math-Variables----
@@ -74,42 +75,10 @@ public class DriveTrain {
 
     public void falconSetup() {
 
-        //Right Front Falcon Config
-        rFrontFX = new WPI_TalonFX(RobotMap.DriveTrainMap.krFrontFX);
-        rFrontFX.configFactoryDefault();
-        rFrontFX.setName("Right Front Drive Train Falcon");
-        rFrontFX.setInverted(false);
-        rFrontFX.setNeutralMode(NeutralMode.Brake);
-        rFrontFX.setSensorPhase(false);
-        rFrontFX.configOpenloopRamp(0);
-
-        //Left Front Falcon Config
-        lFrontFX = new WPI_TalonFX(RobotMap.DriveTrainMap.klFrontFX);
-        lFrontFX.configFactoryDefault();
-        lFrontFX.setName("Left Front Drive Train Falcon");
-        lFrontFX.setInverted(false);
-        lFrontFX.setNeutralMode(NeutralMode.Brake);
-        lFrontFX.setSensorPhase(false);
-        lFrontFX.configOpenloopRamp(0);
-        
-
-        //Right Back Falcon Config
-        rBackFX = new WPI_TalonFX(RobotMap.DriveTrainMap.krBackFX);
-        rBackFX.configFactoryDefault();
-        rBackFX.setName("Right Back Drive Train Falcon");
-        rBackFX.setInverted(false);
-        rBackFX.setNeutralMode(NeutralMode.Brake);
-        rBackFX.setSensorPhase(false);
-        rBackFX.configOpenloopRamp(0);
-        
-        //Left Back Falcon Config
-        lBackFX = new WPI_TalonFX(RobotMap.DriveTrainMap.klBackFX);
-        lBackFX.configFactoryDefault();
-        lBackFX.setName("Left Back Drive Train Falcon");
-        lBackFX.setInverted(false);
-        lBackFX.setNeutralMode(NeutralMode.Brake);
-        lBackFX.setSensorPhase(false);
-        lBackFX.configOpenloopRamp(0);
+        rFrontFX = BaseFXConfig.generateDefaultTalon(RobotMap.DriveTrainMap.krFrontFX);
+        lFrontFX = BaseFXConfig.generateDefaultTalon(RobotMap.DriveTrainMap.klFrontFX);
+        rBackFX = BaseFXConfig.generateDefaultTalon(RobotMap.DriveTrainMap.krBackFX);
+        lBackFX = BaseFXConfig.generateDefaultTalon(RobotMap.DriveTrainMap.klBackFX);
 
     }
 }
