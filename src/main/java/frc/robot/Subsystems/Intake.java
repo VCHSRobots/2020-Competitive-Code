@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Compressor;
 
 
 public class Intake {
