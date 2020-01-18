@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
 
+  public void robotPeriodic() {
 
 public class Intake {
 
@@ -39,7 +40,7 @@ public class Intake {
   }
 
   public void teleopInit() {
-    
+
   }
 
   public void teleopPeriodic() {

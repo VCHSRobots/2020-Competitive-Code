@@ -8,63 +8,74 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Subsystems.Intake;
+import frc.robot.Subsystems.DriveTrain;
+import frc.robot.Subsystems.Shooter;
+import frc.robot.Subsystems.ColorWheel;
+import frc.robot.util.FMSData;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the TimedRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.gradle file in the
- * project.
- */
 public class Robot extends TimedRobot {
 
+  // ---------Subsystem Imports---------------
+  private FMSData fmsData = new FMSData();
+  private Intake intake = new Intake();
+  private DriveTrain driveTrain = new DriveTrain();
+  private ColorWheel colorWheel = new ColorWheel();
+  private Shooter shooter = new Shooter();
 
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
+  // ---------Controller Imports--------------
+  public static XboxController driveCtrl;
+  public static XboxController manipCtrl;
+
   @Override
   public void robotInit() {
+    // -------------------------Controllers------------------------------
+    driveCtrl = new XboxController(RobotMap.Controllers.kDriveCtrl);
+    manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
 
+    intake.robotInit();
+    driveTrain.robotInit();
+    shooter.robotInit();
+    colorWheel.robotInit();
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
-   */
   @Override
   public void robotPeriodic() {
-  }
+    //--------------FMS SmartDashboard Send----------------
+    fmsData.smartDashSend(); // edit in FMSData
 
+    intake.robotPeriodic();
+    driveTrain.robotPeriodic();
+    shooter.robotPeriodic();
+    colorWheel.robotPeriodic();
+    
+  }
 
   @Override
   public void autonomousInit() {
-
+    intake.autonomousInit();
+    driveTrain.autonomousInit();
+    shooter.autonomousInit();
+    colorWheel.autonomousInit();
   }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
   @Override
   public void autonomousPeriodic() {
-
+    intake.autonomousPeriodic();
+    driveTrain.autonomousPeriodic();
+    shooter.autonomousPeriodic();
+    colorWheel.autonomousPeriodic();
   }
 
-  /**
-   * This function is called periodically during operator control.
-   */
   @Override
   public void teleopPeriodic() {
+    intake.teleopPeriodic();
+    driveTrain.teleopPeriodic();
+    shooter.teleopPeriodic();
+    colorWheel.teleopPeriodic();
   }
 
-  /**
-   * This function is called periodically during test mode.
-   */
   @Override
   public void testPeriodic() {
   }
