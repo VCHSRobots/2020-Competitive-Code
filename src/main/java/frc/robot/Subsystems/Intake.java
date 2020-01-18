@@ -6,6 +6,8 @@ import frc.robot.RobotMap;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
 
 
@@ -14,6 +16,7 @@ public class Intake {
   WPI_TalonSRX intakeBagMotor; 
   WPI_TalonFX intakeFalconMotor;
   XboxController tempController;
+  DoubleSolenoid intakeUpDown;
 
 
   public void robotInit() {
@@ -37,7 +40,7 @@ public class Intake {
 
   public void teleopInit() {
     
-  };
+  }
 
   public void teleopPeriodic() {
     //controller initialization
