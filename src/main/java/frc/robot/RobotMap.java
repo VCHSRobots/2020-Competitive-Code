@@ -7,6 +7,11 @@ public class RobotMap {
         public static int kManipCtrl = 1;
     }
 
+    public static class DriveCtrl {
+        public static int kForwardAxis = 1;
+        public static int kTurnAxis = 4;
+    }
+
     public static class ColorWheelMap {
         public static int controlPanelWheel = 2;
     }

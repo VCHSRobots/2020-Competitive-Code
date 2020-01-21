@@ -5,24 +5,13 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.Subsystems;
+package frc.robot;
 
 /**
  * Add your docs here.
  */
-public class Limelight {
-
-    /* 
-     * return the estimated distance to the goal
-     */
-    public double getDistance() {
-        return 0;
-    }
-
-    /* 
-     * return a value of [0,1.0] based on where the center of the goal is in the frame
-     */
-    public double getX() {
-        return 0;
-    }
+public class constants {
+    public static final double kEncoderTicksMinutePerRev100ms = 4096 / 600; // 4096 ticks * 1 min / (1 rev * 60 seconds * 10 [100ms]);
+    public static final int kDriveWheelDiameter = 6;
+    
 }

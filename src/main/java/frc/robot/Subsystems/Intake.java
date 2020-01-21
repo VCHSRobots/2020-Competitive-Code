@@ -8,7 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
 
-public class Intake {
+public class Intake{
 
   WPI_TalonSRX intakeBagMotor; 
   WPI_TalonFX intakeFalconMotor;
@@ -16,8 +16,6 @@ public class Intake {
   XboxController tempController;
   
   DoubleSolenoid intakeUpDown;
-
-  
 
   public void robotInit() {
 
@@ -32,6 +30,10 @@ public class Intake {
 
   }
 
+  public void robotDisabled() {
+
+  }
+
   public void autonomousInit() {
 
   }
@@ -39,6 +41,10 @@ public class Intake {
   public void autonomousPeriodic() {
 
   }
+
+  public void autonomousDisabled() {
+
+  } 
 
   public void teleopInit() {
 
@@ -60,10 +66,11 @@ public class Intake {
       intakeBagMotor.set(0);
       intakeFalconMotor.set(0);
     }
-
-  
     
   }
-  
+
+  public void teleopDisabled() {
+
+  }
 
 }

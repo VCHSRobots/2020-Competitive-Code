@@ -24,7 +24,7 @@ import frc.robot.util.FMSData;
  * This is a simple example to show how the REV Color Sensor V3 can be used to
  * detect pre-configured colors.
  */
-public class ColorWheel {
+public class ColorWheel{
     TalonFX falcon;
     XboxController xbox;
     int blueCount, redCount, yellowCount, greenCount;
@@ -76,6 +76,10 @@ public class ColorWheel {
         SmartDashboard.putNumber("green count", greenCount);
     }
 
+    public void robotDisabled() {
+
+    }
+
     public void autonomousInit() {
 
     }
@@ -84,6 +88,13 @@ public class ColorWheel {
 
     }
 
+    public void autonomousDisabled() {
+
+    }
+
+    public void teleopInit() {
+
+    }
 
     public void teleopPeriodic() {
         fmsColor = fmsData.getCWColor();
@@ -166,5 +177,9 @@ public class ColorWheel {
                 falcon.set(ControlMode.PercentOutput, 0);
             }
         }
+    }
+
+    public void teleopDisabled() {
+
     }
 }

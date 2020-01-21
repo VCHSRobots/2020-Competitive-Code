@@ -22,6 +22,10 @@ public class Shooter {
 
     }
 
+    public void robotDisabled() {
+
+    }
+
     public void autonomousInit() {
 
     }
@@ -30,11 +34,19 @@ public class Shooter {
 
     }
 
+    public void autonomousDisabled() {
+
+    }
+
     public void teleopInit() {
 
     }
 
     public void teleopPeriodic() {
+
+    }
+
+    public void teleopDisabled() {
 
     }
 
