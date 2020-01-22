@@ -19,6 +19,9 @@ public class Intake {
   XboxController tempController;
   
   DoubleSolenoid intakeUpDown;
+
+  String pneumaticValue;
+  double speed; 
   
 
   public void robotInit() {
@@ -28,11 +31,14 @@ public class Intake {
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
     tempController = Robot.manipCtrl;
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
+    pneumaticValue = new String();
+    speed = SmartDashboard.getNumber("Motor Speed", 0.5);
 
   }
 
   public void robotPeriodic() {
-
+    //sends pneumatic state to the smart dashboard
+    SmartDashboard.putString("Pneumatic State", pneumaticValue);
   }
 
   public void autonomousInit() {
@@ -52,12 +58,11 @@ public class Intake {
     boolean buttonX = tempController.getXButtonPressed();
     boolean buttonY = tempController.getYButtonPressed();
     boolean buttonB = tempController.getBButtonPressed();
-    String pneumaticValue;
-    pneumaticValue = new String();
+  
     //intake turns on
     if (buttonX == true) {
-      intakeBagMotor.set(0.5);
-      intakeFalconMotor.set(0.5);
+      intakeBagMotor.set(speed);
+      intakeFalconMotor.set(speed);
     } 
 
     //intake turns off
@@ -76,8 +81,7 @@ public class Intake {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
       pneumaticValue = "Reverse";
     }
-    //sends pneumatic state to the smart dashboard
-    SmartDashboard.putString("Pneumatic State", pneumaticValue);
+    
     
   }
   
