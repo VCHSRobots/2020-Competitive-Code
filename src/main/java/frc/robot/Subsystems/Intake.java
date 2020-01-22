@@ -1,5 +1,6 @@
 package frc.robot.Subsystems;
 
+import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.util.BaseFXConfig;
@@ -55,18 +56,18 @@ public class Intake {
 
   public void teleopPeriodic() {
     //controller initialization
-    boolean buttonX = tempController.getXButtonPressed();
-    boolean buttonY = tempController.getYButtonPressed();
-    boolean buttonB = tempController.getBButtonPressed();
+    boolean buttonA = tempController.getRawButton(ControllerMap.Manip.kIntakeStart);
+    boolean buttonX = tempController.getRawButton(ControllerMap.Manip.kIntakeStop);
+    boolean buttonB = tempController.getRawButton(ControllerMap.Manip.kIntakeUpDown);
   
     //intake turns on
-    if (buttonX == true) {
+    if (buttonA == true) {
       intakeBagMotor.set(speed);
       intakeFalconMotor.set(speed);
     } 
 
     //intake turns off
-    if (buttonY == true){
+    if (buttonX == true){
       intakeBagMotor.set(0);
       intakeFalconMotor.set(0);
     }

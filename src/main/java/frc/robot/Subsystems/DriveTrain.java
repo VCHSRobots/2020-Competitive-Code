@@ -54,8 +54,8 @@ public class DriveTrain {
     }
 
     public void teleopPeriodic() {
-        valueX = Robot.driveCtrl.getRawAxis(4);
-        valueY = Robot.driveCtrl.getRawAxis(1) * -1; // Multiplied by -1 because Y axis is inverted
+        valueX = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kRightStickXAxis);
+        valueY = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kLeftStickYAxis) * -1; // Multiplied by -1 because Y axis is inverted
 
         // -------Drive Equation----------- left side = y+x right side = y-x
         leftSidePower = valueY + valueX;
