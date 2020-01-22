@@ -8,8 +8,9 @@ public class RobotMap {
     }
 
     public static class DriveCtrl {
-        public static int kForwardAxis = 1;
-        public static int kTurnAxis = 4;
+        public static int kLeftStickYAxis = 1;
+        public static int kRightStickXAxis = 4;
+        public static int kRightStickYAxis = 5;
     }
 
     public static class ColorWheelMap {
