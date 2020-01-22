@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake {
 
@@ -19,7 +19,6 @@ public class Intake {
   XboxController tempController;
   
   DoubleSolenoid intakeUpDown;
-  Compressor c;
   
 
   public void robotInit() {
@@ -29,8 +28,6 @@ public class Intake {
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
     tempController = Robot.manipCtrl;
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
-    c = new Compressor(RobotMap.IntakeMap.kComp);
-    c.setClosedLoopControl(true);
 
   }
 
@@ -55,7 +52,8 @@ public class Intake {
     boolean buttonX = tempController.getXButtonPressed();
     boolean buttonY = tempController.getYButtonPressed();
     boolean buttonB = tempController.getBButtonPressed();
-    
+    String pneumaticValue;
+    pneumaticValue = new String();
     //intake turns on
     if (buttonX == true) {
       intakeBagMotor.set(0.5);
@@ -68,13 +66,18 @@ public class Intake {
       intakeFalconMotor.set(0);
     }
 
+    //pneumatic toggle
     if(buttonB == true && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
       intakeUpDown.set(DoubleSolenoid.Value.kForward);
+      pneumaticValue = "Forward";
     }
 
     if(buttonB == true && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
+      pneumaticValue = "Reverse";
     }
+    //sends pneumatic state to the smart dashboard
+    SmartDashboard.putString("Pneumatic State", pneumaticValue);
     
   }
   
