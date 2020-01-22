@@ -38,6 +38,9 @@ public class ColorWheel{
 
     int blueCount, redCount, yellowCount, greenCount;
     int controlPanelRotationTicks = 49152;
+
+    double RPM = 0;
+
     boolean colorCheck = false;
     boolean changedColor = true;
     boolean yButtonPressed = false;
@@ -85,6 +88,7 @@ public class ColorWheel{
         SmartDashboard.putNumber("blue count", blueCount);
         SmartDashboard.putNumber("red count", redCount);
         SmartDashboard.putNumber("green count", greenCount);
+        SmartDashboard.putNumber("RPM", 0);
         
     }
 
@@ -108,12 +112,16 @@ public class ColorWheel{
 
     }
     public void teleopPeriodic() {
+
+
         if (fmsColor.toString() != null)
             fmsColorString = fmsColor.toString();
         
         int encoderTicks = falcon.getSelectedSensorPosition();
         Color detectedColor = m_colorSensor.getColor();
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+
+        RPM = SmartDashboard.getNumber("RPM", 0);
 
         if (match.color == kBlueTarget) {
             colorString = "Blue";
@@ -146,9 +154,9 @@ public class ColorWheel{
         }
         
         //control to manually move hand
-        if (xbox.getBumper(GenericHID.Hand.kRight)) {
+        if (xbox.getStartButton()) {
             falcon.set(ControlMode.PercentOutput, -0.10);
-        } else if (xbox.getBumper(GenericHID.Hand.kLeft)) {
+        } else if (xbox.getBackButton()) {
             falcon.set(ControlMode.PercentOutput, 0.10);
         } else if (!yButtonPressed) {
           falcon.set(ControlMode.PercentOutput, 0.0);
