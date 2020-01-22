@@ -7,12 +7,6 @@ public class RobotMap {
         public static int kManipCtrl = 1;
     }
 
-    public static class DriveCtrl {
-        public static int kLeftStickYAxis = 1;
-        public static int kRightStickXAxis = 4;
-        public static int kRightStickYAxis = 5;
-    }
-
     public static class ColorWheelMap {
         public static int controlPanelWheel = 2;
     }
@@ -35,6 +29,10 @@ public class RobotMap {
         public static int klFrontFX = 12;
         public static int klBackFX = 13;
         public static int krBackFX = 14;
+    }
+
+    public static class ClimberMap {
+        public static int kclimbFX = 3;
     }
 
 }
