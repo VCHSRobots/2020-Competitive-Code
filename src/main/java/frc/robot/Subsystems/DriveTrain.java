@@ -96,7 +96,7 @@ public class DriveTrain{
 
         valueX = 0.7*Math.copySign(valueX * valueX, valueX);
         valueY = Math.copySign(valueY * valueY, valueY);
-        // -------Drive Equation----------- left side = y+x right side = y-x
+        // -------Drive Equation----------- left side = y+x        right side = y-x
         leftSidePower = valueY + valueX;
         rightSidePower = valueY - valueX;
 
@@ -113,11 +113,5 @@ public class DriveTrain{
     public void teleopDisabled() {
         // TODO Auto-generated method stub
         
-    }
-
-    public void falconSetup() {
-
-        
-
     }
 }
