@@ -29,8 +29,9 @@ import com.ctre.phoenix.sensors.CANCoder;
  * This is a simple example to show how the REV Color Sensor V3 can be used to
  * detect pre-configured colors.
  */
-public class ColorWheel {
 
+public class ColorWheel{
+  
     TalonFX falcon;
 
     XboxController xbox;
@@ -87,6 +88,10 @@ public class ColorWheel {
         
     }
 
+    public void robotDisabled() {
+
+    }
+
     public void autonomousInit() {
 
     }
@@ -95,6 +100,13 @@ public class ColorWheel {
 
     }
 
+    public void autonomousDisabled() {
+
+    }
+
+    public void teleopInit() {
+
+    }
     public void teleopPeriodic() {
         if (fmsColor.toString() != null)
             fmsColorString = fmsColor.toString();
@@ -189,5 +201,9 @@ public class ColorWheel {
         pastColor = colorString;
 
         changedColor = false;
+    }
+
+    public void teleopDisabled() {
+
     }
 }
