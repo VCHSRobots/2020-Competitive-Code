@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotMap;
 import frc.robot.util.FMSData;
+import frc.robot.ControllerMap;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -44,6 +45,8 @@ public class ColorWheel{
     boolean colorCheck = false;
     boolean changedColor = true;
     boolean yButtonPressed = false;
+    boolean yButton;
+    boolean startButton;
 
     String colorString = "Unknown";
     String pastColor = "Unknown";
@@ -52,7 +55,7 @@ public class ColorWheel{
 
     private FMSData fmsColor = new FMSData();
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
-    private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+    private ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
     private final ColorMatch m_colorMatcher = new ColorMatch();
     private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
     private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
@@ -71,7 +74,17 @@ public class ColorWheel{
         falcon.setSelectedSensorPosition(0);
 
         xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
-        
+
+        yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
+        startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
+
+        try {
+            m_colorSensor = new ColorSensorV3(i2cPort);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
     }
 
     public void robotPeriodic() {
@@ -163,7 +176,7 @@ public class ColorWheel{
         }
 
         // control to rotate disk three times
-        if (xbox.getYButtonPressed()) {
+        if (yButton) {
             yButtonPressed = true;
             falcon.setSelectedSensorPosition(controlPanelRotationTicks);
             return;
