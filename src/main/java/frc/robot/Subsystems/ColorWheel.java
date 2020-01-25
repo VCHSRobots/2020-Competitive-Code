@@ -116,9 +116,6 @@ public class ColorWheel {
 
     public void teleopPeriodic() {
 
-        if (fmsColor.toString() != null) {
-            fmsColorString = fmsColor.toString();
-        }
         RPM = SmartDashboard.getNumber("RPM", 0);
 
         Double velocityPer100Milliseconds = RPM * 4096 / 600;
@@ -169,6 +166,10 @@ public class ColorWheel {
 
         // Enters Finding the Color Mode through FMS
         if (xbox.getBButton()) {
+            //gets fms color if it doesnt == null
+            if (fmsColor.getCWColor() != null) {
+                fmsColorString = fmsColor.getCWColor();
+            }
             // if fmsColor is blue and colorString isnt red then move until then
             if (fmsColorString == "blue" && colorString != "Red") {
                 falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
