@@ -40,7 +40,7 @@ public class ColorWheel {
     double RPM = 0;
 
     boolean colorCheck = false;
-    boolean yButtonPressed = false;
+    boolean rotateDisk = false;
     boolean yButton;
     boolean startButton;
 
@@ -148,22 +148,22 @@ public class ColorWheel {
             falcon.set(ControlMode.Velocity, -velocityPer100Milliseconds);
         } else if (xbox.getBackButton()) {
             falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
-        } else if (!yButtonPressed) {
+        } else if (!rotateDisk) {
             falcon.set(ControlMode.Velocity, 0);
         }
 
         // control to rotate disk three times
         if (yButton) {
-            yButtonPressed = true;
+            rotateDisk = true;
             falcon.setSelectedSensorPosition(controlPanelRotationTicks);
             return;
-        } else if (yButtonPressed) {
+        } else if (rotateDisk) {
             if (encoderTicks >= 0) {
                 falcon.set(ControlMode.Velocity, -velocityPer100Milliseconds);
                 return;
             } else {
                 falcon.set(ControlMode.Velocity, 0);
-                yButtonPressed = false;
+                rotateDisk = false;
             }
         }
 
