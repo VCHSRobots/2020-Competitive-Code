@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotMap;
 import frc.robot.util.FMSData;
+import frc.robot.ControllerMap;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -29,17 +30,23 @@ import com.ctre.phoenix.sensors.CANCoder;
  * This is a simple example to show how the REV Color Sensor V3 can be used to
  * detect pre-configured colors.
  */
-public class ColorWheel {
 
+public class ColorWheel{
+  
     TalonFX falcon;
 
     XboxController xbox;
 
     int blueCount, redCount, yellowCount, greenCount;
     int controlPanelRotationTicks = 49152;
+
+    double RPM = 0;
+
     boolean colorCheck = false;
     boolean changedColor = true;
     boolean yButtonPressed = false;
+    boolean yButton;
+    boolean startButton;
 
     String colorString = "Unknown";
     String pastColor = "Unknown";
@@ -67,14 +74,17 @@ public class ColorWheel {
         falcon.setSelectedSensorPosition(0);
 
         xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
-        
+
+        yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
+        startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
+
         try {
             m_colorSensor = new ColorSensorV3(i2cPort);
 
-        } catch (Exception ex){
-
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
+
     }
 
     public void robotPeriodic() {
@@ -91,7 +101,12 @@ public class ColorWheel {
         SmartDashboard.putNumber("blue count", blueCount);
         SmartDashboard.putNumber("red count", redCount);
         SmartDashboard.putNumber("green count", greenCount);
+        SmartDashboard.putNumber("RPM", 0);
         
+    }
+
+    public void robotDisabled() {
+
     }
 
     public void autonomousInit() {
@@ -102,13 +117,24 @@ public class ColorWheel {
 
     }
 
+    public void autonomousDisabled() {
+
+    }
+
+    public void teleopInit() {
+
+    }
     public void teleopPeriodic() {
-        if (fmsColor.toString() != null)
+
+        if (fmsColor.toString() != null) {
             fmsColorString = fmsColor.toString();
+        }
         
         int encoderTicks = falcon.getSelectedSensorPosition();
         Color detectedColor = m_colorSensor.getColor();
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+
+        RPM = SmartDashboard.getNumber("RPM", 0);
 
         if (match.color == kBlueTarget) {
             colorString = "Blue";
@@ -141,16 +167,16 @@ public class ColorWheel {
         }
         
         //control to manually move hand
-        if (xbox.getBumper(GenericHID.Hand.kRight)) {
+        if (xbox.getStartButton()) {
             falcon.set(ControlMode.PercentOutput, -0.10);
-        } else if (xbox.getBumper(GenericHID.Hand.kLeft)) {
+        } else if (xbox.getBackButton()) {
             falcon.set(ControlMode.PercentOutput, 0.10);
         } else if (!yButtonPressed) {
           falcon.set(ControlMode.PercentOutput, 0.0);
         }
 
         // control to rotate disk three times
-        if (xbox.getYButtonPressed()) {
+        if (yButton) {
             yButtonPressed = true;
             falcon.setSelectedSensorPosition(controlPanelRotationTicks);
             return;
@@ -184,7 +210,7 @@ public class ColorWheel {
                 return;
                 // if colorString is unknown then move the motor a small portion
             } else if (colorString == "Unknown") {
-                falcon.set(ControlMode.PercentOutput, 0.01);
+                falcon.set(ControlMode.PercentOutput, 0.05);
                 return;
                 // turn motor off if is on correct fms color
             } else {
@@ -196,5 +222,9 @@ public class ColorWheel {
         pastColor = colorString;
 
         changedColor = false;
+    }
+
+    public void teleopDisabled() {
+
     }
 }
