@@ -22,7 +22,7 @@ public class Intake {
   DoubleSolenoid intakeUpDown;
 
   String pneumaticValue;
-  double speed; 
+  double intakeSpeed; 
   
 
   public void robotInit() {
@@ -33,7 +33,7 @@ public class Intake {
     tempController = Robot.manipCtrl;
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
     pneumaticValue = new String();
-    speed = SmartDashboard.getNumber("Motor Speed", 0.5);
+    intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0.5);
 
   }
 
@@ -62,8 +62,8 @@ public class Intake {
   
     //intake turns on
     if (buttonA == true) {
-      intakeBagMotor.set(speed);
-      intakeFalconMotor.set(speed);
+      intakeBagMotor.set(intakeSpeed);
+      intakeFalconMotor.set(intakeSpeed);
     } 
 
     //intake turns off
