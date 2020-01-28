@@ -22,5 +22,9 @@ public class ControllerMap {
 
     public static class Manip {
 
+        public static int kIntakeStart = 1;
+        public static int kIntakeStop = 2;
+        public static int kIntakeUpDown = 3;
+
     }
 }
