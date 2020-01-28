@@ -15,9 +15,14 @@ public class ControllerMap {
         public static int kLeftStickYAxis = 1;
         public static int kRightStickXAxis = 4;
         public static int kRightStickYAxis = 5;
-        //A button
-        public static int kcolorBeginButton = 1;
+    
+        
+    }
 
+    public static class Manip {
+        //Y Button
+        public static int krotationStartButton = 4;
+        public static int koperatedRotation = 8;
     }
 
     public static class Manip {
@@ -25,6 +30,5 @@ public class ControllerMap {
         public static int kIntakeStart = 1;
         public static int kIntakeStop = 2;
         public static int kIntakeUpDown = 3;
-
     }
 }
