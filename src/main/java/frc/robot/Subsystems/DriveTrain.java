@@ -88,8 +88,8 @@ public class DriveTrain{
     }
 
     public void teleopPeriodic() {
-        valueX = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kRightStickXAxis);
-        valueY = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kLeftStickYAxis) * -1; // Multiplied by -1 because Y axis is inverted
+        valueX = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kRightStickXAxis);
+        valueY = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kLeftStickYAxis) * -1; // Multiplied by -1 because Y axis is inverted
 
         valueX = DeadbandMaker.linear1d(valueX, 0.04);
         valueY = DeadbandMaker.linear1d(valueY, 0.04);
