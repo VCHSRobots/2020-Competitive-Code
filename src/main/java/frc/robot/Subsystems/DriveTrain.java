@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.util.BaseFXConfig;
