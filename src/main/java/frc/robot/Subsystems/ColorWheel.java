@@ -39,13 +39,11 @@ public class ColorWheel {
 
     double RPM = 0;
 
-    boolean colorCheck = false;
     boolean rotateDisk = false;
     boolean yButton;
     boolean startButton;
 
     String colorString = "Unknown";
-    String firstColor = "Unknown";
     String fmsColorString;
 
     private FMSData fmsColor = new FMSData();
@@ -133,11 +131,6 @@ public class ColorWheel {
             colorString = "Yellow";
         } else {
             colorString = "Unknown";
-        }
-
-        if (!colorCheck) {
-            colorCheck = true;
-            firstColor = colorString;
         }
 
         // control to manually move hand
