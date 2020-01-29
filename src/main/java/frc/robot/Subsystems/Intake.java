@@ -32,7 +32,6 @@ public class Intake {
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
     tempController = Robot.manipCtrl;
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
-    pneumaticValue = new String();
     intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0.5);
 
   }
@@ -61,26 +60,26 @@ public class Intake {
     boolean buttonB = tempController.getRawButton(ControllerMap.Manip.kIntakeUpDown);
   
     //intake turns on
-    if (buttonA == true) {
+    if (buttonA) {
       intakeBagMotor.set(intakeSpeed);
       intakeFalconMotor.set(intakeSpeed);
     } 
 
     //intake turns off
-    if (buttonX == true){
+    if (buttonX) {
       intakeBagMotor.set(0);
       intakeFalconMotor.set(0);
     }
 
     //pneumatic toggle
-    if(buttonB == true && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
+    if(buttonB && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
       intakeUpDown.set(DoubleSolenoid.Value.kForward);
-      pneumaticValue = "Forward";
+      pneumaticValue = "Up";
     }
 
-    if(buttonB == true && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
+    if(buttonB && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
-      pneumaticValue = "Reverse";
+      pneumaticValue = "Down";
     }
     
     
