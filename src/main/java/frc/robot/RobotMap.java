@@ -22,6 +22,7 @@ public class RobotMap {
         public static int kIntakeFalconMotor = 22;
         public static int kUpDownForward = 23;
         public static int kUpDownReverse = 24;
+        public static int kComp = 25;
     }
 
     public static class ShooterMap {
@@ -35,6 +36,9 @@ public class RobotMap {
         public static int klFrontFX = 12;
         public static int klBackFX = 13;
         public static int krBackFX = 14;
-    }
 
+    public static class ClimberMap {
+        public static int kclimbFX = 3;
+    }
+    
 }
