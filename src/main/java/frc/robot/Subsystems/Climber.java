@@ -7,6 +7,9 @@ import frc.robot.RobotMap;
 import frc.robot.util.BaseFXConfig;
 
 public class Climber {
+
+    WPI_TalonFX climbFX;
+    
     public void robotInit() {
 
     }

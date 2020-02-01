@@ -3,16 +3,23 @@ package frc.robot.Subsystems;
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+<<<<<<< HEAD
 //import frc.robot.util.BaseFXConfig;
+=======
+
+import frc.robot.util.BaseFXConfig;
+>>>>>>> c958a014891042434d50962713f5512351321726
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 //import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Intake {
+
+public class Intake{
 
   WPI_TalonSRX intakeBagMotor; 
   WPI_TalonSRX intakeProtoMotor; //for protoype intake
@@ -22,9 +29,11 @@ public class Intake {
   
   DoubleSolenoid intakeUpDown;
 
+
   String pneumaticValue;
   double intakeSpeed; 
   
+
 
   public void robotInit() {
 
@@ -43,6 +52,10 @@ public class Intake {
     SmartDashboard.putString("Pneumatic State", pneumaticValue);
   }
 
+  public void robotDisabled() {
+
+  }
+
   public void autonomousInit() {
 
   }
@@ -50,6 +63,10 @@ public class Intake {
   public void autonomousPeriodic() {
 
   }
+
+  public void autonomousDisabled() {
+
+  } 
 
   public void teleopInit() {
 
@@ -88,6 +105,9 @@ public class Intake {
     
     
   }
-  
+
+  public void teleopDisabled() {
+
+  }
 
 }

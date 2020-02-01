@@ -5,24 +5,23 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.Subsystems;
+package frc.robot.util;
 
 /**
  * Add your docs here.
  */
-public class Limelight {
+public class DeadbandMaker {
 
-    /* 
-     * return the estimated distance to the goal
-     */
-    public double getDistance() {
-        return 0;
-    }
-
-    /* 
-     * return a value of [0,1.0] based on where the center of the goal is in the frame
-     */
-    public double getX() {
-        return 0;
+    public static double linear1d(double x, double p) {
+        if (Math.abs(x) < p) {
+            return 0;
+        } else if (x < 0) {
+            x = (x + p) / (1 - p);
+        } else if (x > 0) {
+            x = (x - p) / (1 - p);
+        } else {
+            return 0;
+        }
+        return x;
     }
 }

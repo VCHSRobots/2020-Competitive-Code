@@ -136,6 +136,7 @@ $RECYCLE.BIN/
 
 ### Gradle ###
 .gradle
+.gradle/*/*
 .gradle/*
 /build/
 

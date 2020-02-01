@@ -3,6 +3,7 @@ package frc.robot.util;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.MotorCommutation;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -25,9 +26,6 @@ public class BaseFXConfig extends TalonFXConfiguration{
 
     public BaseFXConfig(){
         this.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        this.initializationStrategy = SensorInitializationStrategy.BootToZero;
-        this.integratedSensorOffsetDegrees = 0;
-        this.motorCommutation = MotorCommutation.Trapezoidal;
         // this.auxPIDPolarity = true;
         this.clearPositionOnLimitF = false;
         this.clearPositionOnLimitR = false;
@@ -39,20 +37,20 @@ public class BaseFXConfig extends TalonFXConfiguration{
         this.forwardLimitSwitchSource = LimitSwitchSource.Deactivated;
         this.forwardSoftLimitEnable = false;
         // this.forwardSoftLimitThreshold = 0;
-        //this.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        // this.integratedSensorOffsetDegrees = 0;
+        this.initializationStrategy = SensorInitializationStrategy.BootToZero;
+        this.integratedSensorOffsetDegrees = 0;
         // this.limitSwitchDisableNeutralOnLOS = false;
         this.motionAcceleration = 0;
         this.motionCruiseVelocity = 0;
         this.motionCurveStrength = 0;
         //this.motionProfileTrajectoryPeriod = 0;
-        //this.motorCommutation = MotorCommutation.Trapezoidal;
-        // this.neutralDeadband = 0.001;
+        this.motorCommutation = MotorCommutation.Trapezoidal;
+        this.neutralDeadband = 0.001;
         this.nominalOutputForward = 0.0;
         this.nominalOutputReverse = 0.0;
         this.openloopRamp = 0.08;
         this.peakOutputForward = 1.0;
-        this.peakOutputReverse = 1.0;
+        this.peakOutputReverse = -1.0;
         //this.primaryPID = BaseTalonPIDSetConfiguration.class.cast(0);
         //this.pulseWidthPeriod_EdgesPerRot = 0;
         //this.pulseWidthPeriod_FilterWindowSz = 0;
@@ -65,10 +63,7 @@ public class BaseFXConfig extends TalonFXConfiguration{
         this.softLimitDisableNeutralOnLOS = false;
         //this.statorCurrLimit = StatorCurrentLimitConfiguration.class.cast(0);
         //this.sum0Term = FeedbackDevice.SensorDifference;
+        this.voltageCompSaturation = 12;
 
-
-
-
-        
     }
 }
