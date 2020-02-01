@@ -3,12 +3,7 @@ package frc.robot.Subsystems;
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-<<<<<<< HEAD
 //import frc.robot.util.BaseFXConfig;
-=======
-
-import frc.robot.util.BaseFXConfig;
->>>>>>> c958a014891042434d50962713f5512351321726
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 //import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;

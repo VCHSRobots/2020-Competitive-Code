@@ -37,9 +37,11 @@ public class RobotMap {
         public static int klFrontFX = 12;
         public static int klBackFX = 13;
         public static int krBackFX = 14;
+    }
 
     public static class ClimberMap {
         public static int kclimbFX = 3;
     }
+    
     
 }
