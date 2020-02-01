@@ -96,8 +96,7 @@ public class Intake{
     if(buttonB && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
       pneumaticValue = "Down";
-    }
-    
+     }   
     
   }
 
