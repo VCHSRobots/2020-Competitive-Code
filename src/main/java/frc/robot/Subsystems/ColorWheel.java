@@ -8,6 +8,7 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -31,17 +32,20 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 public class ColorWheel {
 
     TalonFX falcon;
+    DoubleSolenoid colorSolenoid;
 
     XboxController xbox;
-
+   
     int blueCount, redCount, yellowCount, greenCount;
     int controlPanelRotationTicks = 49152;
 
     double RPM = 0;
 
     boolean rotateDisk = false;
-    boolean yButton;
+    boolean yButton; 
     boolean startButton;
+    boolean solenoidFowardReverse;
+    boolean leftDPad;
 
     String colorString = "Unknown";
     String fmsColorString;
@@ -68,9 +72,12 @@ public class ColorWheel {
 
         xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
 
+        colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidReverse, RobotMap.ColorWheelMap.kcolorSolenoidForward);
+        colorSolenoid.set(DoubleSolenoid.Value.kForward);
+
         yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
         startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
-
+        
         try {
             m_colorSensor = new ColorSensorV3(i2cPort);
         } catch (Exception ex) {

@@ -14,7 +14,13 @@ public class RobotMap {
     }
 
     public static class ColorWheelMap {
+<<<<<<< Updated upstream
         public static int controlPanelWheel = 2;
+=======
+        public static int kcontrolPanelWheel = 2;
+        public static int kcolorSolenoidForward = 3;
+        public static int kcolorSolenoidReverse = 4;
+>>>>>>> Stashed changes
     }
 
     public static class IntakeMap {
