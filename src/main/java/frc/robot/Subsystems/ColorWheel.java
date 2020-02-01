@@ -66,7 +66,7 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget);
 
-        falcon = new TalonFX(RobotMap.ColorWheelMap.controlPanelWheel);
+        falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
         falcon.setNeutralMode(NeutralMode.Brake);
         falcon.setSelectedSensorPosition(0);
 
