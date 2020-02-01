@@ -14,13 +14,9 @@ public class RobotMap {
     }
 
     public static class ColorWheelMap {
-<<<<<<< Updated upstream
-        public static int controlPanelWheel = 2;
-=======
         public static int kcontrolPanelWheel = 2;
         public static int kcolorSolenoidForward = 3;
         public static int kcolorSolenoidReverse = 4;
->>>>>>> Stashed changes
     }
 
     public static class IntakeMap {
@@ -42,6 +38,7 @@ public class RobotMap {
         public static int klFrontFX = 12;
         public static int klBackFX = 13;
         public static int krBackFX = 14;
+    }
 
     public static class ClimberMap {
         public static int kclimbFX = 3;
