@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Intake {
 
   WPI_TalonSRX intakeBagMotor; 
-  WPI_TalonFX intakeFalconMotor;
+  WPI_TalonSRX intakeProtoMotor; //for protoype intake
+  //WPI_TalonFX intakeFalconMotor;
 
   XboxController tempController;
   
@@ -28,7 +29,8 @@ public class Intake {
   public void robotInit() {
 
     intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor);
-    intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
+    intakeProtoMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeProtoMotor);
+    //intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
     tempController = Robot.manipCtrl;
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
@@ -62,13 +64,15 @@ public class Intake {
     //intake turns on
     if (buttonA) {
       intakeBagMotor.set(intakeSpeed);
-      intakeFalconMotor.set(intakeSpeed);
+      intakeProtoMotor.set(intakeSpeed); //for prototype intake
+      //intakeFalconMotor.set(intakeSpeed);
     } 
 
     //intake turns off
     if (buttonX) {
       intakeBagMotor.set(0);
-      intakeFalconMotor.set(0);
+      intakeProtoMotor.set(0); //for prototype intake
+      //intakeFalconMotor.set(0);
     }
 
     //pneumatic toggle
