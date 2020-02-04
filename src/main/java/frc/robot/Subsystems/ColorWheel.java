@@ -35,17 +35,16 @@ public class ColorWheel {
     DoubleSolenoid colorSolenoid;
 
     XboxController xbox;
-   
+
     int blueCount, redCount, yellowCount, greenCount;
     int controlPanelRotationTicks = 49152;
 
     double RPM = 0;
 
     boolean rotateDisk = false;
-    boolean yButton; 
+    boolean yButton;
     boolean startButton;
-    boolean solenoidFowardReverse;
-    boolean leftDPad;
+    boolean solenoidLoop = false;
 
     String colorString = "Unknown";
     String fmsColorString;
@@ -73,11 +72,11 @@ public class ColorWheel {
         xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
 
         colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidReverse, RobotMap.ColorWheelMap.kcolorSolenoidForward);
-        colorSolenoid.set(DoubleSolenoid.Value.kForward);
+        colorSolenoid.set(DoubleSolenoid.Value.kReverse);
 
         yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
         startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
-        
+
         try {
             m_colorSensor = new ColorSensorV3(i2cPort);
         } catch (Exception ex) {
@@ -165,7 +164,7 @@ public class ColorWheel {
         }
 
         // Enters Finding the Color Mode through FMS
-        if (xbox.getBButton()) {
+        if (xbox.getPOV() == 270) {
             //gets fms color if it doesnt == null
             if (fmsColor.getCWColor() != null) {
                 fmsColorString = fmsColor.getCWColor();
@@ -195,6 +194,15 @@ public class ColorWheel {
                 return;
             }
         }
+
+        if (xbox.getPOV() ==  180 && solenoidLoop == false) {
+            colorSolenoid.set(DoubleSolenoid.Value.kForward);
+            solenoidLoop = true; 
+        } else if (xbox.getPOV() == 180 && solenoidLoop == true) {
+            colorSolenoid.set(DoubleSolenoid.Value.kReverse);
+            solenoidLoop = false; 
+        }
+
     }
 
     public void teleopDisabled() {
