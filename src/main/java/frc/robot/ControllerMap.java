@@ -20,15 +20,12 @@ public class ControllerMap {
     }
 
     public static class Manip {
-        //Y Button
-        public static int krotationStartButton = 4;
-        public static int koperatedRotation = 8;
-    }
-
-    public static class Manip {
 
         public static int kIntakeStart = 1;
         public static int kIntakeStop = 2;
         public static int kIntakeUpDown = 3;
+        public static int krotationStartButton = 4;
+        public static int koperatedRotation = 8;
+        
     }
 }
