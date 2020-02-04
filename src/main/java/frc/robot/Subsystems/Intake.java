@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Intake{
 
   WPI_TalonSRX intakeBagMotor; 
-  WPI_TalonFX intakeFalconMotor;
+  WPI_TalonSRX intakeFalconMotor;
 
   XboxController tempController;
   
@@ -33,7 +33,7 @@ public class Intake{
   public void robotInit() {
 
     intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor);
-    intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
+    intakeFalconMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeFalconMotor);
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
     tempController = Robot.manipCtrl;
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
@@ -70,28 +70,24 @@ public class Intake{
   public void teleopPeriodic() {
     //controller initialization
     boolean buttonA = tempController.getRawButton(ControllerMap.Manip.kIntakeStart);
-    boolean buttonX = tempController.getRawButton(ControllerMap.Manip.kIntakeStop);
     boolean buttonB = tempController.getRawButton(ControllerMap.Manip.kIntakeUpDown);
   
     //intake turns on
     if (buttonA == true) {
       intakeBagMotor.set(intakeSpeed);
       intakeFalconMotor.set(intakeSpeed);
-    } 
-
-    //intake turns off
-    if (buttonX == true){
+    } else {
       intakeBagMotor.set(0);
       intakeFalconMotor.set(0);
     }
 
     //pneumatic toggle
-    if(buttonB == true && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
+    if(tempController.getBButtonPressed() == true && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
       intakeUpDown.set(DoubleSolenoid.Value.kForward);
       pneumaticValue = "Forward";
     }
 
-    if(buttonB == true && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
+    if(tempController.getBButtonPressed() == true && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
       pneumaticValue = "Reverse";
     }

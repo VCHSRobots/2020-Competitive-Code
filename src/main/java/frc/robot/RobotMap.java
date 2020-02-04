@@ -20,8 +20,8 @@ public class RobotMap {
     public static class IntakeMap {
         public static int kIntakeBagMotor = 21;
         public static int kIntakeFalconMotor = 22;
-        public static int kUpDownForward = 23;
-        public static int kUpDownReverse = 24;
+        public static int kUpDownForward = 2;
+        public static int kUpDownReverse = 3;
         public static int kComp = 25;
     }
 

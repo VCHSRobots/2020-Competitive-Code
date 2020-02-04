@@ -23,7 +23,7 @@ public class Robot extends TimedRobot {
   private FMSData fmsData = new FMSData();
   private Intake intake = new Intake();
   private DriveTrain driveTrain = new DriveTrain();
-  // private ColorWheel colorWheel = new ColorWheel();
+  private ColorWheel colorWheel = new ColorWheel();
   private Shooter shooter = new Shooter();
 
   // ---------Controller--------------
@@ -36,21 +36,21 @@ public class Robot extends TimedRobot {
     driveCtrl = new XboxController(RobotMap.Controllers.kDriveCtrl);
     manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
 
-    // intake.robotInit();
+    intake.robotInit();
     driveTrain.robotInit();
-    // shooter.robotInit();
-    // colorWheel.robotInit();
+    shooter.robotInit();
+    colorWheel.robotInit();
   }
 
   @Override
   public void robotPeriodic() {
     //--------------FMS SmartDashboard Send----------------
-    // fmsData.smartDashSend(); // edit in FMSData
+    fmsData.smartDashSend(); // edit in FMSData
 
-    // intake.robotPeriodic();
+    intake.robotPeriodic();
     driveTrain.robotPeriodic();
-    // shooter.robotPeriodic();
-    // colorWheel.robotPeriodic();
+    shooter.robotPeriodic();
+    colorWheel.robotPeriodic();
     
   }
 
@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
     intake.autonomousInit();
     driveTrain.autonomousInit();
     shooter.autonomousInit();
-    // colorWheel.autonomousInit();
+    colorWheel.autonomousInit();
   }
 
   @Override
@@ -67,15 +67,15 @@ public class Robot extends TimedRobot {
     intake.autonomousPeriodic();
     driveTrain.autonomousPeriodic();
     shooter.autonomousPeriodic();
-    // colorWheel.autonomousPeriodic();
+    colorWheel.autonomousPeriodic();
   }
 
   @Override
   public void teleopPeriodic() {
-    // intake.teleopPeriodic();
+    intake.teleopPeriodic();
     driveTrain.teleopPeriodic();
-    // shooter.teleopPeriodic();
-    // colorWheel.teleopPeriodic();
+    shooter.teleopPeriodic();
+    colorWheel.teleopPeriodic();
   }
 
   @Override
