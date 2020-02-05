@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 //import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.XboxController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,21 +25,26 @@ public class Intake{
   
   DoubleSolenoid intakeUpDown;
 
-
   String pneumaticValue;
   double intakeSpeed; 
-  
-
+  Compressor c;
 
   public void robotInit() {
 
     intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor);
     intakeProtoMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeProtoMotor);
     //intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
+
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
+    
     tempController = Robot.manipCtrl;
+
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
-    intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0.5);
+    //intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0.5);
+    intakeSpeed = 0;
+
+    c = new Compressor(RobotMap.IntakeMap.kCompressor);
+    c.setClosedLoopControl(true);
 
   }
 
@@ -75,6 +81,7 @@ public class Intake{
   
     //intake turns on
     if (buttonA) {
+      intakeSpeed = 0.5;
       intakeBagMotor.set(intakeSpeed);
       intakeProtoMotor.set(intakeSpeed); //for prototype intake
       //intakeFalconMotor.set(intakeSpeed);
@@ -82,9 +89,10 @@ public class Intake{
 
     //intake turns off
     if (buttonX) {
-      intakeBagMotor.set(0);
-      intakeProtoMotor.set(0); //for prototype intake
-      //intakeFalconMotor.set(0);
+      intakeSpeed = 0;
+      intakeBagMotor.set(intakeSpeed);
+      intakeProtoMotor.set(intakeSpeed); //for prototype intake
+      //intakeFalconMotor.set(intakeSpeed);
     }
 
     //pneumatic toggle

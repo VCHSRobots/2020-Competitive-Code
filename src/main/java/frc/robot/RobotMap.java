@@ -24,6 +24,7 @@ public class RobotMap {
         public static int kUpDownReverse = 24;
         public static int kComp = 25;
         public static int kIntakeProtoMotor = 26; //for prototype robot only
+        public static int kCompressor = 27;
     }
 
     public static class ShooterMap {
