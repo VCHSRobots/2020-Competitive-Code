@@ -8,12 +8,14 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotMap;
 import frc.robot.util.FMSData;
 import frc.robot.ControllerMap;
+import frc.robot.Robot;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -64,6 +66,7 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget);
 
+        DoubleSolenoid colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward,RobotMap.ColorWheelMap.kcolorSolenoidReverse);
         falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
         falcon.setNeutralMode(NeutralMode.Brake);
         falcon.setSelectedSensorPosition(0);
@@ -90,7 +93,7 @@ public class ColorWheel {
         SmartDashboard.putNumber("Blue", detectedColor.blue);
         SmartDashboard.putNumber("Confidence", match.confidence);
         SmartDashboard.putString("Detected Color", colorString);
-        SmartDashboard.putNumber("RPM", 0);
+        SmartDashboard.getNumber("RPM", 0);
 
     }
 
@@ -119,7 +122,6 @@ public class ColorWheel {
         if (fmsColor.toString() != null) {
             fmsColorString = fmsColor.toString();
         }
-        RPM = SmartDashboard.getNumber("RPM", 0);
 
         Double velocityPer100Milliseconds = RPM * 4096 / 600;
         int encoderTicks = falcon.getSelectedSensorPosition();
