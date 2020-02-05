@@ -44,7 +44,11 @@ public class ColorWheel {
     boolean rotateDisk = false;
     boolean yButton;
     boolean startButton;
+<<<<<<< Updated upstream
     boolean solenoidLoop = false;
+=======
+    boolean solenoi33dLoop = false;
+>>>>>>> Stashed changes
 
     String colorString = "Unknown";
     String fmsColorString;
@@ -71,7 +75,11 @@ public class ColorWheel {
 
         xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
 
+<<<<<<< Updated upstream
         colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidReverse, RobotMap.ColorWheelMap.kcolorSolenoidForward);
+=======
+        //colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidReverse, RobotMap.ColorWheelMap.kcolorSolenoidForward);
+>>>>>>> Stashed changes
         colorSolenoid.set(DoubleSolenoid.Value.kReverse);
 
         yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
@@ -195,13 +203,21 @@ public class ColorWheel {
             }
         }
 
+<<<<<<< Updated upstream
         if (xbox.getPOV() ==  180 && solenoidLoop == false) {
+=======
+    /*    if (xbox.getPOV() ==  180 && solenoidLoop == false) {
+>>>>>>> Stashed changes
             colorSolenoid.set(DoubleSolenoid.Value.kForward);
             solenoidLoop = true; 
         } else if (xbox.getPOV() == 180 && solenoidLoop == true) {
             colorSolenoid.set(DoubleSolenoid.Value.kReverse);
             solenoidLoop = false; 
+<<<<<<< Updated upstream
         }
+=======
+        }*/
+>>>>>>> Stashed changes
 
     }
 

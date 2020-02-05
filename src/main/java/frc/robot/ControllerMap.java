@@ -24,8 +24,12 @@ public class ControllerMap {
         public static int kIntakeStart = 1;
         public static int kIntakeStop = 2;
         public static int kIntakeUpDown = 3;
+<<<<<<< Updated upstream
         public static int krotationStartButton = 4;
         public static int koperatedRotation = 8;
         
+=======
+        //public static int colorPOV = 270;
+>>>>>>> Stashed changes
     }
 }
