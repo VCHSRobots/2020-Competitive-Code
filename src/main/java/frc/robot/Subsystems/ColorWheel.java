@@ -8,7 +8,6 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -32,7 +31,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 public class ColorWheel {
 
     TalonFX falcon;
-    DoubleSolenoid colorSolenoid;
 
     XboxController xbox;
 
@@ -41,16 +39,13 @@ public class ColorWheel {
 
     double RPM = 0;
 
+    boolean colorCheck = false;
     boolean rotateDisk = false;
     boolean yButton;
     boolean startButton;
-<<<<<<< Updated upstream
-    boolean solenoidLoop = false;
-=======
-    boolean solenoi33dLoop = false;
->>>>>>> Stashed changes
 
     String colorString = "Unknown";
+    String firstColor = "Unknown";
     String fmsColorString;
 
     private FMSData fmsColor = new FMSData();
@@ -74,13 +69,6 @@ public class ColorWheel {
         falcon.setSelectedSensorPosition(0);
 
         xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
-
-<<<<<<< Updated upstream
-        colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidReverse, RobotMap.ColorWheelMap.kcolorSolenoidForward);
-=======
-        //colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidReverse, RobotMap.ColorWheelMap.kcolorSolenoidForward);
->>>>>>> Stashed changes
-        colorSolenoid.set(DoubleSolenoid.Value.kReverse);
 
         yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
         startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
@@ -128,6 +116,9 @@ public class ColorWheel {
 
     public void teleopPeriodic() {
 
+        if (fmsColor.toString() != null) {
+            fmsColorString = fmsColor.toString();
+        }
         RPM = SmartDashboard.getNumber("RPM", 0);
 
         Double velocityPer100Milliseconds = RPM * 4096 / 600;
@@ -145,6 +136,11 @@ public class ColorWheel {
             colorString = "Yellow";
         } else {
             colorString = "Unknown";
+        }
+
+        if (!colorCheck) {
+            colorCheck = true;
+            firstColor = colorString;
         }
 
         // control to manually move hand
@@ -172,11 +168,7 @@ public class ColorWheel {
         }
 
         // Enters Finding the Color Mode through FMS
-        if (xbox.getPOV() == 270) {
-            //gets fms color if it doesnt == null
-            if (fmsColor.getCWColor() != null) {
-                fmsColorString = fmsColor.getCWColor();
-            }
+        if (xbox.getBButton()) {
             // if fmsColor is blue and colorString isnt red then move until then
             if (fmsColorString == "blue" && colorString != "Red") {
                 falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
@@ -202,23 +194,6 @@ public class ColorWheel {
                 return;
             }
         }
-
-<<<<<<< Updated upstream
-        if (xbox.getPOV() ==  180 && solenoidLoop == false) {
-=======
-    /*    if (xbox.getPOV() ==  180 && solenoidLoop == false) {
->>>>>>> Stashed changes
-            colorSolenoid.set(DoubleSolenoid.Value.kForward);
-            solenoidLoop = true; 
-        } else if (xbox.getPOV() == 180 && solenoidLoop == true) {
-            colorSolenoid.set(DoubleSolenoid.Value.kReverse);
-            solenoidLoop = false; 
-<<<<<<< Updated upstream
-        }
-=======
-        }*/
->>>>>>> Stashed changes
-
     }
 
     public void teleopDisabled() {
