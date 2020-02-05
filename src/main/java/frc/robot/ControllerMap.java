@@ -21,10 +21,12 @@ public class ControllerMap {
     }
 
     public static class Manip {
-
+        //A button
         public static int kIntakeStart = 1;
-        public static int kIntakeStop = 2;
-        public static int kIntakeUpDown = 3;
+        //X button
+        public static int kIntakeStop = 3;
+        //B button
+        public static int kIntakeUpDown = 2;
 
     }
 }

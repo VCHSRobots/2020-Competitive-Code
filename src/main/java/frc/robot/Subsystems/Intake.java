@@ -9,8 +9,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 //import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Compressor;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -24,10 +24,11 @@ public class Intake{
   XboxController tempController;
   
   DoubleSolenoid intakeUpDown;
+  Compressor c; 
 
   String pneumaticValue;
-  double intakeSpeed; 
-  Compressor c;
+  double intakeSpeed;
+  double dashboardIntake;
 
   public void robotInit() {
 
@@ -36,15 +37,16 @@ public class Intake{
     //intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
 
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
-    
-    tempController = Robot.manipCtrl;
-
-    intakeUpDown.set(DoubleSolenoid.Value.kForward);
-    //intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0.5);
-    intakeSpeed = 0;
-
     c = new Compressor(RobotMap.IntakeMap.kCompressor);
     c.setClosedLoopControl(true);
+    //temporary controller
+    tempController = new XboxController(0);
+    //actual controller
+    //tempController = manipCtrl;
+
+    intakeUpDown.set(DoubleSolenoid.Value.kForward);
+    intakeSpeed = 0;
+    //dashboardIntake = SmartDashboard.getNumber("Motor Speed", intakeSpeed);
 
   }
 
@@ -82,18 +84,16 @@ public class Intake{
     //intake turns on
     if (buttonA) {
       intakeSpeed = 0.5;
-      intakeBagMotor.set(intakeSpeed);
-      intakeProtoMotor.set(intakeSpeed); //for prototype intake
-      //intakeFalconMotor.set(intakeSpeed);
     } 
 
     //intake turns off
     if (buttonX) {
       intakeSpeed = 0;
-      intakeBagMotor.set(intakeSpeed);
-      intakeProtoMotor.set(intakeSpeed); //for prototype intake
-      //intakeFalconMotor.set(intakeSpeed);
     }
+
+    intakeBagMotor.set(intakeSpeed);
+    intakeProtoMotor.set(intakeSpeed); //for prototype intake
+    //intakeFalconMotor.set(dashboardIntake);
 
     //pneumatic toggle
     if(buttonB && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
