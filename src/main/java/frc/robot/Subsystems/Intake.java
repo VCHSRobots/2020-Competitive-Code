@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.Compressor;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -25,7 +24,6 @@ public class Intake{
   XboxController tempController;
   
   DoubleSolenoid intakeUpDown;
-  Compressor c; 
 
   String pneumaticValue;
   double intakeSpeed;
@@ -38,12 +36,9 @@ public class Intake{
     //intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
 
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
-    //c = new Compressor(RobotMap.IntakeMap.kCompressor);
-    //c.setClosedLoopControl(true);
-    //temporary controller
-    tempController = Robot.driveCtrl;
+
     //actual controller
-    //tempController = manipCtrl;
+    tempController = new XboxController(RobotMap.Controllers.kManipCtrl);
 
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
 
@@ -53,7 +48,7 @@ public class Intake{
     //sends pneumatic state to the smart dashboard
     SmartDashboard.putString("Pneumatic State", pneumaticValue);
 
-    intakeSpeed = SmartDashboard.getNumber("Intake Speed", 0.1);
+    dashboardIntake = SmartDashboard.getNumber("Intake Speed", 0.1);
   }
 
   public void robotDisabled() {
@@ -84,7 +79,7 @@ public class Intake{
   
     //intake turns on
     if (buttonA) {
-      intakeSpeed = 0.5;
+      intakeSpeed = dashboardIntake;
     } 
 
     //intake turns off
