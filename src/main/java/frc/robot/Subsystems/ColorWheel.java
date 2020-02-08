@@ -59,6 +59,7 @@ public class ColorWheel {
     private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
+    
     public void robotInit() {
 
         m_colorMatcher.addColorMatch(kBlueTarget);
@@ -67,11 +68,27 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kYellowTarget);
 
         DoubleSolenoid colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward,RobotMap.ColorWheelMap.kcolorSolenoidReverse);
-        falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
-        falcon.setNeutralMode(NeutralMode.Brake);
-        falcon.setSelectedSensorPosition(0);
 
-        xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
+        falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
+        falcon.configFactoryDefault();
+
+        falcon.setSelectedSensorPosition(0);
+        falcon.setSensorPhase(false);
+        falcon.config_kF(0, 1023 / 600);
+        falcon.config_kP(0, 0);
+        falcon.config_kI(0, 0);
+        falcon.config_kD(0, 0);
+        falcon.config_IntegralZone(0, 0);
+
+        falcon.configNominalOutputForward(0);
+        falcon.configNominalOutputReverse(0);
+        falcon.configPeakOutputForward(1);
+        falcon.configPeakOutputReverse(-1);
+
+        falcon.setNeutralMode(NeutralMode.Brake);
+        
+
+       xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
 
         yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
         startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
@@ -170,7 +187,7 @@ public class ColorWheel {
         }
 
         // Enters Finding the Color Mode through FMS
-        if (xbox.getBButton()) {
+        if (xbox.getPOV() == 270) {
             // if fmsColor is blue and colorString isnt red then move until then
             if (fmsColorString == "blue" && colorString != "Red") {
                 falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
@@ -187,7 +204,7 @@ public class ColorWheel {
             } else if (fmsColorString == "yellow" && colorString != "Green") {
                 falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
                 return;
-                // if colorString is unknown then move the motor a small portion
+                // if colorString is unknown then move the falcon a small portion
             } else if (colorString == "Unknown") {
                 falcon.set(ControlMode.Velocity, velocityPer100Milliseconds / 2);
                 return;
