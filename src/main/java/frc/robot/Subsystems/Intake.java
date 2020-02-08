@@ -5,6 +5,7 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 //import frc.robot.util.BaseFXConfig;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 //import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -37,22 +38,22 @@ public class Intake{
     //intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
 
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
-    c = new Compressor(RobotMap.IntakeMap.kCompressor);
-    c.setClosedLoopControl(true);
+    //c = new Compressor(RobotMap.IntakeMap.kCompressor);
+    //c.setClosedLoopControl(true);
     //temporary controller
-    tempController = new XboxController(0);
+    tempController = Robot.driveCtrl;
     //actual controller
     //tempController = manipCtrl;
 
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
-    intakeSpeed = 0;
-    //dashboardIntake = SmartDashboard.getNumber("Motor Speed", intakeSpeed);
 
   }
 
   public void robotPeriodic() {
     //sends pneumatic state to the smart dashboard
     SmartDashboard.putString("Pneumatic State", pneumaticValue);
+
+    intakeSpeed = SmartDashboard.getNumber("Intake Speed", 0.1);
   }
 
   public void robotDisabled() {
@@ -91,8 +92,8 @@ public class Intake{
       intakeSpeed = 0;
     }
 
-    intakeBagMotor.set(intakeSpeed);
-    intakeProtoMotor.set(intakeSpeed); //for prototype intake
+    intakeBagMotor.set(ControlMode.PercentOutput, intakeSpeed);
+    intakeProtoMotor.set(ControlMode.PercentOutput, intakeSpeed); //for prototype intake
     //intakeFalconMotor.set(dashboardIntake);
 
     //pneumatic toggle
