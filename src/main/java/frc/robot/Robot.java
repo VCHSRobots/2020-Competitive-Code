@@ -7,75 +7,92 @@
 
 package frc.robot;
 
-import java.util.Collection;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Subsystems.Intake;
 import frc.robot.Subsystems.DriveTrain;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ColorWheel;
+import frc.robot.Subsystems.Climber;
 import frc.robot.util.FMSData;
+import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
 
   // ---------Subsystems---------------
-  private FMSData fmsData = new FMSData();
-  private Intake intake = new Intake();
-  private DriveTrain driveTrain = new DriveTrain();
-  private ColorWheel colorWheel = new ColorWheel();
-  private Shooter shooter = new Shooter();
-
+  public static FMSData fmsData = new FMSData();
+  public static Intake intake = new Intake();
+  public static DriveTrain driveTrain = new DriveTrain();
+  public static ColorWheel colorWheel = new ColorWheel();
+  public static Shooter shooter = new Shooter();
+  public static Climber climber = new Climber();
+  
   // ---------Controller--------------
   public static XboxController driveCtrl;
   public static XboxController manipCtrl;
+  public static Joystick climbCtrl;
+  
+  // ------- Global Variables
+  static public Boolean brake_is_enabled = false;
+  static public Boolean tether_is_enabled = false;
+  static public Boolean climb_is_enabled = false;
 
   @Override
   public void robotInit() {
     // -------------------------Controllers------------------------------
     driveCtrl = new XboxController(RobotMap.Controllers.kDriveCtrl);
     manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
+    climbCtrl = new Joystick(RobotMap.Controllers.kClimberCtrl);
 
-    intake.robotInit();
+    climber.robotInit();
+    //intake.robotInit();
     driveTrain.robotInit();
-    shooter.robotInit();
-    colorWheel.robotInit();
+    //shooter.robotInit();
+    //colorWheel.robotInit();
   }
 
   @Override
   public void robotPeriodic() {
     //--------------FMS SmartDashboard Send----------------
     fmsData.smartDashSend(); // edit in FMSData
-
-    intake.robotPeriodic();
+    climber.robotPeriodic();
+    //intake.robotPeriodic();
     driveTrain.robotPeriodic();
-    shooter.robotPeriodic();
-    colorWheel.robotPeriodic();
-    
+    //shooter.robotPeriodic();
+    //colorWheel.robotPeriodic();
   }
 
   @Override
   public void autonomousInit() {
-    intake.autonomousInit();
+    climber.autonomousInit();
+    //intake.autonomousInit();
     driveTrain.autonomousInit();
-    shooter.autonomousInit();
-    colorWheel.autonomousInit();
+    //shooter.autonomousInit();
+    //colorWheel.autonomousInit();
   }
 
   @Override
   public void autonomousPeriodic() {
-    intake.autonomousPeriodic();
+    climber.autonomousPeriodic();
+    //intake.autonomousPeriodic();
     driveTrain.autonomousPeriodic();
-    shooter.autonomousPeriodic();
-    colorWheel.autonomousPeriodic();
+    //shooter.autonomousPeriodic();
+    //colorWheel.autonomousPeriodic();
+  }
+
+  @Override
+  public void teleopInit() {
+    climber.teleopInit();
+    driveTrain.teleopInit();
   }
 
   @Override
   public void teleopPeriodic() {
-    intake.teleopPeriodic();
+    climber.teleopPeriodic();
+    //intake.teleopPeriodic();
     driveTrain.teleopPeriodic();
-    shooter.teleopPeriodic();
-    colorWheel.teleopPeriodic();
+    //shooter.teleopPeriodic();
+    //colorWheel.teleopPeriodic();
   }
 
   @Override

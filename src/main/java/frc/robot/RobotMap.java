@@ -5,6 +5,7 @@ public class RobotMap {
     public static class Controllers {
         public static int kDriveCtrl = 0; // These are port numbers
         public static int kManipCtrl = 1;
+        public static int kClimberCtrl = 2;
     }
 
     public static class DriveCtrl {
@@ -25,6 +26,16 @@ public class RobotMap {
         public static int kComp = 25;
     }
 
+    public static class BreakerMap{
+        public static int kBrakeModeOn = 2;
+        public static int kBrakeModeOff = 3;
+    }
+
+    public static class ShifterMap{
+      public static int kShiftModeDrive = 4;
+      public static int kShiftModeClimb = 5; 
+    }
+
     public static class ShooterMap {
         public static int kupperWheelsFX = 31;
         public static int klowerWheelsFX = 32;
@@ -40,6 +51,10 @@ public class RobotMap {
 
     public static class ClimberMap {
         public static int kclimbFX = 3;
+        public static int kLeftArm_Up = 6;
+        public static int kLeftArm_Dn = 7;
+        public static int kRightArm_Up = 0;
+        public static int kRightArm_Dn = 1;
     }
     
 }

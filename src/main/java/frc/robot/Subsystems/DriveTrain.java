@@ -88,6 +88,15 @@ public class DriveTrain{
     }
 
     public void teleopPeriodic() {
+
+        if (Robot.tether_is_enabled) return;
+        if (Robot.climb_is_enabled) return;
+        if (Robot.brake_is_enabled) {
+          rFrontFX_master.set(ControlMode.PercentOutput, 0.0);
+          lFrontFX_master.set(ControlMode.PercentOutput, 0.0);
+          return;
+        }
+        
         valueX = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kRightStickXAxis);
         valueY = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kLeftStickYAxis) * -1; // Multiplied by -1 because Y axis is inverted
 
@@ -113,5 +122,11 @@ public class DriveTrain{
     public void teleopDisabled() {
         // TODO Auto-generated method stub
         
+    }
+
+    public void ExternalMotorControl(double leftSidePower, double rightSidePower) {
+        // ----------------Percent Output Drive------------------
+        rFrontFX_master.set(ControlMode.PercentOutput, rightSidePower);
+        lFrontFX_master.set(ControlMode.PercentOutput, leftSidePower);
     }
 }
