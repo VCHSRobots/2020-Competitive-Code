@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotMap;
 import frc.robot.util.FMSData;
 import frc.robot.ControllerMap;
+import frc.robot.Robot;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -32,25 +33,19 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 public class ColorWheel {
 
     TalonFX falcon;
-    DoubleSolenoid colorSolenoid;
 
     XboxController xbox;
-   
-    int blueCount, redCount, yellowCount, greenCount;
-    int controlPanelRotationTicks = 49152;
 
     double RPM = 0;
 
     boolean rotateDisk = false;
-    boolean yButton; 
-    boolean startButton;
-    boolean solenoidFowardReverse;
-    boolean leftDPad;
+    
+    String currentColor = "Unknown";
+    String fmsColor;
 
-    String colorString = "Unknown";
-    String fmsColorString;
+    DoubleSolenoid colorSolenoid;
 
-    private FMSData fmsColor = new FMSData();
+    private FMSData fmsColorData = new FMSData();
     private ColorSensorV3 m_colorSensor;
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
     private final ColorMatch m_colorMatcher = new ColorMatch();
@@ -66,18 +61,19 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget);
 
+        colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward,RobotMap.ColorWheelMap.kcolorSolenoidReverse);
+
         falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
         falcon.setNeutralMode(NeutralMode.Brake);
         falcon.setSelectedSensorPosition(0);
+        // falcon.config_kP(0, 0);
+        // falcon.config_kI(0, 0);
+        // falcon.config_kD(0, 0);
+        // falcon.config_kF(0, 5);
+        // falcon.config_IntegralZone(0, 0);
 
         xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
-
-        colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidReverse, RobotMap.ColorWheelMap.kcolorSolenoidForward);
-        colorSolenoid.set(DoubleSolenoid.Value.kForward);
-
-        yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
-        startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
-        
+ 
         try {
             m_colorSensor = new ColorSensorV3(i2cPort);
         } catch (Exception ex) {
@@ -94,8 +90,8 @@ public class ColorWheel {
         SmartDashboard.putNumber("Green", detectedColor.green);
         SmartDashboard.putNumber("Blue", detectedColor.blue);
         SmartDashboard.putNumber("Confidence", match.confidence);
-        SmartDashboard.putString("Detected Color", colorString);
-        SmartDashboard.putNumber("RPM", 0);
+        SmartDashboard.putString("Detected Color", currentColor);
+        RPM = SmartDashboard.getNumber("RPM of ColorWheel", 0);
 
     }
 
@@ -121,79 +117,89 @@ public class ColorWheel {
 
     public void teleopPeriodic() {
 
-        RPM = SmartDashboard.getNumber("RPM", 0);
-
-        Double velocityPer100Milliseconds = RPM * 4096 / 600;
+        //Double velocityPer100Milliseconds = RPM * 4096 / 600;
         int encoderTicks = falcon.getSelectedSensorPosition();
         Color detectedColor = m_colorSensor.getColor();
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+        boolean startButton = xbox.getStartButton();
+        boolean startReleased = true;
 
-        if (match.color == kBlueTarget) {
-            colorString = "Blue";
-        } else if (match.color == kGreenTarget) {
-            colorString = "Green";
-        } else if (match.color == kRedTarget) {
-            colorString = "Red";
-        } else if (match.color == kYellowTarget && match.confidence >= 0.94) {
-            colorString = "Yellow";
-        } else {
-            colorString = "Unknown";
+        if (fmsColor.toString() != null) {
+            fmsColor = fmsColorData.toString();
         }
 
-        // control to manually move hand
-        if (xbox.getStartButton()) {
-            falcon.set(ControlMode.Velocity, -velocityPer100Milliseconds);
-        } else if (xbox.getBackButton()) {
-            falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
-        } else if (!rotateDisk) {
-            falcon.set(ControlMode.Velocity, 0);
+        if (!startButton) {
+            startReleased = true;
+        }
+
+        if (startButton && startReleased && colorSolenoid.get() == DoubleSolenoid.Value.kForward) {
+            colorSolenoid.set(DoubleSolenoid.Value.kReverse);
+            startReleased = false;
+        } else if (startButton && startReleased && colorSolenoid.get() == DoubleSolenoid.Value.kReverse) {
+            colorSolenoid.set(DoubleSolenoid.Value.kForward);
+            startReleased = false;
+        }
+
+        if (match.color == kBlueTarget) {
+            currentColor = "Blue";
+        } else if (match.color == kGreenTarget) {
+            currentColor = "Green";
+        } else if (match.color == kRedTarget) {
+            currentColor = "Red";
+        } else if (match.color == kYellowTarget && match.confidence >= 0.94) {
+            currentColor = "Yellow";
+        } else {
+            currentColor = "Unknown";
         }
 
         // control to rotate disk three times
-        if (yButton) {
+        if (xbox.getYButton()) {
             rotateDisk = true;
-            falcon.setSelectedSensorPosition(controlPanelRotationTicks);
+            falcon.setSelectedSensorPosition(49152);
             return;
         } else if (rotateDisk) {
             if (encoderTicks >= 0) {
-                falcon.set(ControlMode.Velocity, -velocityPer100Milliseconds);
+                falcon.set(ControlMode.PercentOutput, 0.20);
                 return;
             } else {
-                falcon.set(ControlMode.Velocity, 0);
+                falcon.set(ControlMode.PercentOutput, 0);
                 rotateDisk = false;
             }
         }
 
         // Enters Finding the Color Mode through FMS
         if (xbox.getBButton()) {
-            //gets fms color if it doesnt == null
-            if (fmsColor.getCWColor() != null) {
-                fmsColorString = fmsColor.getCWColor();
-            }
-            // if fmsColor is blue and colorString isnt red then move until then
-            if (fmsColorString == "blue" && colorString != "Red") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+            // if fmsColor is blue and currentColor isnt red then move until then
+            if (fmsColor == "blue" && currentColor != "Red") {
+                falcon.set(ControlMode.PercentOutput, 0.20);
                 return;
-                // if fmsColor is green and colorString isnt yellow then move until then
-            } else if (fmsColorString == "green" && colorString != "Yellow") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+                // if fmsColor is green and currentColor isnt yellow then move until then
+            } else if (fmsColor == "green" && currentColor != "Yellow") {
+                falcon.set(ControlMode.PercentOutput, 0.20);
                 return;
-                // if fmsColor is red and colorString isnt blue then move until then
-            } else if (fmsColorString == "red" && colorString != "Blue") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+                // if fmsColor is red and currentColor isnt blue then move until then
+            } else if (fmsColor == "red" && currentColor != "Blue") {
+                falcon.set(ControlMode.PercentOutput, 0.20);
                 return;
-                // if fmsColor is yellow and colorString isnt green then move until then
-            } else if (fmsColorString == "yellow" && colorString != "Green") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+                // if fmsColor is yellow and currentColor isnt green then move until then
+            } else if (fmsColor == "yellow" && currentColor != "Green") {
+                falcon.set(ControlMode.PercentOutput, 0.20);
                 return;
-                // if colorString is unknown then move the motor a small portion
-            } else if (colorString == "Unknown") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds / 2);
+                // if currentColor is unknown then move the motor a small portion
+            } else if (fmsColor == "Unknown") {
+                falcon.set(ControlMode.PercentOutput, 0.10);
                 return;
             } else {
-                falcon.set(ControlMode.Velocity, 0);
+                falcon.set(ControlMode.PercentOutput, 0);
                 return;
             }
+        }
+
+        // manually move hand
+        if (xbox.getBackButton()) {
+            falcon.set(ControlMode.PercentOutput, 0.20);
+        } else if (!rotateDisk) {
+            falcon.set(ControlMode.PercentOutput, 0);
         }
     }
 
