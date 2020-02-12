@@ -104,10 +104,51 @@ public class Climber {
       //}
       // IF the tehter is engaged, control motors.
       if (Robot.tether_is_enabled) {
-        double pull = Robot.climbCtrl.getRawAxis(ControllerMap.climbjoy.kClimbAxis);
-        //double balance = Robot.climbCtrl.getRawAxis(ControllerMap.climbjoy.kBalanceAxis);
-        pull = pull * 0.25;  // Limit it for testing and development
-        Robot.driveTrain.ExternalMotorControl(pull, pull);
+        boolean mainpull_is_zero = false;
+        boolean sidepull_is_zero = false;
+        double mainpull = Robot.climbCtrl.getRawAxis(ControllerMap.climbjoy.kClimbAxis);
+        double sidepull = Robot.climbCtrl.getRawAxis(ControllerMap.climbjoy.kBalanceAxis);
+        if (Math.abs(mainpull) < 0.25) {
+          mainpull = 0.0;
+          mainpull_is_zero = true;
+        } else {
+          if (mainpull > 0.0) {
+            mainpull = (mainpull - 0.25) / 0.75;
+          } else {
+            mainpull = (mainpull + 0.25) / 0.75;
+          }
+        }
+        if (Math.abs(sidepull) < 0.25) {
+          sidepull = 0.0;
+          sidepull_is_zero = true;
+        } else {
+          if (sidepull > 0.0) {
+            sidepull = (sidepull - 0.25) / 0.75;
+          } else {
+            sidepull = (sidepull + 0.25) / 0.75;
+          }
+        }
+        // Scale pulling here...
+        mainpull = mainpull * 0.75;
+        sidepull = sidepull * 0.30;
+        if (mainpull_is_zero && sidepull_is_zero) {
+          Robot.driveTrain.ExternalMotorControl(0.0, 0.0);
+          return;
+        }
+        if (sidepull_is_zero) {
+          // Apply a ballanced force only.
+          mainpull = mainpull * 0.75;
+          Robot.driveTrain.ExternalMotorControl(mainpull, mainpull);
+          return;
+        } else {
+           // This the more normal case.. apply additive pull to the side 
+          // that the ballance axis is leaning.
+          if (sidepull > 0.0) {
+            Robot.driveTrain.ExternalMotorControl(mainpull, mainpull + sidepull);
+          } else {
+            Robot.driveTrain.ExternalMotorControl(mainpull - sidepull, mainpull);
+          }
+         }
       }
     }
 
