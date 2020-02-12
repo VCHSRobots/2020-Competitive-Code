@@ -45,5 +45,4 @@ public class RobotMap {
         public static int kclimbFX = 3;
     }
     
-    
 }
