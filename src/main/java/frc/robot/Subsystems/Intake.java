@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi .first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -24,8 +24,9 @@ public class Intake{
   XboxController tempController;
   
   DoubleSolenoid intakeUpDown;
+  Compressor c;
 
-  String pneumaticValue;
+  String pneumaticValue = "what state?";
   double intakeSpeed;
   double dashboardIntake;
 
@@ -41,6 +42,8 @@ public class Intake{
     tempController = new XboxController(RobotMap.Controllers.kManipCtrl);
 
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
+    c = new Compressor(0);
+    c.setClosedLoopControl(false);
 
   }
 
@@ -48,7 +51,7 @@ public class Intake{
     //sends pneumatic state to the smart dashboard
     SmartDashboard.putString("Pneumatic State", pneumaticValue);
 
-    dashboardIntake = SmartDashboard.getNumber("Intake Speed", 0.1);
+    dashboardIntake = SmartDashboard.getNumber("Intake Speed", 0.3);
   }
 
   public void robotDisabled() {

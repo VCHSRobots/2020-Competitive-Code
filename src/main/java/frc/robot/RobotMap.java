@@ -41,8 +41,15 @@ public class RobotMap {
         public static int krBackFX = 14;
     }
 
-    public static class ClimberMap {
-        public static int kclimbFX = 3;
+    public static class ConveyorMap {
+        public static int kFrontFX = 41;
+        public static int kMiddleFX = 42;
+        public static int kBackFX = 43;
+
+        public static int inputSensor_1 = 0;
+        public static int inputSensor_2 = 2;
+        public static int inputSensor_3 = 1;
+
     }
     
     

@@ -15,6 +15,7 @@ import frc.robot.Subsystems.Intake;
 import frc.robot.Subsystems.DriveTrain;
 import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ColorWheel;
+import frc.robot.Subsystems.Conveyer;
 import frc.robot.util.FMSData;
 
 public class Robot extends TimedRobot {
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
   private DriveTrain driveTrain = new DriveTrain();
   // private ColorWheel colorWheel = new ColorWheel();
   private Shooter shooter = new Shooter();
+  private Conveyer conveyer = new Conveyer();
 
   // ---------Controller--------------
   public static XboxController driveCtrl;
@@ -36,10 +38,11 @@ public class Robot extends TimedRobot {
     driveCtrl = new XboxController(RobotMap.Controllers.kDriveCtrl);
     manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
 
-    // intake.robotInit();
+    intake.robotInit();
     driveTrain.robotInit();
     // shooter.robotInit();
     // colorWheel.robotInit();
+    conveyer.robotInit();
   }
 
   @Override
@@ -47,11 +50,11 @@ public class Robot extends TimedRobot {
     //--------------FMS SmartDashboard Send----------------
     // fmsData.smartDashSend(); // edit in FMSData
 
-    // intake.robotPeriodic();
+    intake.robotPeriodic();
     driveTrain.robotPeriodic();
     // shooter.robotPeriodic();
     // colorWheel.robotPeriodic();
-    
+    conveyer.robotPeriodic();
   }
 
   @Override
@@ -60,6 +63,7 @@ public class Robot extends TimedRobot {
     driveTrain.autonomousInit();
     shooter.autonomousInit();
     // colorWheel.autonomousInit();
+    conveyer.autonomousInit();
   }
 
   @Override
@@ -68,14 +72,16 @@ public class Robot extends TimedRobot {
     driveTrain.autonomousPeriodic();
     shooter.autonomousPeriodic();
     // colorWheel.autonomousPeriodic();
+    conveyer.autonomousPeriodic();
   }
 
   @Override
   public void teleopPeriodic() {
-    // intake.teleopPeriodic();
+    intake.teleopPeriodic();
     driveTrain.teleopPeriodic();
     // shooter.teleopPeriodic();
     // colorWheel.teleopPeriodic();
+    conveyer.teleopPeriodic();
   }
 
   @Override
