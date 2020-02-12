@@ -38,6 +38,7 @@ public class ColorWheel {
 
     double RPM = 0;
 
+    boolean colorCheck = false;
     boolean rotateDisk = false;
     
     String currentColor = "Unknown";
@@ -54,6 +55,7 @@ public class ColorWheel {
     private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
+    
     public void robotInit() {
 
         m_colorMatcher.addColorMatch(kBlueTarget);
@@ -64,7 +66,8 @@ public class ColorWheel {
         colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward,RobotMap.ColorWheelMap.kcolorSolenoidReverse);
 
         falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
-        falcon.setNeutralMode(NeutralMode.Brake);
+        falcon.configFactoryDefault();
+
         falcon.setSelectedSensorPosition(0);
         // falcon.config_kP(0, 0);
         // falcon.config_kI(0, 0);
