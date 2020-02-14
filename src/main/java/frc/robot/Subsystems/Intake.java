@@ -68,12 +68,8 @@ public class Intake{
   }
 
   public void teleopPeriodic() {
-    //controller initialization
-    boolean buttonA = tempController.getRawButton(ControllerMap.Manip.kIntakeStart);
-    boolean buttonB = tempController.getRawButton(ControllerMap.Manip.kIntakeUpDown);
-  
     //intake turns on
-    if (buttonA == true) {
+    if (tempController.getRawButton(ControllerMap.Manip.kIntakeStart)) {
       intakeBagMotor.set(intakeSpeed);
       intakeFalconMotor.set(intakeSpeed);
     } else {
@@ -82,17 +78,15 @@ public class Intake{
     }
 
     //pneumatic toggle
-    if(tempController.getBButtonPressed() == true && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
+    if(tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown) && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
       intakeUpDown.set(DoubleSolenoid.Value.kForward);
       pneumaticValue = "Forward";
     }
 
-    if(tempController.getBButtonPressed() == true && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
+    if(tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown) && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
       pneumaticValue = "Reverse";
     }
-    
-    
   }
 
   public void teleopDisabled() {
