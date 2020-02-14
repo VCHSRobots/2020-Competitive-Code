@@ -38,8 +38,8 @@ public class DriveTrain{
 
     public void robotInit() {
         BaseFXConfig driveFXconfig = new BaseFXConfig();
-        driveFXconfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 80, 80, 0.25);
-        driveFXconfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 80, 80, 0.25);
+        driveFXconfig.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 60, 60, 0.25);
+        driveFXconfig.statorCurrLimit = new StatorCurrentLimitConfiguration(true, 60, 60, 0.25);
 
         rFrontFX_master.configAllSettings(driveFXconfig, 100);
         rFrontFX_master.setInverted(true);
@@ -103,7 +103,7 @@ public class DriveTrain{
         valueX = DeadbandMaker.linear1d(valueX, 0.04);
         valueY = DeadbandMaker.linear1d(valueY, 0.04);
 
-        valueX = 0.7*Math.copySign(valueX * valueX, valueX);
+        valueX = 0.6*Math.copySign(valueX * valueX, valueX);
         valueY = Math.copySign(valueY * valueY, valueY);
         // -------Drive Equation----------- left side = y+x        right side = y-x
         leftSidePower = valueY + valueX;
@@ -113,8 +113,7 @@ public class DriveTrain{
 
         } else {
             // ----------------Percent Output Drive------------------
-            rFrontFX_master.set(ControlMode.PercentOutput, rightSidePower);
-            lFrontFX_master.set(ControlMode.PercentOutput, leftSidePower);
+            setRawPercent(leftSidePower, rightSidePower);
         }
 
     }
@@ -126,7 +125,11 @@ public class DriveTrain{
 
     public void ExternalMotorControl(double leftSidePower, double rightSidePower) {
         // ----------------Percent Output Drive------------------
-        rFrontFX_master.set(ControlMode.PercentOutput, rightSidePower);
-        lFrontFX_master.set(ControlMode.PercentOutput, leftSidePower);
+        setRawPercent(leftSidePower, rightSidePower);
+    }
+
+    public void setRawPercent(double left, double right) {
+        rFrontFX_master.set(ControlMode.PercentOutput, right);
+        lFrontFX_master.set(ControlMode.PercentOutput, left);
     }
 }
