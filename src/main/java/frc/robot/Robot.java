@@ -22,9 +22,9 @@ public class Robot extends TimedRobot {
   // ---------Subsystems---------------
   private FMSData fmsData = new FMSData();
   private Intake intake = new Intake();
-  private DriveTrain driveTrain = new DriveTrain();
-  // private ColorWheel colorWheel = new ColorWheel();
-  private Shooter shooter = new Shooter();
+  // private DriveTrain driveTrain = new DriveTrain();
+  private ColorWheel colorWheel = new ColorWheel();
+  // private Shooter shooter = new Shooter();
 
   // ---------Controller--------------
   public static XboxController driveCtrl;
@@ -37,9 +37,9 @@ public class Robot extends TimedRobot {
     manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
 
     // intake.robotInit();
-    driveTrain.robotInit();
+    // driveTrain.robotInit();
     // shooter.robotInit();
-    // colorWheel.robotInit();
+    colorWheel.robotInit();
   }
 
   @Override
@@ -48,34 +48,34 @@ public class Robot extends TimedRobot {
     // fmsData.smartDashSend(); // edit in FMSData
 
     // intake.robotPeriodic();
-    driveTrain.robotPeriodic();
+    // driveTrain.robotPeriodic();
     // shooter.robotPeriodic();
-    // colorWheel.robotPeriodic();
+    colorWheel.robotPeriodic();
     
   }
 
   @Override
   public void autonomousInit() {
-    intake.autonomousInit();
-    driveTrain.autonomousInit();
-    shooter.autonomousInit();
-    // colorWheel.autonomousInit();
+    // intake.autonomousInit();
+    // driveTrain.autonomousInit();
+    // shooter.autonomousInit();
+    colorWheel.autonomousInit();
   }
 
   @Override
   public void autonomousPeriodic() {
-    intake.autonomousPeriodic();
-    driveTrain.autonomousPeriodic();
-    shooter.autonomousPeriodic();
-    // colorWheel.autonomousPeriodic();
+    // intake.autonomousPeriodic();
+    // driveTrain.autonomousPeriodic();
+    // shooter.autonomousPeriodic();
+    colorWheel.autonomousPeriodic();
   }
 
   @Override
   public void teleopPeriodic() {
     // intake.teleopPeriodic();
-    driveTrain.teleopPeriodic();
+    // driveTrain.teleopPeriodic();
     // shooter.teleopPeriodic();
-    // colorWheel.teleopPeriodic();
+    colorWheel.teleopPeriodic();
   }
 
   @Override
