@@ -21,8 +21,9 @@ public class ControllerMap {
     public static class Manip {
 
         // Y Button
-        public static int krotationStartButton = 4;
+        public static int krotateButton = 4;
         public static int koperatedRotation = 8;
+        public static int knearestColor = 7;
 
         public static int kIntakeStart = 1;
         public static int kIntakeStop = 2;
