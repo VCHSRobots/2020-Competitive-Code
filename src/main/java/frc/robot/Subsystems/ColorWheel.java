@@ -34,18 +34,26 @@ public class ColorWheel {
     private TalonFXConfiguration m_falconSettings = new TalonFXConfiguration();
     TalonFX falcon;
 
+<<<<<<< Updated upstream
     final const k_RPMToSensorVelocity = 2047.0/600.0;
     final const k_sensorVelocityToRPM = 600.0/2047.0;
     XboxController xbox;
 
 <<<<<<< Updated upstream
 =======
+=======
+    final double k_RPMToSensorVelocity = 2047.0/600.0;
+    final double k_sensorVelocityToRPM = 600.0/2047.0;
+    XboxController xbox;
+
+>>>>>>> Stashed changes
     int controlPanelRotationTicks = 49152;
 
 >>>>>>> Stashed changes
     double RPM = 0;
 
     boolean rotateDisk = false;
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     
     String currentColor = "Unknown";
@@ -56,12 +64,17 @@ public class ColorWheel {
     private FMSData fmsColorData = new FMSData();
     private ColorSensorV3 m_colorSensor;
 =======
+=======
+>>>>>>> Stashed changes
 
     String colorString = "Unknown";
     String fmsColorString;
 
     private FMSData fmsColor = new FMSData();
     private ColorSensorV3 m_colorSensor = null;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
     private final ColorMatch m_colorMatcher = new ColorMatch();
@@ -79,8 +92,11 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kYellowTarget);
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward,RobotMap.ColorWheelMap.kcolorSolenoidReverse);
 =======
+=======
+>>>>>>> Stashed changes
         m_falconSettings.voltageCompSaturation = 11;
         m_falconSettings.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 15, 15, 0.2);
         m_falconSettings.openloopRamp = 0.03; 
@@ -100,12 +116,16 @@ public class ColorWheel {
         m_falconSettings.slot0.kI = 0;
         m_falconSettings.slot0.kD = 0;
         m_falconSettings.slot0.kF = 0.03;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
         falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
         falcon.configFactoryDefault();
 
         falcon.setSelectedSensorPosition(0);
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         // falcon.config_kP(0, 0);
         // falcon.config_kI(0, 0);
@@ -120,6 +140,13 @@ public class ColorWheel {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+=======
+        falcon.configAllSettings(m_falconSettings);
+
+        xbox = Robot.manipCtrl;
+
+        colorTry();
+>>>>>>> Stashed changes
 =======
         falcon.configAllSettings(m_falconSettings);
 
@@ -145,6 +172,9 @@ public class ColorWheel {
 =======
         SmartDashboard.putString("Detected Color", colorString);
         RPM = SmartDashboard.getNumber("disk RPM", 0);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
     }
@@ -172,8 +202,11 @@ public class ColorWheel {
     public void teleopPeriodic() {
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         //Double velocityPer100Milliseconds = RPM * 4096 / 600;
 =======
+=======
+>>>>>>> Stashed changes
         colorTry();
         if (fmsColor.toString() != null) {
             fmsColorString = fmsColor.toString();
@@ -247,11 +280,14 @@ public class ColorWheel {
 
         // Enters Finding the Color Mode through FMS
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         if (xbox.getBButton()) {
             // if fmsColor is blue and currentColor isnt red then move until then
             if (fmsColor == "blue" && currentColor != "Red") {
                 falcon.set(ControlMode.PercentOutput, 0.20);
 =======
+=======
+>>>>>>> Stashed changes
         if (endButton) {
            colorTry();
             // if fmsColor is blue and colorString isnt red then move until then
