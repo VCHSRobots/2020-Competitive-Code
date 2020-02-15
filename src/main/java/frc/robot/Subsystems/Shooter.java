@@ -16,8 +16,8 @@ import frc.robot.RobotMap;
 import frc.robot.util.BaseFXConfig;
 
 public class Shooter {
-    private double m_top_RPM = 0;
-    private double m_bottom_RPM = 0;
+    private double m_top_RPM = 3500;
+    private double m_bottom_RPM = 4500;
     private boolean m_isRunning = false;
     private int m_controlMode = 0;
 

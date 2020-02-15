@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
     // climber.robotInit();
     conveyor.robotInit();
     intake.robotInit();
-    driveTrain.robotInit();
+    // driveTrain.robotInit();
     shooter.robotInit();
     //colorWheel.robotInit();
   }
@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
     // climber.robotPeriodic();
     
     intake.robotPeriodic();
-    driveTrain.robotPeriodic();
+    // driveTrain.robotPeriodic();
     shooter.robotPeriodic();
     conveyor.robotPeriodic();
     //colorWheel.robotPeriodic();
@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // climber.autonomousInit();
     intake.autonomousInit();
-    driveTrain.autonomousInit();
+    // driveTrain.autonomousInit();
     shooter.autonomousInit();
     conveyor.autonomousInit();
     //colorWheel.autonomousInit();
@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
     // climber.autonomousPeriodic();
     conveyor.autonomousPeriodic();
     intake.autonomousPeriodic();
-    driveTrain.autonomousPeriodic();
+    // driveTrain.autonomousPeriodic();
     shooter.autonomousPeriodic();
     //colorWheel.autonomousPeriodic();
   }
@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     // climber.teleopInit();
     conveyor.teleopInit();
-    driveTrain.teleopInit();
+    // driveTrain.teleopInit();
     intake.teleopInit();
     shooter.teleopInit();
   }
@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
     // climber.teleopPeriodic();
     conveyor.teleopPeriodic();
     intake.teleopPeriodic();
-    driveTrain.teleopPeriodic();
+    // driveTrain.teleopPeriodic();
     shooter.teleopPeriodic();
     //colorWheel.teleopPeriodic();
   }

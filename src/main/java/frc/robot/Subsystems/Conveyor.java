@@ -31,7 +31,7 @@ public class Conveyor extends TimedRobot {
   boolean middleCheck = false;
   boolean go = false;
 
-  double defaultValue = 0.3;
+  double defaultValue = 0.15;
 
   Double frontPower = 0.0;
   Double backPower = 0.0;
@@ -89,23 +89,21 @@ public class Conveyor extends TimedRobot {
 
   public void teleopPeriodic() {
 
-    if (ctrl.getPOV() == ControllerMap.Manip.kUpperDPad) {
+    if (ctrl.getRawButtonPressed(ControllerMap.Manip.kConveyerSequence)) {
       go = !go;
     }
 
     if (go) {
-      if (sensor3.get()) {
-        if (!sensor1.get()) {
-          allMotorsSet(defaultValue);
-        } else if (sensor1.get()) {
+      Intake.intakeOnOff = true;
+      if (!sensor1.get() && sensor3.get()) {
+        allMotorsSet(defaultValue);
+      } else {
+          if (!sensor3.get()){Intake.intakeOnOff = false;}
           allMotorsSet(0);
-        }
-      } else if (!sensor3.get()) {
-        allMotorsSet(0);
       }
-
     } else {
-      allMotorsSet(0);
+        allMotorsSet(0);
+        Intake.intakeOnOff = false;
     }
 
     //Shoot

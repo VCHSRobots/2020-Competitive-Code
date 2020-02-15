@@ -26,6 +26,7 @@ public class ControllerMap {
         public static int kIntakeStop = 2;
         public static int kIntakeUpDown = 3;
         public static int krotationStartButton = 4;
+        public static final int kConveyerSequence = 5;
 
         public static final int kshooterToggle = 6;
         public static int koperatedRotation = 7;

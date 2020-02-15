@@ -24,6 +24,8 @@ public class Intake{
   
   DoubleSolenoid intakeUpDown;
 
+  public static boolean intakeOnOff = false;
+  boolean pneumaticForward = false;
 
   String pneumaticValue;
   double intakeSpeed; 
@@ -64,12 +66,18 @@ public class Intake{
   } 
 
   public void teleopInit() {
+    intakeOnOff = false;
+    intakeUpDown.set(DoubleSolenoid.Value.kForward);
 
   }
 
   public void teleopPeriodic() {
     //intake turns on
-    if (tempController.getRawButton(ControllerMap.Manip.kIntakeStart)) {
+    if (tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeStart)) {
+      intakeOnOff = !intakeOnOff;
+    }
+
+    if (intakeOnOff) {
       intakeBagMotor.set(intakeSpeed);
       intakeFalconMotor.set(intakeSpeed);
     } else {
@@ -78,15 +86,18 @@ public class Intake{
     }
 
     //pneumatic toggle
-    if(tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown) && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
+    if (tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown)) {
+      pneumaticForward = !pneumaticForward;
+    }
+    if (pneumaticForward && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
       intakeUpDown.set(DoubleSolenoid.Value.kForward);
-      pneumaticValue = "Forward";
     }
-
-    if(tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown) && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
+    if (!pneumaticForward && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
-      pneumaticValue = "Reverse";
     }
+    
+
+    
   }
 
   public void teleopDisabled() {
