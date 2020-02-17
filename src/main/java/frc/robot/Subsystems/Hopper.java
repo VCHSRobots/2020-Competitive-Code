@@ -28,12 +28,10 @@ public class Hopper {
 
     TalonFXConfiguration m_config;
 
-    double percentRight = 10.0;
-    double percentLeft = 10.0;
+    double RPMRight = 10.0;
+    double RPMLeft = 10.0;
 
     public void robotInit() {
-
-        rSideFX = new TalonFX(HopperMap.krightFX);
 
         m_config.voltageCompSaturation = 11;
         m_config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 15, 15, 0.2);
@@ -55,22 +53,23 @@ public class Hopper {
         m_config.slot0.kD = 0;
         m_config.slot0.kF = 0.04;
 
-
+        rSideFX = new TalonFX(HopperMap.krightFX);
+        rSideFX.configAllSettings(m_config);
 
         lSideFX = new TalonFX(HopperMap.kleftFX);
-        midFX = new TalonFX(HopperMap.kmidFX);
+        lSideFX.configAllSettings(m_config);
 
-        lSideFX.follow(rSideFX);
+        midFX = new TalonFX(HopperMap.kmidFX);
 
         joy = Robot.manipCtrl;
 
-        SmartDashboard.putNumber("RPM of left", percentLeft);
-        SmartDashboard.putNumber("RPM of right", percentRight);
+        SmartDashboard.putNumber("RPM of left", RPMLeft);
+        SmartDashboard.putNumber("RPM of right", RPMRight);
     }
 
     public void robotPeriodic() {
-        percentLeft = SmartDashboard.getNumber("RPM of left", 0);
-        percentRight = SmartDashboard.getNumber("RPM of right", 0);
+        RPMLeft = SmartDashboard.getNumber("RPM of left", 0);
+        RPMRight = SmartDashboard.getNumber("RPM of right", 0);
         
     }
 
@@ -102,29 +101,33 @@ public class Hopper {
         if (!POV0 && !POV90 && !POV180) {
             POVreleased = true;
         }
-        if (POV0 && POVreleased && rSideFX.getMotorOutputPercent() == 0) {
-            rSideFX.set(ControlMode.PercentOutput, percentMidOut);
+        if (POV0 && POVreleased) {
+            rSideFX.set(ControlMode.Velocity, RPMRight);
+            lSideFX.set(ControlMode.Velocity, RPMLeft);
             POVreleased = false;
-        } else if (POV0 && POVreleased && rSideFX.getMotorOutputPercent() != 0) {
-            rSideFX.set(ControlMode.PercentOutput, 0);
-            POVreleased = false;
-        }
-
-        if (POV90 && POVreleased && midFX.getMotorOutputPercent() == 0) {
-            midFX.set(ControlMode.PercentOutput, percentConveyorOut);
-            POVreleased = false;
-        } else if (POV90 && POVreleased && midFX.getMotorOutputPercent() == percentMidOut) {
-            midFX.set(ControlMode.PercentOutput, 0);
+        } else if (POV0 && POVreleased) {
+            rSideFX.set(ControlMode.Velocity, 0);
+            lSideFX.set(ControlMode.Velocity, 0);
             POVreleased = false;
         }
 
-        if (POV180 && POVreleased && midFX.getMotorOutputPercent() == 0) {
-            midFX.set(ControlMode.PercentOutput, percentConveyorOut);
-            rSideFX.set(ControlMode.PercentOutput, percentMidOut);
+        if (POV90 && POVreleased) {
+            midFX.set(ControlMode.Velocity, 10);
             POVreleased = false;
-        } else if (POV180 && POVreleased && midFX.getMotorOutputPercent() == percentMidOut) {
-            midFX.set(ControlMode.PercentOutput, 0);
-            rSideFX.set(ControlMode.PercentOutput, 0);
+        } else if (POV90 && POVreleased) {
+            midFX.set(ControlMode.Velocity, 0);
+            POVreleased = false;
+        }
+
+        if (POV180 && POVreleased) {
+            midFX.set(ControlMode.Velocity, percentConveyorOut);
+            rSideFX.set(ControlMode.Velocity, RPMRight);
+            lSideFX.set(ControlMode.Velocity, RPMLeft);
+            POVreleased = false;
+        } else if (POV180 && POVreleased) {
+            midFX.set(ControlMode.Velocity, 0);
+            rSideFX.set(ControlMode.Velocity, 0);
+            lSideFX.set(ControlMode.Velocity, 0);
             POVreleased = false;
         }
     }
