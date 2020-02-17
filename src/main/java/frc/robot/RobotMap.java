@@ -8,21 +8,26 @@ public class RobotMap {
         public static int kClimberCtrl = 2;
     }
 
-    public static class DriveCtrl {
-        public static int kLeftStickYAxis = 1;
-        public static int kRightStickXAxis = 4;
-        public static int kRightStickYAxis = 5;
-    }
-
     public static class ColorWheelMap {
+        // motors
         public static int kcontrolPanelWheel = 2;
+
+        // solenoids
+        public static int kcolorSolenoidForward = 5;
+        public static int kcolorSolenoidReverse = 6;
     }
 
     public static class IntakeMap {
+        // motors
         public static int kIntakeBagMotor = 21;
-        public static int kIntakeFalconMotor = 22;
-        public static int kUpDownForward = 0;
-        public static int kUpDownReverse = 1;
+
+        // solenoids
+        public static final int kBottomForward = 0;
+        public static final int kBottomReverse = 1;
+        public static final int kTopForward = 2;
+        public static final int kTopReverse = 3;
+
+        // compressor? why/
         public static int kComp = 25;
     }
 
@@ -37,6 +42,7 @@ public class RobotMap {
     }
 
     public static class ShooterMap {
+        // motors
         public static int kupperWheelsFX = 31;
         public static int klowerWheelsFX = 32;
         public static int kturnTableFX = 33;
@@ -65,9 +71,11 @@ public class RobotMap {
         public static int kProxSensor_1 = 0;
         public static int kProxSensor_2 = 1;
         public static int kProxSensor_3 = 2;
-
-
-
     }
     
+    public static class HopperMap {
+        public static int kleftFX = 41;
+        public static int krightFX = 42;
+        public static int kAcceleratorFX = 43;
+    }
 }

@@ -12,42 +12,47 @@ package frc.robot;
  */
 public class ControllerMap {
     public static class Drive {
-        public static int kLeftStickYAxis = 1;
-        public static int kRightStickXAxis = 4;
-        public static int kRightStickYAxis = 5;
+        public static int kLeftStickYAxis =     1;
+        public static int kRightStickXAxis =    4;
+        public static int kRightStickYAxis =    5;
 
     }
 
     public static class Manip {
         // ----- axis -----
+        
+        // ----- buttons -----
+        public static final int kAllFeederToggle =      1;
+        public static final int kHopperLeftToggle =     2;
+        public static final int kHopperRightToggle =    3;
+        public static final int kAcceleratorToggle =    4;
+        public static final int kColorWheelPneumatic =  5;
+        public static final int kShooterToggle =        6;
+        public static final int knearestColor =               7;
+        public static final int krotateButton =               8;
 
-        // -----buttons-----
-        public static int kIntakeStart = 1;
-        public static int kIntakeStop = 2;
-        public static int kIntakeUpDown = 3;
-        public static int krotationStartButton = 4;
-        public static final int kConveyerSequence = 5;
+        // --- unused ---
+        public static final int kConveyerSequence = 50;
 
-        public static final int kshooterToggle = 6;
-        public static int koperatedRotation = 7;
-        public static final int kshooterStop = 8;
-
-        public static int kUpperDPad = 0;
-        public static int kRightDPad = 90;
+        // ----- DPAD -----
+        public static final int kIntakeStowed =               0;
+        public static final int kIntakeMid =                 90;
+        public static final int kIntakeLow =                180;
+        public static final int kIntakeMotorToggle =        270;
     }
 
     public static class climbjoy {
       // Buttons
-      public static int TetherEngage = 1;   // Trigger main button to engage PTO and climb.  Otherwise drive.
-      public static int LeftSide_UP = 3;    // Raise left side arm
-      public static int RightSide_UP = 4;   // Raise right side arm
-      public static int LeftSide_DOWN = 5;  // Lower left side arm (must be done before engaging rope)
-      public static int RightSide_DOWN = 6; // Lower right side arm (must be done before engaging rope)
-      public static int kBrake_ON = 11;     // Engage break for both climb and drive !! (watch out)
-      public static int kBrake_OFF = 12;    // Release break
-      public static int kResetClimbMode = 7; // Reset climb mode.
+      public static final int TetherEngage = 1;   // Trigger main button to engage PTO and climb.  Otherwise drive.
+      public static final int LeftSide_UP = 3;    // Raise left side arm
+      public static final int RightSide_UP = 4;   // Raise right side arm
+      public static final int LeftSide_DOWN = 5;  // Lower left side arm (must be done before engaging rope)
+      public static final int RightSide_DOWN = 6; // Lower right side arm (must be done before engaging rope)
+      public static final int kBrake_ON = 11;     // Engage break for both climb and drive !! (watch out)
+      public static final int kBrake_OFF = 12;    // Release break
+      public static final int kResetClimbMode = 7; // Reset climb mode.
 
-      public static int kClimbAxis = 1;    // Main climber rope control axis (Y axis)
-      public static int kBalanceAxis = 0;  // Allows left-right adjustment of arm strength (X axis)
+      public static final int kClimbAxis = 1;    // Main climber rope control axis (Y axis)
+      public static final int kBalanceAxis = 0;  // Allows left-right adjustment of arm strength (X axis)
     }
 }

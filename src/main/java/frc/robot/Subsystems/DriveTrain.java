@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -97,14 +96,14 @@ public class DriveTrain{
           return;
         }
         
-        valueX = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kRightStickXAxis);
-        valueY = Robot.driveCtrl.getRawAxis(RobotMap.DriveCtrl.kLeftStickYAxis) * -1; // Multiplied by -1 because Y axis is inverted
+        valueX = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kRightStickXAxis);
+        valueY = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kLeftStickYAxis) * -1; // Multiplied by -1 because Y axis is inverted
 
         valueX = DeadbandMaker.linear1d(valueX, 0.04);
         valueY = DeadbandMaker.linear1d(valueY, 0.04);
 
-        valueX = 0.6*Math.copySign(valueX * valueX, valueX);
-        valueY = Math.copySign(valueY * valueY, valueY);
+        valueX = 0.5 * Math.copySign(valueX * valueX, valueX);
+        valueY = 0.7 * Math.copySign(valueY * valueY, valueY);
         // -------Drive Equation----------- left side = y+x        right side = y-x
         leftSidePower = valueY + valueX;
         rightSidePower = valueY - valueX;
