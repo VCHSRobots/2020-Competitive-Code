@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
   private Intake intake = new Intake();
   // private DriveTrain driveTrain = new DriveTrain();
   private ColorWheel colorWheel = new ColorWheel();
-  // private Shooter shooter = new Shooter();
+  private Shooter shooter = new Shooter();
 
   // ---------Controller--------------
   public static XboxController driveCtrl;
@@ -38,8 +38,8 @@ public class Robot extends TimedRobot {
 
     // intake.robotInit();
     // driveTrain.robotInit();
-    // shooter.robotInit();
-    colorWheel.robotInit();
+    shooter.robotInit();
+    // colorWheel.robotInit();
   }
 
   @Override
@@ -49,8 +49,8 @@ public class Robot extends TimedRobot {
 
     // intake.robotPeriodic();
     // driveTrain.robotPeriodic();
-    // shooter.robotPeriodic();
-    colorWheel.robotPeriodic();
+    shooter.robotPeriodic();
+    // colorWheel.robotPeriodic();
     
   }
 
@@ -58,24 +58,24 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // intake.autonomousInit();
     // driveTrain.autonomousInit();
-    // shooter.autonomousInit();
-    colorWheel.autonomousInit();
+    shooter.autonomousInit();
+    // colorWheel.autonomousInit();
   }
 
   @Override
   public void autonomousPeriodic() {
     // intake.autonomousPeriodic();
     // driveTrain.autonomousPeriodic();
-    // shooter.autonomousPeriodic();
-    colorWheel.autonomousPeriodic();
+    shooter.autonomousPeriodic();
+    // colorWheel.autonomousPeriodic();
   }
 
   @Override
   public void teleopPeriodic() {
     // intake.teleopPeriodic();
     // driveTrain.teleopPeriodic();
-    // shooter.teleopPeriodic();
-    colorWheel.teleopPeriodic();
+    shooter.teleopPeriodic();
+    // colorWheel.teleopPeriodic();
   }
 
   @Override

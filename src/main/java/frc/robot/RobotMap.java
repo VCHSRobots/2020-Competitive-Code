@@ -44,4 +44,9 @@ public class RobotMap {
         public static int kclimbFX = 3;
     }
     
+    public static class HopperMap {
+        public static int kleftFX = 40;
+        public static int krightFX = 41;
+        public static int kmidFX = 42;
+    }
 }

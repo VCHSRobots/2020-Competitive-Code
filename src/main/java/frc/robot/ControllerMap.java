@@ -28,5 +28,9 @@ public class ControllerMap {
         public static int kIntakeStart = 1;
         public static int kIntakeStop = 2;
         public static int kIntakeUpDown = 3;
+
+        public static int khopperPOVStart = 0;
+        public static int khopperPOVMidWheel = 90;
+        public static int kallPOVWheel = 180;
     }
 }
