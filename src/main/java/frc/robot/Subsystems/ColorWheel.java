@@ -70,7 +70,7 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget);
 
-        //colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward,RobotMap.ColorWheelMap.kcolorSolenoidReverse);
+        colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward,RobotMap.ColorWheelMap.kcolorSolenoidReverse);
 
         m_falconSettings.voltageCompSaturation = 11;
         m_falconSettings.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 15, 15, 0.2);
@@ -95,22 +95,22 @@ public class ColorWheel {
         falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
         falcon.configAllSettings(m_falconSettings);
 
-        // colorTry();
+        colorTry();
         xbox = Robot.manipCtrl;
         SmartDashboard.putNumber("RPM of ColorWheel", RPM);
     }
 
     public void robotPeriodic() {
 
-        // colorTry();
-        //Color detectedColor = m_colorSensor.getColor();
-        //ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+        colorTry();
+        Color detectedColor = m_colorSensor.getColor();
+        ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
         SmartDashboard.putNumber("encoder", falcon.getSelectedSensorPosition());
-        // SmartDashboard.putNumber("Red", detectedColor.red);
-        // SmartDashboard.putNumber("Green", detectedColor.green);
-        // SmartDashboard.putNumber("Blue", detectedColor.blue);
-        // SmartDashboard.putNumber("Confidence", match.confidence);
-        // SmartDashboard.putString("Detected Color", currentColor);
+        SmartDashboard.putNumber("Red", detectedColor.red);
+        SmartDashboard.putNumber("Green", detectedColor.green);
+        SmartDashboard.putNumber("Blue", detectedColor.blue);
+        SmartDashboard.putNumber("Confidence", match.confidence);
+        SmartDashboard.putString("Detected Color", currentColor);
         RPM = SmartDashboard.getNumber("RPM of ColorWheel", 0);
 
     }
@@ -149,32 +149,32 @@ public class ColorWheel {
 
         Double velocityPer100Milliseconds = RPM * k_RPMToSensorVelocity;
         int encoderTicks = falcon.getSelectedSensorPosition();
-        // Color detectedColor = m_colorSensor.getColor();
-        // ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+        Color detectedColor = m_colorSensor.getColor();
+        ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
-        // if (!POV270) {
-        //     POVReleased = true;
-        // }
+        if (!POV270) {
+            POVReleased = true;
+        }
 
-        // if (POV270 && colorSolenoid.get() == DoubleSolenoid.Value.kForward && POVReleased) {
-        //     colorSolenoid.set(DoubleSolenoid.Value.kReverse);
-        //     POVReleased = false;
-        // } else if (POV270 && colorSolenoid.get() == DoubleSolenoid.Value.kReverse && POVReleased) {
-        //     colorSolenoid.set(DoubleSolenoid.Value.kForward);
-        //     POVReleased = false;
-        // }
+        if (POV270 && colorSolenoid.get() == DoubleSolenoid.Value.kForward && POVReleased) {
+            colorSolenoid.set(DoubleSolenoid.Value.kReverse);
+            POVReleased = false;
+        } else if (POV270 && colorSolenoid.get() == DoubleSolenoid.Value.kReverse && POVReleased) {
+            colorSolenoid.set(DoubleSolenoid.Value.kForward);
+            POVReleased = false;
+        }
 
-        // if (match.color == kBlueTarget) {
-        //     currentColor = "Blue";
-        // } else if (match.color == kGreenTarget) {
-        //     currentColor = "Green";
-        // } else if (match.color == kRedTarget) {
-        //     currentColor = "Red";
-        // } else if (match.color == kYellowTarget && match.confidence >= 0.94) {
-        //     currentColor = "Yellow";
-        // } else {
-        //     currentColor = "Unknown";
-        // }
+        if (match.color == kBlueTarget) {
+            currentColor = "Blue";
+        } else if (match.color == kGreenTarget) {
+            currentColor = "Green";
+        } else if (match.color == kRedTarget) {
+            currentColor = "Red";
+        } else if (match.color == kYellowTarget && match.confidence >= 0.94) {
+            currentColor = "Yellow";
+        } else {
+            currentColor = "Unknown";
+        }
 
         // manually move hand
         if (menuButton) {
