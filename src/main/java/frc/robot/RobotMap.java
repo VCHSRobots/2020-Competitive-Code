@@ -21,8 +21,8 @@ public class RobotMap {
     public static class IntakeMap {
         public static int kIntakeBagMotor = 21;
         public static int kIntakeFalconMotor = 22;
-        public static int kUpDownForward = 2;
-        public static int kUpDownReverse = 3;
+        public static int kUpDownForward = 0;
+        public static int kUpDownReverse = 1;
         public static int kComp = 25;
     }
 
@@ -55,6 +55,19 @@ public class RobotMap {
         public static int kLeftArm_Dn = 7;
         public static int kRightArm_Up = 0;
         public static int kRightArm_Dn = 1;
+    }
+
+    public static class ConveyorMap {
+        public static int kFrontWheelsFX = 41;
+        public static int kBeltFX = 42;
+        public static int kBackWheelsFX = 43;
+
+        public static int kProxSensor_1 = 0;
+        public static int kProxSensor_2 = 1;
+        public static int kProxSensor_3 = 2;
+
+
+
     }
     
 }
