@@ -43,13 +43,13 @@ public class Shooter {
     m_talon_config.nominalOutputForward = 0;
     m_talon_config.nominalOutputReverse = 0;
     m_talon_config.peakOutputForward = 1;
-    m_talon_config.peakOutputReverse = -0.5;
+    m_talon_config.peakOutputReverse = -0.8;
     m_talon_config.closedloopRamp = 0.03;
     m_talon_config.slot0.allowableClosedloopError = 0;
     m_talon_config.slot0.closedLoopPeakOutput = 1.0;
     m_talon_config.slot0.closedLoopPeriod = 2;
     m_talon_config.slot0.integralZone = 0;
-    m_talon_config.slot0.kP = 0.005;
+    m_talon_config.slot0.kP = 0.01;
     m_talon_config.slot0.kI = 0;
     m_talon_config.slot0.kD = 3.0;
     m_talon_config.slot0.kF = 0.05;

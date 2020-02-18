@@ -4,7 +4,7 @@ public class RobotMap {
 
     public static class Controllers {
         public static int kDriveCtrl = 0; // These are port numbers
-        public static int kManipCtrl = 1;
+        public static int kManipCtrl = 0;
         public static int kClimberCtrl = 2;
     }
 
@@ -13,8 +13,8 @@ public class RobotMap {
         public static int kcontrolPanelWheel = 2;
 
         // solenoids
-        public static int kcolorSolenoidForward = 5;
-        public static int kcolorSolenoidReverse = 6;
+        public static int kcolorSolenoidForward = 0;
+        public static int kcolorSolenoidReverse = 0;
     }
 
     public static class IntakeMap {
@@ -23,9 +23,9 @@ public class RobotMap {
 
         // solenoids
         public static final int kBottomForward = 0;
-        public static final int kBottomReverse = 1;
-        public static final int kTopForward = 2;
-        public static final int kTopReverse = 3;
+        public static final int kBottomReverse = 0;
+        public static final int kTopForward = 0;
+        public static final int kTopReverse = 0;
 
         // compressor? why/
         public static int kComp = 25;
@@ -57,10 +57,13 @@ public class RobotMap {
 
     public static class ClimberMap {
         public static int kclimbFX = 3;
-        public static int kLeftArm_Up = 6;
-        public static int kLeftArm_Dn = 7;
+
+        // pneumatics
+        
         public static int kRightArm_Up = 0;
         public static int kRightArm_Dn = 1;
+        public static int kLeftArm_Up = 6;
+        public static int kLeftArm_Dn = 7;
     }
 
     public static class ConveyorMap {
