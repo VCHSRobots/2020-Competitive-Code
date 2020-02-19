@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
@@ -32,6 +33,7 @@ public class Shooter {
   WPI_TalonFX lowerWheelsFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.klowerWheelsFX);
   WPI_TalonFX turnTableFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.kturnTableFX);
 
+  boolean resetTurnTableEncoder = false;
   public void robotInit() {
     // ---------- shooter wheels config -----------
     // TODO: tune pid. k thanks.
@@ -65,7 +67,7 @@ public class Shooter {
     lowerWheelsFX.setNeutralMode(NeutralMode.Coast);
     lowerWheelsFX.setInverted(TalonFXInvertType.Clockwise);
 
-    // ---------- turntable config ----------
+    // ---------- Turntable config ----------
     // TODO: tune pid. k thanks.
     m_talon_config.peakOutputForward = 0.3;
     m_talon_config.peakOutputReverse = -0.3;
@@ -83,11 +85,13 @@ public class Shooter {
     turnTableFX.setNeutralMode(NeutralMode.Brake);
     turnTableFX.setInverted(TalonFXInvertType.Clockwise);
 
-    // ---------- smartdashboard ----------
+    
+
+    // ---------- Smartdashboard ----------
     SmartDashboard.putNumber("Top RPM", m_top_RPM);
     SmartDashboard.putNumber("Bot RPM", m_bottom_RPM);
     SmartDashboard.putNumber("A: ControlMode (0 Velocity - 1 Percent)", m_controlMode);
-    SmartDashboard.putNumber("Turntable Speed", m_turnTable_Max_Speed);
+    SmartDashboard.putBoolean("Reset Turntable Encoder", resetTurnTableEncoder);
   }
 
   public void robotPeriodic() {
@@ -95,11 +99,17 @@ public class Shooter {
         upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
     SmartDashboard.putNumber("Actual Bot RPM",
         lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
+    SmartDashboard.putNumber("Turntable Position", turnTableFX.getSelectedSensorPosition());
+    resetTurnTableEncoder = SmartDashboard.getBoolean("Reset Turntable Encoder", false);
+    if (resetTurnTableEncoder) {
+      turnTableFX.setSelectedSensorPosition(0);
+      resetTurnTableEncoder = false;
+    }
     m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
     m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
     m_turnTable_Max_Speed = SmartDashboard.getNumber("Turntable Max Speed", 0);
 
-    //LIMELIGHT
+    //--------------- LIMELIGHT -----------------------
     limelightDistance = Robot.limelight.getDistance();
     limelightX = Robot.limelight.getX();
   }
@@ -137,7 +147,8 @@ public class Shooter {
       stopMotors();
     }
 
-    //TURNTABLE CODE
+  //------------------- TURNTABLE CODE ------------------------
+    //Turntable set with left joystick on manip controller. Max speed is set by SmartDashboard Variable
     turnTableFX.set(ControlMode.PercentOutput, DeadbandMaker.linear1d(Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate) * m_turnTable_Max_Speed, 0.05));
   }
 
@@ -147,7 +158,7 @@ public class Shooter {
 
   public void disabledInit() {
     stopMotors();
-  }
+}
 
   private void stopMotors() {
     upperWheelsFX.neutralOutput();
