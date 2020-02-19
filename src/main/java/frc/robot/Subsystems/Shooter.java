@@ -14,27 +14,30 @@ import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.util.BaseFXConfig;
+import frc.robot.util.DeadbandMaker;
 
 public class Shooter {
-    private double m_top_RPM = 3500;
-    private double m_bottom_RPM = 4500;
-    private boolean m_isRunning = false;
-    private int m_controlMode = 0;
+  private double m_top_RPM = 3500;
+  private double m_bottom_RPM = 4500;
+  private double m_turnTable_Max_Speed = 0.2;
+  private boolean m_isRunning = false;
+  private int m_controlMode = 0;
+  double limelightDistance = 0;
+  double limelightX = 0;
 
-    private TalonFXConfiguration m_talon_config = new TalonFXConfiguration();
+  private TalonFXConfiguration m_talon_config = new TalonFXConfiguration();
 
+  // -----Falcon Motors-------
+  WPI_TalonFX upperWheelsFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.kupperWheelsFX);
+  WPI_TalonFX lowerWheelsFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.klowerWheelsFX);
+  WPI_TalonFX turnTableFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.kturnTableFX);
 
-    //-----Falcon Motors-------
-    WPI_TalonFX upperWheelsFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.kupperWheelsFX);
-    WPI_TalonFX lowerWheelsFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.klowerWheelsFX);
-    WPI_TalonFX turnTableFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.kturnTableFX);
-
-    public void robotInit() {
+  public void robotInit() {
     // ---------- shooter wheels config -----------
     // TODO: tune pid. k thanks.
     m_talon_config.voltageCompSaturation = Constants.kvoltageComp;
     m_talon_config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0.2);
-    m_talon_config.openloopRamp = 0.03; 
+    m_talon_config.openloopRamp = 0.03;
     m_talon_config.forwardSoftLimitEnable = false;
     m_talon_config.reverseSoftLimitEnable = false;
     // m_talon_config.peakCurrentLimit = 50;
@@ -76,63 +79,78 @@ public class Shooter {
     m_talon_config.slot0.kD = 0;
     m_talon_config.slot0.kF = 0;
 
+    turnTableFX.configAllSettings(m_talon_config);
+    turnTableFX.setNeutralMode(NeutralMode.Brake);
+    turnTableFX.setInverted(TalonFXInvertType.Clockwise);
+
     // ---------- smartdashboard ----------
     SmartDashboard.putNumber("Top RPM", m_top_RPM);
     SmartDashboard.putNumber("Bot RPM", m_bottom_RPM);
     SmartDashboard.putNumber("A: ControlMode (0 Velocity - 1 Percent)", m_controlMode);
+    SmartDashboard.putNumber("Turntable Speed", m_turnTable_Max_Speed);
+  }
+
+  public void robotPeriodic() {
+    SmartDashboard.putNumber("Actual Top RPM",
+        upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
+    SmartDashboard.putNumber("Actual Bot RPM",
+        lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
+    m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
+    m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
+    m_turnTable_Max_Speed = SmartDashboard.getNumber("Turntable Max Speed", 0);
+
+    //LIMELIGHT
+    limelightDistance = Robot.limelight.getDistance();
+    limelightX = Robot.limelight.getX();
+  }
+
+  public void robotDisabled() {
+
+  }
+
+  public void autonomousInit() {
+
+  }
+
+  public void autonomousPeriodic() {
+
+  }
+
+  public void autonomousDisabled() {
+
+  }
+
+  public void teleopInit() {
+    m_isRunning = false;
+  }
+
+  public void teleopPeriodic() {
+    // A button will toggle the control loop off and on
+    if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kShooterToggle)) {
+      m_isRunning = !m_isRunning;
     }
 
-    public void robotPeriodic() {
-      SmartDashboard.putNumber("Actual Top RPM", upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
-      SmartDashboard.putNumber("Actual Bot RPM", lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
-      m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
-      m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
+    if (m_isRunning) {
+      upperWheelsFX.set(ControlMode.Velocity, m_top_RPM * Constants.kRPMtoCTREEncoderTicks);
+      lowerWheelsFX.set(ControlMode.Velocity, m_bottom_RPM * Constants.kRPMtoCTREEncoderTicks);
+    } else {
+      stopMotors();
     }
 
-    public void robotDisabled() {
+    //TURNTABLE CODE
+    turnTableFX.set(ControlMode.PercentOutput, DeadbandMaker.linear1d(Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate) * m_turnTable_Max_Speed, 0.05));
+  }
 
-    }
+  public void teleopDisabled() {
 
-    public void autonomousInit() {
+  }
 
-    }
+  public void disabledInit() {
+    stopMotors();
+  }
 
-    public void autonomousPeriodic() {
-
-    }
-
-    public void autonomousDisabled() {
-
-    }
-
-    public void teleopInit() {
-      m_isRunning = false;
-    }
-
-    public void teleopPeriodic() {
-      // A button will toggle the control loop off and on
-      if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kShooterToggle)) {
-        m_isRunning = !m_isRunning;
-      }
-
-      if (m_isRunning) {
-        upperWheelsFX.set(ControlMode.Velocity, m_top_RPM * Constants.kRPMtoCTREEncoderTicks );
-        lowerWheelsFX.set(ControlMode.Velocity, m_bottom_RPM * Constants.kRPMtoCTREEncoderTicks );
-      } else {
-        stopMotors();
-      }
-    }
-
-    public void teleopDisabled() {
-
-    }
-
-    public void disabledInit() {
-        stopMotors();   
-    }
-
-    private void stopMotors() {
-        upperWheelsFX.neutralOutput();
-        lowerWheelsFX.neutralOutput();
-    }
+  private void stopMotors() {
+    upperWheelsFX.neutralOutput();
+    lowerWheelsFX.neutralOutput();
+  }
 }

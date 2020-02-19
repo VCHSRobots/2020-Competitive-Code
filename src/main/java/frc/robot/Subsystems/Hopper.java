@@ -12,13 +12,10 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.HopperMap;
 import frc.robot.ControllerMap.Manip;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
-
 
 public class Hopper {
 
@@ -39,7 +36,7 @@ public class Hopper {
 
         m_config.voltageCompSaturation = 11;
         m_config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 15, 15, 0.2);
-        m_config.openloopRamp = 0.03; 
+        m_config.openloopRamp = 0.03;
         m_config.forwardSoftLimitEnable = false;
         m_config.reverseSoftLimitEnable = false;
         m_config.neutralDeadband = 0.03;
@@ -100,7 +97,7 @@ public class Hopper {
         lSideFX.set(ControlMode.PercentOutput, 0);
         rSideFX.set(ControlMode.PercentOutput, 0);
         leftToggle = false;
-        rightToggle = false; 
+        rightToggle = false;
         acceleratorToggle = false;
         allToggle = false;
     }
@@ -149,8 +146,6 @@ public class Hopper {
         } else {
             acceleratorFX.set(ControlMode.PercentOutput, 0);
         }
-
-
 
     }
 

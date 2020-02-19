@@ -20,7 +20,7 @@ public class ControllerMap {
 
     public static class Manip {
         // ----- axis -----
-        
+        public static final int kturnTableRotate = 1;
         // ----- buttons -----
         public static final int kAllFeederToggle =      1;
         public static final int kHopperLeftToggle =     2;
@@ -30,9 +30,6 @@ public class ControllerMap {
         public static final int kShooterToggle =        6;
         public static final int knearestColor =               7;
         public static final int krotateButton =               8;
-
-        // --- unused ---
-        public static final int kConveyerSequence = 50;
 
         // ----- DPAD -----
         public static final int kIntakeStowed =               0;

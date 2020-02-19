@@ -10,6 +10,7 @@ package frc.robot.Subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Add your docs here.
@@ -29,6 +30,11 @@ public class Limelight {
     public double regularAspectRatio = regularHorizontal/regularVertical;
     private double normalArea = regularHorizontal*regularVertical;
     private double[] defaultCamtran = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+    public void SmartDashboardSend() {
+        SmartDashboard.putNumber("LimeLight X", getX());
+        SmartDashboard.putNumber("Limelight Distance", getDistance());
+    }
 
     /* 
      * return the estimated distance to the goal

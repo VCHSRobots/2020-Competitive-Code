@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Subsystems.Intake;
+import frc.robot.Subsystems.Limelight;
 import frc.robot.Subsystems.DriveTrain;
 import frc.robot.Subsystems.Hopper;
 import frc.robot.Subsystems.Shooter;
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
   public static Shooter shooter = new Shooter();
   public static Climber climber = new Climber();
   public static Hopper hopper = new Hopper();
+  public static Limelight limelight = new Limelight();
   
   // ---------Controller--------------
   public static XboxController driveCtrl;
@@ -64,6 +66,7 @@ public class Robot extends TimedRobot {
     shooter.robotPeriodic();
     //colorWheel.robotPeriodic();
     hopper.robotPeriodic();
+    limelight.SmartDashboardSend();
   }
 
   @Override

@@ -15,40 +15,37 @@ public class Intake {
   WPI_TalonSRX intakeProtoMotor; // for protoype intake
 
   // motors
-  WPI_TalonSRX intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor); 
-  
+  WPI_TalonSRX intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor);
+
   DoubleSolenoid intakeSolenoidTop = new DoubleSolenoid(RobotMap.IntakeMap.kTopForward, RobotMap.IntakeMap.kTopReverse);
-  DoubleSolenoid intakeSolenoidBottom = new DoubleSolenoid(RobotMap.IntakeMap.kBottomForward, RobotMap.IntakeMap.kBottomReverse);
+  DoubleSolenoid intakeSolenoidBottom = new DoubleSolenoid(RobotMap.IntakeMap.kBottomForward,
+      RobotMap.IntakeMap.kBottomReverse);
 
   public static enum intakePosition {
-    STOWED,
-    MID,
-    LOW
-  } 
+    STOWED, MID, LOW
+  }
 
   boolean intakeToggle = false;
-  
+
   String pneumaticTopValue = new String();
   String pneumaticBottomValue = new String();
   DoubleSolenoid.Value top;
   DoubleSolenoid.Value bottom;
 
-  double intakeSpeed; 
-  
-
+  double intakeSpeed;
 
   public void robotInit() {
     intakeSolenoidTop.set(DoubleSolenoid.Value.kForward);
     intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
     top = DoubleSolenoid.Value.kForward;
     bottom = DoubleSolenoid.Value.kForward;
-    
+
     intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0);
 
   }
 
   public void robotPeriodic() {
-    //sends pneumatic state to the smart dashboard
+    // sends pneumatic state to the smart dashboard
     SmartDashboard.putString("Intake Top", pneumaticTopValue);
     SmartDashboard.putString("Intake Bottom", pneumaticBottomValue);
   }
