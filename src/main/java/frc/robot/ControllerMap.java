@@ -19,6 +19,7 @@ public class ControllerMap {
     }
 
     public static class Manip {
+<<<<<<< HEAD
         // ----- axis -----
 
         // -----buttons-----
@@ -27,6 +28,14 @@ public class ControllerMap {
         public static int kIntakeUpDown = 3;
         public static int krotationStartButton = 4;
         public static final int kConveyerSequence = 5;
+=======
+        //A button
+        public static int kIntakeStart = 1;
+        //X button
+        public static int kIntakeStop = 3;
+        //B button
+        public static int kIntakeUpDown = 2;
+>>>>>>> intake
 
         public static final int kshooterToggle = 6;
         public static int koperatedRotation = 7;
