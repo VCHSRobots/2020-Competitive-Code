@@ -3,26 +3,17 @@ package frc.robot.Subsystems;
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-//import frc.robot.util.BaseFXConfig;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-//import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.XboxController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+public class Intake {
+  WPI_TalonSRX intakeProtoMotor; // for protoype intake
 
-public class Intake{
-
-  WPI_TalonSRX intakeBagMotor; 
-  WPI_TalonSRX intakeProtoMotor; //for protoype intake
-  //WPI_TalonFX intakeFalconMotor;
-
-  XboxController tempController;
-  
   DoubleSolenoid intakeUpDown;
 
   public static boolean intakeOnOff = false;
@@ -33,22 +24,18 @@ public class Intake{
   double dashboardIntake;
 
   public void robotInit() {
-
-    intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor);
     intakeProtoMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeProtoMotor);
-    //intakeFalconMotor = BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
+    // intakeFalconMotor =
+    // BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
 
     intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
-
-    //actual controller
-    tempController = new XboxController(RobotMap.Controllers.kManipCtrl);
 
     intakeUpDown.set(DoubleSolenoid.Value.kForward);
 
   }
 
   public void robotPeriodic() {
-    //sends pneumatic state to the smart dashboard
+    // sends pneumatic state to the smart dashboard
     SmartDashboard.putString("Pneumatic State", pneumaticValue);
 
     dashboardIntake = SmartDashboard.getNumber("Intake Speed", 0.1);
@@ -68,7 +55,7 @@ public class Intake{
 
   public void autonomousDisabled() {
 
-  } 
+  }
 
   public void teleopInit() {
     intakeOnOff = false;
@@ -77,8 +64,8 @@ public class Intake{
   }
 
   public void teleopPeriodic() {
-    //intake turns on
-    if (tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeStart)) {
+    // intake turns on
+    if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kIntakeStart)) {
       intakeOnOff = !intakeOnOff;
     }
 
@@ -87,13 +74,10 @@ public class Intake{
     } else {
       intakeProtoMotor.set(0);
     }
+    intakeProtoMotor.set(ControlMode.PercentOutput, intakeSpeed); // for prototype intake
 
-    intakeBagMotor.set(ControlMode.PercentOutput, intakeSpeed);
-    intakeProtoMotor.set(ControlMode.PercentOutput, intakeSpeed); //for prototype intake
-    //intakeFalconMotor.set(dashboardIntake);
-
-    //pneumatic toggle
-    if (tempController.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown)) {
+    // pneumatic toggle
+    if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown)) {
       pneumaticForward = !pneumaticForward;
     }
     if (pneumaticForward && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
@@ -102,9 +86,7 @@ public class Intake{
     if (!pneumaticForward && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
       intakeUpDown.set(DoubleSolenoid.Value.kReverse);
     }
-    
 
-    
   }
 
   public void teleopDisabled() {
