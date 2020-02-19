@@ -14,31 +14,43 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Intake {
   WPI_TalonSRX intakeProtoMotor; // for protoype intake
 
-  DoubleSolenoid intakeUpDown;
+  // motors
+  WPI_TalonSRX intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor); 
+  
+  DoubleSolenoid intakeSolenoidTop = new DoubleSolenoid(RobotMap.IntakeMap.kTopForward, RobotMap.IntakeMap.kTopReverse);
+  DoubleSolenoid intakeSolenoidBottom = new DoubleSolenoid(RobotMap.IntakeMap.kBottomForward, RobotMap.IntakeMap.kBottomReverse);
 
-  public static boolean intakeOnOff = false;
-  boolean pneumaticForward = false;
+  public static enum intakePosition {
+    STOWED,
+    MID,
+    LOW
+  } 
 
-  String pneumaticValue;
-  double intakeSpeed;
-  double dashboardIntake;
+  boolean intakeToggle = false;
+  
+  String pneumaticTopValue = new String();
+  String pneumaticBottomValue = new String();
+  DoubleSolenoid.Value top;
+  DoubleSolenoid.Value bottom;
+
+  double intakeSpeed; 
+  
+
 
   public void robotInit() {
-    intakeProtoMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeProtoMotor);
-    // intakeFalconMotor =
-    // BaseFXConfig.generateDefaultTalon(RobotMap.IntakeMap.kIntakeFalconMotor);
-
-    intakeUpDown = new DoubleSolenoid(RobotMap.IntakeMap.kUpDownForward, RobotMap.IntakeMap.kUpDownReverse);
-
-    intakeUpDown.set(DoubleSolenoid.Value.kForward);
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kForward);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
+    top = DoubleSolenoid.Value.kForward;
+    bottom = DoubleSolenoid.Value.kForward;
+    
+    intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0);
 
   }
 
   public void robotPeriodic() {
-    // sends pneumatic state to the smart dashboard
-    SmartDashboard.putString("Pneumatic State", pneumaticValue);
-
-    dashboardIntake = SmartDashboard.getNumber("Intake Speed", 0.1);
+    //sends pneumatic state to the smart dashboard
+    SmartDashboard.putString("Intake Top", pneumaticTopValue);
+    SmartDashboard.putString("Intake Bottom", pneumaticBottomValue);
   }
 
   public void robotDisabled() {
@@ -58,34 +70,39 @@ public class Intake {
   }
 
   public void teleopInit() {
-    intakeOnOff = false;
-    intakeUpDown.set(DoubleSolenoid.Value.kForward);
-
+    intakeToggle = false;
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kForward);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
   }
 
   public void teleopPeriodic() {
     // intake turns on
-    if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kIntakeStart)) {
-      intakeOnOff = !intakeOnOff;
+    if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeMotorToggle) {
+      intakeToggle = !intakeToggle;
     }
 
-    if (intakeOnOff) {
+    if (intakeToggle) {
       intakeProtoMotor.set(intakeSpeed);
     } else {
       intakeProtoMotor.set(0);
     }
     intakeProtoMotor.set(ControlMode.PercentOutput, intakeSpeed); // for prototype intake
 
-    // pneumatic toggle
-    if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kIntakeUpDown)) {
-      pneumaticForward = !pneumaticForward;
+    // pneumatic position
+
+    if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeLow) {
+      top = DoubleSolenoid.Value.kForward;
+      bottom = DoubleSolenoid.Value.kForward;
+    } else if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeMid) {
+      top = DoubleSolenoid.Value.kReverse;
+      bottom = DoubleSolenoid.Value.kForward;
+    } else if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeStowed) {
+      top = DoubleSolenoid.Value.kReverse;
+      bottom = DoubleSolenoid.Value.kReverse;
     }
-    if (pneumaticForward && intakeUpDown.get() == DoubleSolenoid.Value.kReverse) {
-      intakeUpDown.set(DoubleSolenoid.Value.kForward);
-    }
-    if (!pneumaticForward && intakeUpDown.get() == DoubleSolenoid.Value.kForward) {
-      intakeUpDown.set(DoubleSolenoid.Value.kReverse);
-    }
+    // TODO set solenoids to value saved.
+    intakeSolenoidTop.set(top);
+    intakeSolenoidBottom.set(bottom);
 
   }
 

@@ -43,13 +43,13 @@ public class Shooter {
     m_talon_config.nominalOutputForward = 0;
     m_talon_config.nominalOutputReverse = 0;
     m_talon_config.peakOutputForward = 1;
-    m_talon_config.peakOutputReverse = -0.5;
+    m_talon_config.peakOutputReverse = -0.8;
     m_talon_config.closedloopRamp = 0.03;
     m_talon_config.slot0.allowableClosedloopError = 0;
     m_talon_config.slot0.closedLoopPeakOutput = 1.0;
     m_talon_config.slot0.closedLoopPeriod = 2;
     m_talon_config.slot0.integralZone = 0;
-    m_talon_config.slot0.kP = 0.005;
+    m_talon_config.slot0.kP = 0.01;
     m_talon_config.slot0.kI = 0;
     m_talon_config.slot0.kD = 3.0;
     m_talon_config.slot0.kF = 0.05;
@@ -83,10 +83,10 @@ public class Shooter {
     }
 
     public void robotPeriodic() {
-        SmartDashboard.putNumber("Actual Top RPM", upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
-        SmartDashboard.putNumber("Actual Bot RPM", lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
-        m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
-        m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
+      SmartDashboard.putNumber("Actual Top RPM", upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
+      SmartDashboard.putNumber("Actual Bot RPM", lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
+      m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
+      m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
     }
 
     public void robotDisabled() {
@@ -110,37 +110,17 @@ public class Shooter {
     }
 
     public void teleopPeriodic() {
-         // A button will toggle the control loop off and on
-    if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kshooterToggle)) {
-      m_isRunning = !m_isRunning;
-    }
+      // A button will toggle the control loop off and on
+      if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kShooterToggle)) {
+        m_isRunning = !m_isRunning;
+      }
 
-    // start button = stop / panic button
-    if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kshooterStop)) {
-      m_isRunning = false;
-      stopMotors();
-    }
-
-    if (m_isRunning) {
-      // switch ((int) m_controlMode) {
-      //   velocity == 0
-      //   percent out == 1
-        // case 0:
-          // set the velocity to the RPM grabbed from dashboard
-          upperWheelsFX.set(ControlMode.Velocity, m_top_RPM * Constants.kRPMtoCTREEncoderTicks );
-          lowerWheelsFX.set(ControlMode.Velocity, m_bottom_RPM * Constants.kRPMtoCTREEncoderTicks );
-          // break;
-        // case 1:
-        //   // scale the rpm box input by 1/5000 for ease of coding. 5000 rpm is rough free spin.
-        //   upperWheelsFX.set(ControlMode.PercentOutput, m_top_RPM / 5000.0);
-        //   lowerWheelsFX.set(ControlMode.PercentOutput, m_bottom_RPM / 5000.0);
-          // break;
-        // default:
-
-      // }
-    } else {
-      stopMotors();
-    }
+      if (m_isRunning) {
+        upperWheelsFX.set(ControlMode.Velocity, m_top_RPM * Constants.kRPMtoCTREEncoderTicks );
+        lowerWheelsFX.set(ControlMode.Velocity, m_bottom_RPM * Constants.kRPMtoCTREEncoderTicks );
+      } else {
+        stopMotors();
+      }
     }
 
     public void teleopDisabled() {
@@ -148,7 +128,6 @@ public class Shooter {
     }
 
     public void disabledInit() {
-        disabledInit();
         stopMotors();   
     }
 
@@ -156,5 +135,4 @@ public class Shooter {
         upperWheelsFX.neutralOutput();
         lowerWheelsFX.neutralOutput();
     }
-
 }

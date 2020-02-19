@@ -7,10 +7,11 @@
 
 package frc.robot.Subsystems;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.util.FMSData;
 import frc.robot.ControllerMap;
@@ -32,8 +33,6 @@ public class ColorWheel {
 
     TalonFX falcon;
 
-    XboxController xbox;
-
     int blueCount, redCount, yellowCount, greenCount;
     int controlPanelRotationTicks = 49152;
 
@@ -41,8 +40,8 @@ public class ColorWheel {
 
     boolean colorCheck = false;
     boolean rotateDisk = false;
-    boolean yButton;
-    boolean startButton;
+    boolean bNearestColor;
+    boolean bRotationMode;
 
     String colorString = "Unknown";
     String firstColor = "Unknown";
@@ -68,10 +67,8 @@ public class ColorWheel {
         falcon.setNeutralMode(NeutralMode.Brake);
         falcon.setSelectedSensorPosition(0);
 
-        xbox = new XboxController(RobotMap.Controllers.kManipCtrl);
-
-        yButton = xbox.getRawButton(ControllerMap.Manip.krotationStartButton);
-        startButton = xbox.getRawButton(ControllerMap.Manip.koperatedRotation);
+        bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
+        bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
 
         try {
             m_colorSensor = new ColorSensorV3(i2cPort);
@@ -143,17 +140,8 @@ public class ColorWheel {
             firstColor = colorString;
         }
 
-        // control to manually move hand
-        if (xbox.getStartButton()) {
-            falcon.set(ControlMode.Velocity, -velocityPer100Milliseconds);
-        } else if (xbox.getBackButton()) {
-            falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
-        } else if (!rotateDisk) {
-            falcon.set(ControlMode.Velocity, 0);
-        }
-
         // control to rotate disk three times
-        if (yButton) {
+        if (bRotationMode) {
             rotateDisk = true;
             falcon.setSelectedSensorPosition(controlPanelRotationTicks);
             return;
@@ -168,7 +156,7 @@ public class ColorWheel {
         }
 
         // Enters Finding the Color Mode through FMS
-        if (xbox.getBButton()) {
+        if (bNearestColor) {
             // if fmsColor is blue and colorString isnt red then move until then
             if (fmsColorString == "blue" && colorString != "Red") {
                 falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
