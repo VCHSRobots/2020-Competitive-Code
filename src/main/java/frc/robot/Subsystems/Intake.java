@@ -50,19 +50,11 @@ public class Intake {
     SmartDashboard.putString("Intake Bottom", pneumaticBottomValue);
   }
 
-  public void robotDisabled() {
-
-  }
-
   public void autonomousInit() {
 
   }
 
   public void autonomousPeriodic() {
-
-  }
-
-  public void autonomousDisabled() {
 
   }
 
@@ -103,8 +95,12 @@ public class Intake {
 
   }
 
-  public void teleopDisabled() {
+  public void disabledInit() {
 
+  }
+
+  public void disabledPeriodic() {
+    
   }
 
 }

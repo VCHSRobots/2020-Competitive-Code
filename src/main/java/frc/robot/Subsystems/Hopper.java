@@ -76,19 +76,11 @@ public class Hopper {
         RPMaccelerator = SmartDashboard.getNumber("% of Accel", 0);
     }
 
-    public void robotDisabled() {
-
-    }
-
     public void autonomousInit() {
 
     }
 
     public void autonomousPeriodic() {
-
-    }
-
-    public void autonomousDisabled() {
 
     }
 
@@ -116,7 +108,7 @@ public class Hopper {
             acceleratorToggle = !acceleratorToggle;
         }
 
-        // overall toggle
+        // overall go or toggle
         if (Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle)) {
             allToggle = !allToggle;
             if (allToggle) {
@@ -129,19 +121,19 @@ public class Hopper {
                 leftToggle = false;
             }
         }
-
+        
         // set motor values
-        if (leftToggle) {
+        if (leftToggle || Robot.manipCtrl.getRawAxis(Manip.kAllFeederGo) > 0.9) {
             lSideFX.set(ControlMode.PercentOutput, RPMLeft);
         } else {
             lSideFX.set(ControlMode.PercentOutput, 0);
         }
-        if (rightToggle) {
+        if (rightToggle || Robot.manipCtrl.getRawAxis(Manip.kAllFeederGo) > 0.9) {
             rSideFX.set(ControlMode.PercentOutput, RPMRight);
         } else {
             rSideFX.set(ControlMode.PercentOutput, 0);
         }
-        if (acceleratorToggle) {
+        if (acceleratorToggle || Robot.manipCtrl.getRawAxis(Manip.kAllFeederGo) > 0.9) {
             acceleratorFX.set(ControlMode.PercentOutput, RPMaccelerator);
         } else {
             acceleratorFX.set(ControlMode.PercentOutput, 0);
@@ -149,8 +141,12 @@ public class Hopper {
 
     }
 
-    public void teleopDisabled() {
+    public void disabledInit() {
+        stopMotors();
+    }
 
+    public void disabledPeriodic() {
+      
     }
 
     public void stopMotors() {

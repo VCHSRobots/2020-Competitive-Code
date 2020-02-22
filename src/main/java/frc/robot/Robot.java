@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
   public static DriveTrain driveTrain = new DriveTrain();
   // public static ColorWheel colorWheel = new ColorWheel();
   public static Shooter shooter = new Shooter();
-  public static Climber climber = new Climber();
+  // public static Climber climber = new Climber();
   public static Hopper hopper = new Hopper();
   public static Limelight limelight = new Limelight();
   
@@ -48,9 +48,9 @@ public class Robot extends TimedRobot {
     manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
     climbCtrl = new Joystick(RobotMap.Controllers.kClimberCtrl);
 
-    climber.robotInit();
+    // climber.robotInit();
     // intake.robotInit();
-    driveTrain.robotInit();
+    // driveTrain.robotInit();
     shooter.robotInit();
     hopper.robotInit();
     //colorWheel.robotInit();
@@ -60,20 +60,20 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     //--------------FMS SmartDashboard Send----------------
     fmsData.smartDashSend(); // edit in FMSData
-    climber.robotPeriodic();
+    // climber.robotPeriodic();
     // intake.robotPeriodic();
-    driveTrain.robotPeriodic();
+    // driveTrain.robotPeriodic();
     shooter.robotPeriodic();
     //colorWheel.robotPeriodic();
     hopper.robotPeriodic();
-    limelight.SmartDashboardSend();
+    limelight.robotPeriodic();
   }
 
   @Override
   public void autonomousInit() {
-    climber.autonomousInit();
+    // climber.autonomousInit();
     // intake.autonomousInit();
-    driveTrain.autonomousInit();
+    // driveTrain.autonomousInit();
     shooter.autonomousInit();
     //colorWheel.autonomousInit();
     hopper.autonomousInit();
@@ -81,9 +81,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    climber.autonomousPeriodic();
+    // climber.autonomousPeriodic();
     // intake.autonomousPeriodic();
-    driveTrain.autonomousPeriodic();
+    // driveTrain.autonomousPeriodic();
     shooter.autonomousPeriodic();
     //colorWheel.autonomousPeriodic();
     hopper.autonomousPeriodic();
@@ -91,8 +91,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    climber.teleopInit();
-    driveTrain.teleopInit();
+    // climber.teleopInit();
+    // driveTrain.teleopInit();
     // intake.teleopInit();
     shooter.teleopInit();
     hopper.teleopInit();
@@ -100,15 +100,37 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    climber.teleopPeriodic();
+    // climber.teleopPeriodic();
     // intake.teleopPeriodic();
-    driveTrain.teleopPeriodic();
+    // driveTrain.teleopPeriodic();
     shooter.teleopPeriodic();
     //colorWheel.teleopPeriodic();
     hopper.teleopPeriodic();
   }
 
   @Override
+  public void testInit() {
+    
+  }
+
+  @Override
   public void testPeriodic() {
+  }
+
+  @Override
+  public void disabledInit() {
+    // climber.disabledInit();
+    // ColorWheel.disabledInit();
+    // driveTrain.disabledInit();
+    hopper.disabledInit();
+    // intake.disabledInit();
+
+    shooter.disabledInit();
+
+  }
+
+  @Override
+  public void disabledPeriodic() {
+
   }
 }

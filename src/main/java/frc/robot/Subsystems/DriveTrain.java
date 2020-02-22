@@ -65,19 +65,11 @@ public class DriveTrain{
 
     }
 
-    public void robotDisabled() {
-
-    }
-
     public void autonomousInit() {
 
     }
 
     public void autonomousPeriodic() {
-
-    }
-
-    public void autonomousDisabled() {
 
     }
 
@@ -115,10 +107,13 @@ public class DriveTrain{
         }
 
     }
+    
+    public void disabledInit() {
 
-    public void teleopDisabled() {
-        // TODO Auto-generated method stub
-        
+    }
+
+    public void disabledPeriodic() {
+      
     }
 
     public void ExternalMotorControl(double leftSidePower, double rightSidePower) {

@@ -1,13 +1,14 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
@@ -18,14 +19,25 @@ import frc.robot.util.BaseFXConfig;
 import frc.robot.util.DeadbandMaker;
 
 public class Shooter {
+  // member variables for Shooter control
   private double m_top_RPM = 3500;
   private double m_bottom_RPM = 4500;
   private double m_turnTable_Max_Speed = 0.2;
   private boolean m_isRunning = false;
-  private int m_controlMode = 0;
+  private DigitalInput DI_turntableLimit = new DigitalInput(8);
+
+  private int turntable_starting_position;
+  private int turretPosition;
+  private int turret_center_offset = 24500;
+  private int turret_low_limit = -50000;
+  private int turret_high_limit = 50000;
+  private boolean turretLowCalibrated = false;
+  private boolean turretHighCalibrated = false;
+
   double limelightDistance = 0;
   double limelightX = 0;
 
+  // falcon config
   private TalonFXConfiguration m_talon_config = new TalonFXConfiguration();
 
   // -----Falcon Motors-------
@@ -69,8 +81,9 @@ public class Shooter {
 
     // ---------- Turntable config ----------
     // TODO: tune pid. k thanks.
-    m_talon_config.peakOutputForward = 0.3;
-    m_talon_config.peakOutputReverse = -0.3;
+    m_talon_config.peakOutputForward = 0.25;
+    m_talon_config.peakOutputReverse = -0.25;
+    m_talon_config.openloopRamp = 0.08;
     m_talon_config.closedloopRamp = 0.03;
     m_talon_config.slot0.allowableClosedloopError = 0;
     m_talon_config.slot0.closedLoopPeakOutput = 1.0;
@@ -85,37 +98,59 @@ public class Shooter {
     turnTableFX.setNeutralMode(NeutralMode.Brake);
     turnTableFX.setInverted(TalonFXInvertType.Clockwise);
 
-    
+    turntable_starting_position = turnTableFX.getSelectedSensorPosition();
 
     // ---------- Smartdashboard ----------
     SmartDashboard.putNumber("Top RPM", m_top_RPM);
     SmartDashboard.putNumber("Bot RPM", m_bottom_RPM);
-    SmartDashboard.putNumber("A: ControlMode (0 Velocity - 1 Percent)", m_controlMode);
+    SmartDashboard.putNumber("Turntable Max Speed", m_turnTable_Max_Speed);
+
     SmartDashboard.putBoolean("Reset Turntable Encoder", resetTurnTableEncoder);
   }
 
   public void robotPeriodic() {
+    // turntable math limits
+    // limit == false when stopped on switch
+    turretPosition = turnTableFX.getSelectedSensorPosition();
+    if (DI_turntableLimit.get() == false) {
+      if (!turretLowCalibrated && turretPosition < turntable_starting_position) {
+        turret_low_limit = turretPosition + 1000;
+        turretLowCalibrated = true;
+      }
+      else if (!turretHighCalibrated && turretPosition > turntable_starting_position) {
+        turret_high_limit = turretPosition - 1000;
+        turretHighCalibrated = true;
+      }
+    }
+
+
+    // smartdash set statuses
     SmartDashboard.putNumber("Actual Top RPM",
         upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
     SmartDashboard.putNumber("Actual Bot RPM",
         lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
-    SmartDashboard.putNumber("Turntable Position", turnTableFX.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Turntable Position", turretPosition);
+
     resetTurnTableEncoder = SmartDashboard.getBoolean("Reset Turntable Encoder", false);
     if (resetTurnTableEncoder) {
       turnTableFX.setSelectedSensorPosition(0);
       resetTurnTableEncoder = false;
+      SmartDashboard.putBoolean("Reset Turntable Encoder", resetTurnTableEncoder);
+      turretHighCalibrated = false;
+      turretLowCalibrated = false;
     }
+
+    SmartDashboard.putBoolean("Turntable Limit", DI_turntableLimit.get());
+
+    // smartdash gets
     m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
     m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
     m_turnTable_Max_Speed = SmartDashboard.getNumber("Turntable Max Speed", 0);
 
     //--------------- LIMELIGHT -----------------------
+    Robot.limelight.SmartDashboardSend();
     limelightDistance = Robot.limelight.getDistance();
     limelightX = Robot.limelight.getX();
-  }
-
-  public void robotDisabled() {
-
   }
 
   public void autonomousInit() {
@@ -126,12 +161,9 @@ public class Shooter {
 
   }
 
-  public void autonomousDisabled() {
-
-  }
-
   public void teleopInit() {
     m_isRunning = false;
+    turnTableFX.setNeutralMode(NeutralMode.Brake);
   }
 
   public void teleopPeriodic() {
@@ -148,17 +180,31 @@ public class Shooter {
     }
 
   //------------------- TURNTABLE CODE ------------------------
-    //Turntable set with left joystick on manip controller. Max speed is set by SmartDashboard Variable
-    turnTableFX.set(ControlMode.PercentOutput, DeadbandMaker.linear1d(Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate) * m_turnTable_Max_Speed, 0.05));
+  double turret_speed = DeadbandMaker.linear1d(
+      Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate)
+      * m_turnTable_Max_Speed, 0.05);
+  if (Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kAutoAim) > 0.7) {
+    turret_speed = limelightX * 0.4;
+    // turret_speed = Math.max(-0.25, Math.min(0.25, turret_speed));
   }
-
-  public void teleopDisabled() {
-
+  // desired speed is positive, position is more than soft limit, therefore speed 0
+  if (turret_speed > 0 && turretPosition > turret_high_limit) {
+    turret_speed = 0;
+  } else if (turret_speed < 0 && turretPosition < turret_low_limit) {
+    turret_speed = 0;
   }
+  //Turntable set with left joystick on manip controller. Max speed is set by SmartDashboard Variable
+  turnTableFX.set(ControlMode.PercentOutput, turret_speed);
+}
 
   public void disabledInit() {
     stopMotors();
-}
+    turnTableFX.setNeutralMode(NeutralMode.Coast);
+  }
+
+  public void disabledPeriodic() {
+    
+  }
 
   private void stopMotors() {
     upperWheelsFX.neutralOutput();

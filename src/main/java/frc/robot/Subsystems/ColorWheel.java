@@ -91,19 +91,11 @@ public class ColorWheel {
 
     }
 
-    public void robotDisabled() {
-
-    }
-
     public void autonomousInit() {
 
     }
 
     public void autonomousPeriodic() {
-
-    }
-
-    public void autonomousDisabled() {
 
     }
 
@@ -184,7 +176,11 @@ public class ColorWheel {
         }
     }
 
-    public void teleopDisabled() {
+    public void disabledInit() {
 
+    }
+
+    public void disabledPeriodic() {
+      
     }
 }

@@ -31,9 +31,21 @@ public class Limelight {
     private double normalArea = regularHorizontal*regularVertical;
     private double[] defaultCamtran = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
+    private double[] tx_values = new double[10];
+
     public void SmartDashboardSend() {
         SmartDashboard.putNumber("LimeLight X", getX());
         SmartDashboard.putNumber("Limelight Distance", getDistance());
+    }
+
+    public void robotPeriodic() {
+    tv = table.getEntry("tv");
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
+    area = table.getEntry("area");
+    horizontal = table.getEntry("thor");
+    vertical = table.getEntry("tvert");
+    camtran = table.getEntry("camtran");
     }
 
     /* 
@@ -71,14 +83,20 @@ public class Limelight {
     }
 
     /* 
-     * return a value of [0,1.0] based on where the center of the goal is in the frame
+     * return a value of [-1.0,1.0] based on where the center of the goal is in the frame
      */
     public double getX() {
-        double x;
-        if (tv.getBoolean(false)) {
-            x = tx.getDouble(0);
-            //normalizes degree values to a [0.0, 1.0] range
-            return (x+29.8)/59.6;
+        double x = 0;
+        if (!tv.getBoolean(false)) {
+            //normalizes degree values to a [-1.0, 1.0] range
+            // for (int i = 0; i < tx_values.length-1; i++) {
+            //     tx_values[i] = tx_values[i+1];
+            //     x += tx_values[i];
+            // }
+            // tx_values[tx_values.length-1] = tx.getDouble(0);
+            // x += tx_values[tx_values.length-1];
+            // return x/(29.8 + tx_values.length);
+            return tx.getDouble(0)/29.8;
         } else {
             return Double.NaN;
         }

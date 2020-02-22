@@ -21,6 +21,8 @@ public class ControllerMap {
     public static class Manip {
         // ----- axis -----
         public static final int kturnTableRotate = 1;
+        public static final int kAutoAim = 2;
+        public static final int kAllFeederGo = 3;
         // ----- buttons -----
         public static final int kAllFeederToggle =      1;
         public static final int kHopperLeftToggle =     2;
