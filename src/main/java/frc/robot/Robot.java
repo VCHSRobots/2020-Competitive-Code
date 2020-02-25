@@ -54,6 +54,7 @@ public class Robot extends TimedRobot {
     shooter.robotInit();
     hopper.robotInit();
     //colorWheel.robotInit();
+    limelight.robotInit();
   }
 
   @Override

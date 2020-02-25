@@ -24,6 +24,7 @@ public class Limelight {
     private NetworkTableEntry horizontal = table.getEntry("thor");
     private NetworkTableEntry vertical = table.getEntry("tvert");
     private NetworkTableEntry camtran = table.getEntry("camtran");
+
     //the horizontal and vertical size of the target at one unit of distance
     public double regularHorizontal = 1;
     public double regularVertical = 1;
@@ -31,21 +32,39 @@ public class Limelight {
     private double normalArea = regularHorizontal*regularVertical;
     private double[] defaultCamtran = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
-    private double[] tx_values = new double[10];
+    static double offset = 0.166;
 
     public void SmartDashboardSend() {
         SmartDashboard.putNumber("LimeLight X", getX());
         SmartDashboard.putNumber("Limelight Distance", getDistance());
     }
 
+    public void robotInit() {
+        choosePipeline(0);
+    }
+
     public void robotPeriodic() {
-    tv = table.getEntry("tv");
-    tx = table.getEntry("tx");
-    ty = table.getEntry("ty");
-    area = table.getEntry("area");
-    horizontal = table.getEntry("thor");
-    vertical = table.getEntry("tvert");
-    camtran = table.getEntry("camtran");
+        tv = table.getEntry("tv");
+        tx = table.getEntry("tx");
+        ty = table.getEntry("ty");
+        area = table.getEntry("area");
+        horizontal = table.getEntry("thor");
+        vertical = table.getEntry("tvert");
+        camtran = table.getEntry("camtran");
+    }
+
+    public void turnOnLights() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+
+    }
+
+    public void turnOffLights() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+    }
+
+    public void choosePipeline(int index) {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(index);
+
     }
 
     /* 
@@ -96,7 +115,7 @@ public class Limelight {
             // tx_values[tx_values.length-1] = tx.getDouble(0);
             // x += tx_values[tx_values.length-1];
             // return x/(29.8 + tx_values.length);
-            return tx.getDouble(0)/29.8;
+            return tx.getDouble(0)/29.8 - offset;
         } else {
             return Double.NaN;
         }

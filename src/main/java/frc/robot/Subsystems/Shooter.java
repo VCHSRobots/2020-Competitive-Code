@@ -31,8 +31,14 @@ public class Shooter {
   private int turret_center_offset = 24500;
   private int turret_low_limit = -50000;
   private int turret_high_limit = 50000;
+  private int direction = 1;
   private boolean turretLowCalibrated = false;
   private boolean turretHighCalibrated = false;
+  //private boolean attemptGoAroundForTarget = false;
+  private boolean goRightInstead = false;
+  private boolean goLeftInstead = false;
+  private boolean findingTxTarget = false;
+
 
   double limelightDistance = 0;
   double limelightX = 0;
@@ -104,6 +110,8 @@ public class Shooter {
     SmartDashboard.putNumber("Top RPM", m_top_RPM);
     SmartDashboard.putNumber("Bot RPM", m_bottom_RPM);
     SmartDashboard.putNumber("Turntable Max Speed", m_turnTable_Max_Speed);
+    SmartDashboard.putNumber("Turntable Direction", direction);
+    
 
     SmartDashboard.putBoolean("Reset Turntable Encoder", resetTurnTableEncoder);
   }
@@ -114,11 +122,11 @@ public class Shooter {
     turretPosition = turnTableFX.getSelectedSensorPosition();
     if (DI_turntableLimit.get() == false) {
       if (!turretLowCalibrated && turretPosition < turntable_starting_position) {
-        turret_low_limit = turretPosition + 1000;
+        turret_low_limit = turretPosition + 3000;
         turretLowCalibrated = true;
       }
       else if (!turretHighCalibrated && turretPosition > turntable_starting_position) {
-        turret_high_limit = turretPosition - 1000;
+        turret_high_limit = turretPosition - 3000;
         turretHighCalibrated = true;
       }
     }
@@ -130,6 +138,10 @@ public class Shooter {
     SmartDashboard.putNumber("Actual Bot RPM",
         lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
     SmartDashboard.putNumber("Turntable Position", turretPosition);
+    SmartDashboard.putNumber("Turntable Direction", direction);
+    SmartDashboard.putBoolean("Going Left Instead", goLeftInstead);
+    SmartDashboard.putBoolean("Going Right Instead", goRightInstead);
+    SmartDashboard.putBoolean("Target Found and Aligning", findingTxTarget);
 
     resetTurnTableEncoder = SmartDashboard.getBoolean("Reset Turntable Encoder", false);
     if (resetTurnTableEncoder) {
@@ -183,13 +195,46 @@ public class Shooter {
   double turret_speed = DeadbandMaker.linear1d(
       Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate)
       * m_turnTable_Max_Speed, 0.05);
+  //Debug
+  if (limelightX != -Limelight.offset && !(goLeftInstead || goRightInstead)){
+    findingTxTarget = true;
+  }
+  else {
+    findingTxTarget = false;
+  }
+
   if (Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kAutoAim) > 0.7) {
-    turret_speed = limelightX * 0.4;
+    if (limelightX != -Limelight.offset && !(goLeftInstead || goRightInstead)){
+      turret_speed = limelightX * 0.4;
+      if (turretPosition > turret_high_limit-1000){
+        //goLeftInstead = true;
+      }
+      else if (turretPosition < turret_low_limit + 1000){  
+        //goRightInstead = true;
+      }
+      
+    }
+    else {
+      turret_speed =  0.15 *direction;
+      if (turretPosition > turret_high_limit-500) {
+        direction = -1;
+        if (goRightInstead){
+          //goRightInstead = false;
+        }
+      } else if (turretPosition < turret_low_limit+500) {
+        direction = 1;
+        if (goLeftInstead){
+          //goLeftInstead = false;
+        }
+      } 
+      
+    }
+    
     // turret_speed = Math.max(-0.25, Math.min(0.25, turret_speed));
   }
   // desired speed is positive, position is more than soft limit, therefore speed 0
   if (turret_speed > 0 && turretPosition > turret_high_limit) {
-    turret_speed = 0;
+    turret_speed = 0; 
   } else if (turret_speed < 0 && turretPosition < turret_low_limit) {
     turret_speed = 0;
   }
