@@ -33,14 +33,17 @@ public class Limelight {
     private double[] defaultCamtran = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
     static double offset = 0.166;
+    private boolean limelightOnOff = false;
 
     public void SmartDashboardSend() {
         SmartDashboard.putNumber("LimeLight X", getX());
         SmartDashboard.putNumber("Limelight Distance", getDistance());
+        limelightOnOff = SmartDashboard.getBoolean("Limelight On/Off", false);
     }
 
     public void robotInit() {
         choosePipeline(0);
+        SmartDashboard.putBoolean("Limelight On/Off", limelightOnOff);
     }
 
     public void robotPeriodic() {
@@ -51,6 +54,12 @@ public class Limelight {
         horizontal = table.getEntry("thor");
         vertical = table.getEntry("tvert");
         camtran = table.getEntry("camtran");
+
+        if (limelightOnOff) {
+            turnOnLights();
+        } else {
+            turnOffLights();
+        }
     }
 
     public void turnOnLights() {
