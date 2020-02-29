@@ -100,7 +100,7 @@ public class Intake {
   }
 
   public void disabledPeriodic() {
-    
+
   }
 
 }

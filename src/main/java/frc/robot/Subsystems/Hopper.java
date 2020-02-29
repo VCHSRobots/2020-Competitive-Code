@@ -121,7 +121,7 @@ public class Hopper {
                 leftToggle = false;
             }
         }
-        
+
         // set motor values
         if (leftToggle || Robot.manipCtrl.getRawAxis(Manip.kAllFeederGo) > 0.9) {
             lSideFX.set(ControlMode.PercentOutput, RPMLeft);
@@ -146,7 +146,7 @@ public class Hopper {
     }
 
     public void disabledPeriodic() {
-      
+
     }
 
     public void stopMotors() {

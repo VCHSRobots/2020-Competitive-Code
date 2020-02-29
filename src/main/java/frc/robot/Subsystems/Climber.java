@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class Climber {
 
   WPI_TalonFX climbFX;
-    // ---------Devices and Hardward
+  // ---------Devices and Hardward
   private DoubleSolenoid brakerSolenoid;
   private DoubleSolenoid shifterSolenoid;
   private DoubleSolenoid leftArmSolenoid;
@@ -21,7 +21,6 @@ public class Climber {
     shifterSolenoid = new DoubleSolenoid(RobotMap.ShifterMap.kShiftModeClimb, RobotMap.ShifterMap.kShiftModeDrive);
     leftArmSolenoid = new DoubleSolenoid(RobotMap.ClimberMap.kLeftArm_Up, RobotMap.ClimberMap.kLeftArm_Dn);
     rightArmSolenoid = new DoubleSolenoid(RobotMap.ClimberMap.kRightArm_Up, RobotMap.ClimberMap.kRightArm_Dn);
-
 
   }
 
@@ -48,20 +47,20 @@ public class Climber {
     Robot.tether_is_enabled = false;
   }
 
-  
   boolean button_test = true;
+
   public void teleopPeriodic() {
-    if(Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.kBrake_ON)) {
+    if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.kBrake_ON)) {
       Robot.brake_is_enabled = true;
       // Apply Break
       brakerSolenoid.set(DoubleSolenoid.Value.kForward);
     }
-    if(Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.kBrake_OFF)) {
+    if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.kBrake_OFF)) {
       Robot.brake_is_enabled = false;
       // Release Break
       brakerSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
-    if(Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.TetherEngage)) {
+    if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.TetherEngage)) {
       Robot.tether_is_enabled = true;
       Robot.climb_is_enabled = true;
       shifterSolenoid.set(DoubleSolenoid.Value.kReverse);
@@ -75,24 +74,24 @@ public class Climber {
       Robot.climb_is_enabled = false;
 
     }
-    if(Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.LeftSide_UP)) {
+    if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.LeftSide_UP)) {
       leftArmSolenoid.set(DoubleSolenoid.Value.kForward);
     }
-    if(Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.LeftSide_DOWN)) {
+    if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.LeftSide_DOWN)) {
       leftArmSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
-    if(Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_UP)) {
+    if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_UP)) {
       rightArmSolenoid.set(DoubleSolenoid.Value.kForward);
     }
-    if(Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_DOWN)) {
+    if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_DOWN)) {
       rightArmSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
     // If the break is engaged, turn off motors, do nothing else.
-    //if (Robot.brake_is_enabled) {
-    //  Robot.driveTrain.ExternalMotorControl(0.0, 0.0);
-    //  return;
-    //}
+    // if (Robot.brake_is_enabled) {
+    // Robot.driveTrain.ExternalMotorControl(0.0, 0.0);
+    // return;
+    // }
     // IF the tehter is engaged, control motors.
     if (Robot.tether_is_enabled) {
       boolean mainpull_is_zero = false;
@@ -132,22 +131,22 @@ public class Climber {
         Robot.driveTrain.ExternalMotorControl(mainpull, mainpull);
         return;
       } else {
-          // This the more normal case.. apply additive pull to the side 
-          // that the ballance axis is leaning.
-          if (sidepull > 0.0) {
-            Robot.driveTrain.ExternalMotorControl(mainpull, mainpull + sidepull);
-          } else {
-            Robot.driveTrain.ExternalMotorControl(mainpull - sidepull, mainpull);
-          }
+        // This the more normal case.. apply additive pull to the side
+        // that the ballance axis is leaning.
+        if (sidepull > 0.0) {
+          Robot.driveTrain.ExternalMotorControl(mainpull, mainpull + sidepull);
+        } else {
+          Robot.driveTrain.ExternalMotorControl(mainpull - sidepull, mainpull);
         }
       }
     }
-
-    public void disabledInit() {
-
-    }
-
-    public void disabledPeriodic() {
-      
-    }
   }
+
+  public void disabledInit() {
+
+  }
+
+  public void disabledPeriodic() {
+
+  }
+}

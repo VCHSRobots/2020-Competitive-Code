@@ -181,6 +181,6 @@ public class ColorWheel {
     }
 
     public void disabledPeriodic() {
-      
+
     }
 }

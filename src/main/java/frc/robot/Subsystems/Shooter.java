@@ -34,11 +34,10 @@ public class Shooter {
   private int direction = 1;
   private boolean turretLowCalibrated = false;
   private boolean turretHighCalibrated = false;
-  //private boolean attemptGoAroundForTarget = false;
+  // private boolean attemptGoAroundForTarget = false;
   private boolean goRightInstead = false;
   private boolean goLeftInstead = false;
   private boolean findingTxTarget = false;
-
 
   double limelightDistance = 0;
   double limelightX = 0;
@@ -52,6 +51,7 @@ public class Shooter {
   WPI_TalonFX turnTableFX = BaseFXConfig.generateDefaultTalon(RobotMap.ShooterMap.kturnTableFX);
 
   boolean resetTurnTableEncoder = false;
+
   public void robotInit() {
     // ---------- shooter wheels config -----------
     // TODO: tune pid. k thanks.
@@ -89,7 +89,7 @@ public class Shooter {
     // TODO: tune pid. k thanks.
     m_talon_config.peakOutputForward = 0.25;
     m_talon_config.peakOutputReverse = -0.25;
-    m_talon_config.openloopRamp = 0.08;
+    m_talon_config.openloopRamp = 0.3;
     m_talon_config.closedloopRamp = 0.03;
     m_talon_config.slot0.allowableClosedloopError = 0;
     m_talon_config.slot0.closedLoopPeakOutput = 1.0;
@@ -111,7 +111,6 @@ public class Shooter {
     SmartDashboard.putNumber("Bot RPM", m_bottom_RPM);
     SmartDashboard.putNumber("Turntable Max Speed", m_turnTable_Max_Speed);
     SmartDashboard.putNumber("Turntable Direction", direction);
-    
 
     SmartDashboard.putBoolean("Reset Turntable Encoder", resetTurnTableEncoder);
   }
@@ -124,13 +123,11 @@ public class Shooter {
       if (!turretLowCalibrated && turretPosition < turntable_starting_position) {
         turret_low_limit = turretPosition + 3000;
         turretLowCalibrated = true;
-      }
-      else if (!turretHighCalibrated && turretPosition > turntable_starting_position) {
+      } else if (!turretHighCalibrated && turretPosition > turntable_starting_position) {
         turret_high_limit = turretPosition - 3000;
         turretHighCalibrated = true;
       }
     }
-
 
     // smartdash set statuses
     SmartDashboard.putNumber("Actual Top RPM",
@@ -159,7 +156,7 @@ public class Shooter {
     m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
     m_turnTable_Max_Speed = SmartDashboard.getNumber("Turntable Max Speed", 0);
 
-    //--------------- LIMELIGHT -----------------------
+    // --------------- LIMELIGHT -----------------------
     Robot.limelight.SmartDashboardSend();
     limelightDistance = Robot.limelight.getDistance();
     limelightX = Robot.limelight.getX();
@@ -191,56 +188,54 @@ public class Shooter {
       stopMotors();
     }
 
-  //------------------- TURNTABLE CODE ------------------------
-  double turret_speed = DeadbandMaker.linear1d(
-      Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate)
-      * m_turnTable_Max_Speed, 0.05);
-  //Debug
-  if (limelightX != -Limelight.offset && !(goLeftInstead || goRightInstead)){
-    findingTxTarget = true;
-  }
-  else {
-    findingTxTarget = false;
-  }
+    // ------------------- TURNTABLE CODE ------------------------
+    double turret_speed = DeadbandMaker
+        .linear1d(Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate) * m_turnTable_Max_Speed, 0.05);
+    // Debug
+    if (limelightX != -Limelight.offset && !(goLeftInstead || goRightInstead)) {
+      findingTxTarget = true;
+    } else {
+      findingTxTarget = false;
+    }
 
-  if (Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kAutoAim) > 0.7) {
-    if (limelightX != -Limelight.offset && !(goLeftInstead || goRightInstead)){
-      turret_speed = limelightX * 0.4;
-      if (turretPosition > turret_high_limit-1000){
-        //goLeftInstead = true;
-      }
-      else if (turretPosition < turret_low_limit + 1000){  
-        //goRightInstead = true;
-      }
-      
-    }
-    else {
-      turret_speed =  0.15 *direction;
-      if (turretPosition > turret_high_limit-500) {
-        direction = -1;
-        if (goRightInstead){
-          //goRightInstead = false;
+    if (Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kAutoAim) > 0.7) {
+      if (limelightX != -Limelight.offset && !(goLeftInstead || goRightInstead)) {
+        turret_speed = limelightX * 0.4;
+        if (turretPosition > turret_high_limit - 1000) {
+          // goLeftInstead = true;
+        } else if (turretPosition < turret_low_limit + 1000) {
+          // goRightInstead = true;
         }
-      } else if (turretPosition < turret_low_limit+500) {
-        direction = 1;
-        if (goLeftInstead){
-          //goLeftInstead = false;
+
+      } else {
+        turret_speed = 0.15 * direction;
+        if (turretPosition > turret_high_limit - 500) {
+          direction = -1;
+          if (goRightInstead) {
+            // goRightInstead = false;
+          }
+        } else if (turretPosition < turret_low_limit + 500) {
+          direction = 1;
+          if (goLeftInstead) {
+            // goLeftInstead = false;
+          }
         }
-      } 
-      
+
+      }
+
+      // turret_speed = Math.max(-0.25, Math.min(0.25, turret_speed));
     }
-    
-    // turret_speed = Math.max(-0.25, Math.min(0.25, turret_speed));
+    // desired speed is positive, position is more than soft limit, therefore speed
+    // 0
+    if (turret_speed > 0 && turretPosition > turret_high_limit) {
+      turret_speed = 0;
+    } else if (turret_speed < 0 && turretPosition < turret_low_limit) {
+      turret_speed = 0;
+    }
+    // Turntable set with left joystick on manip controller. Max speed is set by
+    // SmartDashboard Variable
+    turnTableFX.set(ControlMode.PercentOutput, turret_speed);
   }
-  // desired speed is positive, position is more than soft limit, therefore speed 0
-  if (turret_speed > 0 && turretPosition > turret_high_limit) {
-    turret_speed = 0; 
-  } else if (turret_speed < 0 && turretPosition < turret_low_limit) {
-    turret_speed = 0;
-  }
-  //Turntable set with left joystick on manip controller. Max speed is set by SmartDashboard Variable
-  turnTableFX.set(ControlMode.PercentOutput, turret_speed);
-}
 
   public void disabledInit() {
     stopMotors();
@@ -248,7 +243,7 @@ public class Shooter {
   }
 
   public void disabledPeriodic() {
-    
+
   }
 
   private void stopMotors() {

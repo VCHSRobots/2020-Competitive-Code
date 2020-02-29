@@ -13,7 +13,7 @@ import frc.robot.RobotMap;
 import frc.robot.util.BaseFXConfig;
 import frc.robot.util.DeadbandMaker;
 
-public class DriveTrain{
+public class DriveTrain {
 
     // ----Drive-Math-Variables----
     double valueX, valueY;
@@ -42,7 +42,7 @@ public class DriveTrain{
         rFrontFX_master.configAllSettings(driveFXconfig, 100);
         rFrontFX_master.setInverted(true);
         rFrontFX_master.setNeutralMode(NeutralMode.Brake);
-        
+
         lFrontFX_master.configAllSettings(driveFXconfig, 100);
         lFrontFX_master.setInverted(false);
         lFrontFX_master.setNeutralMode(NeutralMode.Brake);
@@ -52,7 +52,6 @@ public class DriveTrain{
         rBackFX_follower.setInverted(TalonFXInvertType.FollowMaster);
         rBackFX_follower.setNeutralMode(NeutralMode.Brake);
 
-
         lBackFX_follower.configAllSettings(driveFXconfig, 100);
         lBackFX_follower.follow(lFrontFX_master);
         lBackFX_follower.setInverted(TalonFXInvertType.FollowMaster);
@@ -61,7 +60,7 @@ public class DriveTrain{
     }
 
     public void robotPeriodic() {
-        //velocitydrive = SmartDashboard.getBoolean("Velocity Drive", velocitydrive);
+        // velocitydrive = SmartDashboard.getBoolean("Velocity Drive", velocitydrive);
 
     }
 
@@ -79,23 +78,26 @@ public class DriveTrain{
 
     public void teleopPeriodic() {
 
-        if (Robot.tether_is_enabled) return;
-        if (Robot.climb_is_enabled) return;
+        if (Robot.tether_is_enabled)
+            return;
+        if (Robot.climb_is_enabled)
+            return;
         if (Robot.brake_is_enabled) {
-          rFrontFX_master.set(ControlMode.PercentOutput, 0.0);
-          lFrontFX_master.set(ControlMode.PercentOutput, 0.0);
-          return;
+            rFrontFX_master.set(ControlMode.PercentOutput, 0.0);
+            lFrontFX_master.set(ControlMode.PercentOutput, 0.0);
+            return;
         }
-        
+
         valueX = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kRightStickXAxis);
-        valueY = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kLeftStickYAxis) * -1; // Multiplied by -1 because Y axis is inverted
+        valueY = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kLeftStickYAxis) * -1; // Multiplied by -1 because Y
+                                                                                       // axis is inverted
 
         valueX = DeadbandMaker.linear1d(valueX, 0.04);
         valueY = DeadbandMaker.linear1d(valueY, 0.04);
 
         valueX = 0.5 * Math.copySign(valueX * valueX, valueX);
         valueY = 0.7 * Math.copySign(valueY * valueY, valueY);
-        // -------Drive Equation----------- left side = y+x        right side = y-x
+        // -------Drive Equation----------- left side = y+x right side = y-x
         leftSidePower = valueY + valueX;
         rightSidePower = valueY - valueX;
 
@@ -107,13 +109,13 @@ public class DriveTrain{
         }
 
     }
-    
+
     public void disabledInit() {
 
     }
 
     public void disabledPeriodic() {
-      
+
     }
 
     public void ExternalMotorControl(double leftSidePower, double rightSidePower) {
