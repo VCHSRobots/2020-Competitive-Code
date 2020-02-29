@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import frc.robot.Constants;
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -18,6 +19,7 @@ public class DriveTrain {
     // ----Drive-Math-Variables----
     double valueX, valueY;
     double leftSidePower, rightSidePower;
+    double driveAVGEncoderTicks;
     // --------Falcon Motors-------
     WPI_TalonFX rFrontFX_master = new WPI_TalonFX(RobotMap.DriveTrainMap.krFrontFX);
     WPI_TalonFX lFrontFX_master = new WPI_TalonFX(RobotMap.DriveTrainMap.klFrontFX);
@@ -33,6 +35,8 @@ public class DriveTrain {
     double DTkd = 0;
     double DTkf = 0;
     double maxVel = 0; // f/s * in/f * rev/wheel dia in * sec/min = rev / min
+
+    int stateGoDistance = 1;
 
     public void robotInit() {
         BaseFXConfig driveFXconfig = new BaseFXConfig();
@@ -61,6 +65,7 @@ public class DriveTrain {
 
     public void robotPeriodic() {
         // velocitydrive = SmartDashboard.getBoolean("Velocity Drive", velocitydrive);
+        driveAVGEncoderTicks = (rFrontFX_master.getSelectedSensorPosition() + lFrontFX_master.getSelectedSensorPosition())/2;
 
     }
 
@@ -127,4 +132,21 @@ public class DriveTrain {
         rFrontFX_master.set(ControlMode.PercentOutput, right);
         lFrontFX_master.set(ControlMode.PercentOutput, left);
     }
+
+    public void goDistance(double targetDistance) {
+        if (stateGoDistance == 1) {
+            targetDistance = driveAVGEncoderTicks + ((targetDistance/Constants.kDriveWheelCircumference)*2047.0);
+            stateGoDistance = 2;
+            return;
+        }
+        if (stateGoDistance == 2) {
+            rFrontFX_master.set(ControlMode.Position, targetDistance);
+            stateGoDistance = 3;
+            return;
+        }
+        if (stateGoDistance == 3) {
+            
+        }
+    }
+    
 }
