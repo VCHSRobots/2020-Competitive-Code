@@ -3,10 +3,13 @@ package frc.robot.util;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.MotorCommutation;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+
+import frc.robot.Constants;
  /**
   * BaseFXConfig Class
   * 
@@ -47,7 +50,7 @@ public class BaseFXConfig extends TalonFXConfiguration{
         this.neutralDeadband = 0.001;
         this.nominalOutputForward = 0.0;
         this.nominalOutputReverse = 0.0;
-        this.openloopRamp = 0.08;
+        this.openloopRamp = 0.07;
         this.peakOutputForward = 1.0;
         this.peakOutputReverse = -1.0;
         //this.primaryPID = BaseTalonPIDSetConfiguration.class.cast(0);
@@ -62,7 +65,9 @@ public class BaseFXConfig extends TalonFXConfiguration{
         this.softLimitDisableNeutralOnLOS = false;
         //this.statorCurrLimit = StatorCurrentLimitConfiguration.class.cast(0);
         //this.sum0Term = FeedbackDevice.SensorDifference;
-        this.voltageCompSaturation = 12;
+        this.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 10, 10, 0.2);
+        this.voltageCompSaturation = Constants.kvoltageComp;
+
 
     }
 }

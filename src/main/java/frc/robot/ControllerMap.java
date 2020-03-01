@@ -22,7 +22,7 @@ public class ControllerMap {
         // ----- axis -----
         public static final int kturnTableRotate = 1;
         public static final int kAutoAim = 2;
-        public static final int kAllFeederGo = 3;
+        public static final int kShootAndAllFeederGo = 3;
         // ----- buttons -----
         public static final int kAllFeederToggle =      1;
         public static final int kHopperLeftToggle =     2;

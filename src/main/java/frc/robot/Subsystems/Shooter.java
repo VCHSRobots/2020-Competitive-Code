@@ -10,20 +10,22 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpiutil.math.MathUtil;
 import frc.robot.Constants;
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.ControllerMap.Manip;
 import frc.robot.util.BaseFXConfig;
 import frc.robot.util.DeadbandMaker;
 
 public class Shooter {
   // member variables for Shooter control
-  private double m_top_RPM = 3500;
-  private double m_bottom_RPM = 4500;
+  private double m_top_RPM = 1200;
+  private double m_bottom_RPM = 2000;
   private double m_turnTable_Max_Speed = 0.2;
   private boolean m_isRunning = false;
+  private boolean m_wheelsEnable = false;
   private DigitalInput DI_turntableLimit = new DigitalInput(8);
 
   private int turntable_starting_position;
@@ -57,7 +59,7 @@ public class Shooter {
     // TODO: tune pid. k thanks.
     m_talon_config.voltageCompSaturation = Constants.kvoltageComp;
     m_talon_config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0.2);
-    m_talon_config.openloopRamp = 0.03;
+    m_talon_config.openloopRamp = 0.1;
     m_talon_config.forwardSoftLimitEnable = false;
     m_talon_config.reverseSoftLimitEnable = false;
     // m_talon_config.peakCurrentLimit = 50;
@@ -66,8 +68,8 @@ public class Shooter {
     m_talon_config.nominalOutputForward = 0;
     m_talon_config.nominalOutputReverse = 0;
     m_talon_config.peakOutputForward = 1;
-    m_talon_config.peakOutputReverse = -0.8;
-    m_talon_config.closedloopRamp = 0.03;
+    m_talon_config.peakOutputReverse = -0.3;
+    m_talon_config.closedloopRamp = 0.2;
     m_talon_config.slot0.allowableClosedloopError = 0;
     m_talon_config.slot0.closedLoopPeakOutput = 1.0;
     m_talon_config.slot0.closedLoopPeriod = 2;
@@ -89,10 +91,10 @@ public class Shooter {
     // TODO: tune pid. k thanks.
     m_talon_config.peakOutputForward = 0.25;
     m_talon_config.peakOutputReverse = -0.25;
-    m_talon_config.openloopRamp = 0.3;
-    m_talon_config.closedloopRamp = 0.03;
+    m_talon_config.openloopRamp = 0.1;
+    m_talon_config.closedloopRamp = 0.05;
     m_talon_config.slot0.allowableClosedloopError = 0;
-    m_talon_config.slot0.closedLoopPeakOutput = 1.0;
+    m_talon_config.slot0.closedLoopPeakOutput = 0.5;
     m_talon_config.slot0.closedLoopPeriod = 2;
     m_talon_config.slot0.integralZone = 0;
     m_talon_config.slot0.kP = 0;
@@ -121,19 +123,19 @@ public class Shooter {
     turretPosition = turnTableFX.getSelectedSensorPosition();
     if (DI_turntableLimit.get() == false) {
       if (!turretLowCalibrated && turretPosition < turntable_starting_position) {
-        turret_low_limit = turretPosition + 3000;
+        turret_low_limit = turretPosition + 2000;
         turretLowCalibrated = true;
       } else if (!turretHighCalibrated && turretPosition > turntable_starting_position) {
-        turret_high_limit = turretPosition - 3000;
+        turret_high_limit = turretPosition - 2000;
         turretHighCalibrated = true;
       }
     }
 
     // smartdash set statuses
     SmartDashboard.putNumber("Actual Top RPM",
-        upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
+        upperWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTicksVelocityToRPM);
     SmartDashboard.putNumber("Actual Bot RPM",
-        lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTickVelocityToRPM);
+        lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTicksVelocityToRPM);
     SmartDashboard.putNumber("Turntable Position", turretPosition);
     SmartDashboard.putNumber("Turntable Direction", direction);
     SmartDashboard.putBoolean("Going Left Instead", goLeftInstead);
@@ -156,6 +158,16 @@ public class Shooter {
     m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
     m_turnTable_Max_Speed = SmartDashboard.getNumber("Turntable Max Speed", 0);
 
+    // clamp range checks
+    m_top_RPM = MathUtil.clamp(m_top_RPM, -1400.0, 7000.0);
+    m_bottom_RPM = MathUtil.clamp(m_bottom_RPM, -1400.0, 7000.0);
+    m_turnTable_Max_Speed = MathUtil.clamp(m_turnTable_Max_Speed, -0.5, 0.5);
+
+    // smartdash puts
+    SmartDashboard.putNumber("Top RPM", m_top_RPM);
+    SmartDashboard.getNumber("Bot RPM", m_bottom_RPM);
+    SmartDashboard.getNumber("Turntable Max Speed", m_turnTable_Max_Speed);
+
     // --------------- LIMELIGHT -----------------------
     Robot.limelight.SmartDashboardSend();
     limelightDistance = Robot.limelight.getDistance();
@@ -176,14 +188,25 @@ public class Shooter {
   }
 
   public void teleopPeriodic() {
-    // A button will toggle the control loop off and on
+    // ----------- SHOOTER CODE -------------
+    // button will toggle the control loop off and on
     if (Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kShooterToggle)) {
       m_isRunning = !m_isRunning;
     }
 
-    if (m_isRunning) {
-      upperWheelsFX.set(ControlMode.Velocity, m_top_RPM * Constants.kRPMtoCTREEncoderTicks);
-      lowerWheelsFX.set(ControlMode.Velocity, m_bottom_RPM * Constants.kRPMtoCTREEncoderTicks);
+    // pull manip xbox trigger
+    if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.5) {
+      m_wheelsEnable = true;
+    } else {
+      m_wheelsEnable = false;
+    }
+
+    // full send button
+    // -- check button press, full send five balls, automatically stop after shooting all balls.
+
+    if (m_isRunning || m_wheelsEnable) {
+      upperWheelsFX.set(ControlMode.Velocity, m_top_RPM * Constants.kRPMtoCTREEncoderTicksVelocity);
+      lowerWheelsFX.set(ControlMode.Velocity, m_bottom_RPM * Constants.kRPMtoCTREEncoderTicksVelocity);
     } else {
       stopMotors();
     }
@@ -249,5 +272,9 @@ public class Shooter {
   private void stopMotors() {
     upperWheelsFX.neutralOutput();
     lowerWheelsFX.neutralOutput();
+  }
+
+  public boolean readyToShoot() {
+    return (lowerWheelsFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity);
   }
 }
