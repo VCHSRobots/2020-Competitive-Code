@@ -2,10 +2,8 @@ package frc.robot.util;
 
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.MotorCommutation;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
@@ -17,13 +15,13 @@ import frc.robot.Constants;
   */
 public class BaseSRXConfig extends TalonSRXConfiguration{
 
-    public static WPI_TalonFX configureTalon(WPI_TalonFX talon){
-        talon.configAllSettings(new BaseFXConfig());
+    public static WPI_TalonSRX configureTalon(WPI_TalonSRX talon){
+        talon.configAllSettings(new BaseSRXConfig());
         return talon;
     }
 
-    public static WPI_TalonFX generateDefaultTalon(int deviceID){
-        return configureTalon(new WPI_TalonFX(deviceID));
+    public static WPI_TalonSRX generateDefaultTalon(int deviceID){
+        return configureTalon(new WPI_TalonSRX(deviceID));
     }
 
     public BaseSRXConfig(){

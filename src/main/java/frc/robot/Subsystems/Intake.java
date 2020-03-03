@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
 import frc.robot.RobotMap.IntakeMap;
+import frc.robot.util.BaseSRXConfig;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -12,10 +13,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake {
-  WPI_TalonSRX intakeProtoMotor; // for protoype intake
-
   // motors
-  WPI_TalonSRX intakeBagMotor = new WPI_TalonSRX(IntakeMap.kIntakeBagMotor);
+  WPI_TalonSRX intakeBagMotor = BaseSRXConfig.generateDefaultTalon(IntakeMap.kIntakeBagMotor);
 
   DoubleSolenoid intakeSolenoidTop = new DoubleSolenoid(IntakeMap.kPCM, IntakeMap.kTopForward, IntakeMap.kTopReverse);
   DoubleSolenoid intakeSolenoidBottom = new DoubleSolenoid(IntakeMap.kPCM, IntakeMap.kBottomForward, IntakeMap.kBottomReverse);
@@ -39,7 +38,7 @@ public class Intake {
     top = DoubleSolenoid.Value.kForward;
     bottom = DoubleSolenoid.Value.kForward;
 
-    intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0);
+    SmartDashboard.putNumber("Motor Speed", 0);
 
   }
 
@@ -47,6 +46,8 @@ public class Intake {
     // sends pneumatic state to the smart dashboard
     SmartDashboard.putString("Intake Top", pneumaticTopValue);
     SmartDashboard.putString("Intake Bottom", pneumaticBottomValue);
+    intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0);
+
   }
 
   public void autonomousInit() {
@@ -70,11 +71,11 @@ public class Intake {
     }
 
     if (intakeToggle) {
-      intakeProtoMotor.set(intakeSpeed);
+      intakeBagMotor.set(intakeSpeed);
     } else {
-      intakeProtoMotor.set(0);
+      intakeBagMotor.set(0);
     }
-    intakeProtoMotor.set(ControlMode.PercentOutput, intakeSpeed); // for prototype intake
+    // intakeBagMotor.set(ControlMode.PercentOutput, intakeSpeed); // for prototype intake
 
     // pneumatic position
 

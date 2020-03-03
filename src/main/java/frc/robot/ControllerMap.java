@@ -30,14 +30,14 @@ public class ControllerMap {
         public static final int kAcceleratorToggle =    4;
         public static final int kColorWheelPneumatic =  5;
         public static final int kShooterToggle =        6;
-        public static final int knearestColor =               7;
-        public static final int krotateButton =               8;
+        public static final int knearestColor =         7;
+        public static final int krotateButton =         8;
 
         // ----- DPAD -----
-        public static final int kIntakeStowed =               0;
-        public static final int kIntakeMid =                 90;
-        public static final int kIntakeLow =                180;
-        public static final int kIntakeMotorToggle =        270;
+        public static final int kIntakeStowed =           0;
+        public static final int kIntakeMid =             90;
+        public static final int kIntakeLow =            180;
+        public static final int kIntakeMotorToggle =    270;
     }
 
     public static class climbjoy {

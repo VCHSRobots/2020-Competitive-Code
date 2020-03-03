@@ -17,9 +17,11 @@ import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ColorWheel;
 import frc.robot.Subsystems.Climber;
 import frc.robot.util.FMSData;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
+  Compressor compressor = new Compressor();
 
   // ---------Subsystems---------------
   public static FMSData fmsData = new FMSData();
@@ -27,9 +29,9 @@ public class Robot extends TimedRobot {
   public static Intake intake = new Intake();
   public static DriveTrain driveTrain = new DriveTrain();
   // public static ColorWheel colorWheel = new ColorWheel();
-  // public static Shooter shooter = new Shooter();
+  public static Shooter shooter = new Shooter();
   public static Climber climber = new Climber();
-  // public static Hopper hopper = new Hopper();
+  public static Hopper hopper = new Hopper();
 
   public static Limelight limelight = new Limelight();
   
@@ -45,6 +47,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    compressor.setClosedLoopControl(true);
+    
     // -------------------------Controllers------------------------------
     driveCtrl = new XboxController(RobotMap.Controllers.kDriveCtrl);
     manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
@@ -53,8 +57,8 @@ public class Robot extends TimedRobot {
     climber.robotInit();
     intake.robotInit();
     driveTrain.robotInit();
-    // shooter.robotInit();
-    // hopper.robotInit();
+    shooter.robotInit();
+    hopper.robotInit();
     // colorWheel.robotInit();
     limelight.robotInit();
   }
@@ -66,9 +70,9 @@ public class Robot extends TimedRobot {
     climber.robotPeriodic();
     intake.robotPeriodic();
     driveTrain.robotPeriodic();
-    // shooter.robotPeriodic();
+    shooter.robotPeriodic();
     // colorWheel.robotPeriodic();
-    // hopper.robotPeriodic();
+    hopper.robotPeriodic();
     limelight.robotPeriodic();
   }
 
@@ -77,9 +81,9 @@ public class Robot extends TimedRobot {
     // climber.autonomousInit();
     // intake.autonomousInit();
     driveTrain.autonomousInit();
-    // shooter.autonomousInit();
+    shooter.autonomousInit();
     //colorWheel.autonomousInit();
-    // hopper.autonomousInit();
+    hopper.autonomousInit();
   }
 
   @Override
@@ -97,8 +101,8 @@ public class Robot extends TimedRobot {
     climber.teleopInit();
     driveTrain.teleopInit();
     intake.teleopInit();
-    // shooter.teleopInit();
-    // hopper.teleopInit();
+    shooter.teleopInit();
+    hopper.teleopInit();
   }
 
   @Override
@@ -106,9 +110,9 @@ public class Robot extends TimedRobot {
     climber.teleopPeriodic();
     intake.teleopPeriodic();
     driveTrain.teleopPeriodic();
-    // shooter.teleopPeriodic();
+    shooter.teleopPeriodic();
     //colorWheel.teleopPeriodic();
-    // hopper.teleopPeriodic();
+    hopper.teleopPeriodic();
   }
 
   @Override
@@ -125,9 +129,9 @@ public class Robot extends TimedRobot {
     climber.disabledInit();
     // ColorWheel.disabledInit();
     driveTrain.disabledInit();
-    // hopper.disabledInit();
+    hopper.disabledInit();
     intake.disabledInit();
-    // shooter.disabledInit();
+    shooter.disabledInit();
 
   }
 

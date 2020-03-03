@@ -32,7 +32,7 @@ public class Limelight {
     private double normalArea = regularHorizontal * regularVertical;
     private double[] defaultCamtran = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-    static double offset = 0.166;
+    static double offset = 0.0;
     private boolean limelightOnOff = false;
 
     public void SmartDashboardSend() {

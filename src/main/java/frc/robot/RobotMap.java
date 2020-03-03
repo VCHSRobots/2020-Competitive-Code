@@ -21,7 +21,7 @@ public class RobotMap {
 
     public static class IntakeMap {
         // motors
-        public static final int kIntakeBagMotor = 21;
+        public static final int kIntakeBagMotor = 22;
 
         // solenoids
         public static final int kPCM = 1;
@@ -37,15 +37,15 @@ public class RobotMap {
     public static class GearboxBrakeMap{
         // pneumatics PCM ID and solenoids
         public static final int kPCM = 0;    
-        public static final int kBrakeModeOn = 5;
-        public static final int kBrakeModeOff = 4;
+        public static final int kBrakeModeOn = 0;
+        public static final int kBrakeModeOff = 1;  //
     }
 
     public static class ShifterMap{
         // pneumatics PCM ID and solenoids
         public static final int kPCM = 0;    
-        public static final int kShiftModeDrive = 3;
-        public static final int kShiftModeClimb = 2; 
+        public static final int kShiftModeDrive = 5;
+        public static final int kShiftModeClimb = 4; 
     }
 
     public static class ShooterMap {
@@ -67,10 +67,10 @@ public class RobotMap {
 
         // pneumatics PCM ID and solenoids
         public static final int kPCM = 0;    
-        public static final int kRightArm_Up = 7;
-        public static final int kRightArm_Dn = 6;
-        public static final int kLeftArm_Up = 1;
-        public static final int kLeftArm_Dn = 0;
+        public static final int kRightArm_Up = 6;
+        public static final int kRightArm_Dn = 7;
+        public static final int kLeftArm_Up = 2;
+        public static final int kLeftArm_Dn = 3;
     }
     
     public static class HopperMap {

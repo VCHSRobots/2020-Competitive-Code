@@ -81,11 +81,11 @@ public class Shooter {
 
     upperWheelsFX.configAllSettings(m_talon_config);
     upperWheelsFX.setNeutralMode(NeutralMode.Coast);
-    upperWheelsFX.setInverted(TalonFXInvertType.Clockwise);
+    upperWheelsFX.setInverted(TalonFXInvertType.CounterClockwise);
 
     lowerWheelsFX.configAllSettings(m_talon_config);
     lowerWheelsFX.setNeutralMode(NeutralMode.Coast);
-    lowerWheelsFX.setInverted(TalonFXInvertType.Clockwise);
+    lowerWheelsFX.setInverted(TalonFXInvertType.CounterClockwise);
 
     // ---------- Turntable config ----------
     // TODO: tune pid. k thanks.
@@ -212,8 +212,9 @@ public class Shooter {
     }
 
     // ------------------- TURNTABLE CODE ------------------------
-    double turret_speed = DeadbandMaker
-        .linear1d(Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate) * m_turnTable_Max_Speed, 0.05);
+    double turret_speed = 0.0;
+    // double turret_speed = DeadbandMaker
+        // .linear1d(Robot.manipCtrl.getRawAxis(ControllerMap.Manip.kturnTableRotate) * m_turnTable_Max_Speed, 0.05);
     // Debug
     if (limelightX != -Limelight.offset && !(goLeftInstead || goRightInstead)) {
       findingTxTarget = true;
