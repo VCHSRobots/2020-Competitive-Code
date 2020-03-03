@@ -55,6 +55,8 @@ public class ColorWheel {
     private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
     private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+    Color detectedColor;
+    private ColorMatchResult match;
 
     public void robotInit() {
 
@@ -78,9 +80,13 @@ public class ColorWheel {
     }
 
     public void robotPeriodic() {
-
-        Color detectedColor = m_colorSensor.getColor();
-        ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+        detectedColor = ColorMatch.makeColor(0.0, 0.0, 0.0);
+        try {
+            detectedColor = m_colorSensor.getColor();
+        } catch (Exception e) {
+            
+        }
+        match = m_colorMatcher.matchClosestColor(detectedColor);
         SmartDashboard.putNumber("encoder", falcon.getSelectedSensorPosition());
         SmartDashboard.putNumber("Red", detectedColor.red);
         SmartDashboard.putNumber("Green", detectedColor.green);
@@ -88,7 +94,6 @@ public class ColorWheel {
         SmartDashboard.putNumber("Confidence", match.confidence);
         SmartDashboard.putString("Detected Color", colorString);
         SmartDashboard.putNumber("RPM", 0);
-
     }
 
     public void autonomousInit() {

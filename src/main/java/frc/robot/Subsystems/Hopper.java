@@ -15,17 +15,23 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.HopperMap;
 import frc.robot.ControllerMap.Manip;
+import frc.robot.Constants;
+import frc.robot.ControllerMap;
 import frc.robot.Robot;
 
 public class Hopper {
+    private enum Mode {
+        TOGGLES, STOPPED, SHOOTING
+    }
+    Mode mode = Mode.TOGGLES;
 
     TalonFX rSideFX, lSideFX, acceleratorFX;
 
     TalonFXConfiguration m_config = new TalonFXConfiguration();
 
-    boolean rightToggle = false;
-    boolean leftToggle = false;
-    boolean acceleratorToggle = false;
+    boolean rightEnable = false;
+    boolean leftEnable = false;
+    boolean acceleratorEnable = false;
     boolean allToggle = false;
 
     double RPMRight = 0.2;
@@ -88,57 +94,47 @@ public class Hopper {
         acceleratorFX.set(ControlMode.PercentOutput, 0);
         lSideFX.set(ControlMode.PercentOutput, 0);
         rSideFX.set(ControlMode.PercentOutput, 0);
-        leftToggle = false;
-        rightToggle = false;
-        acceleratorToggle = false;
+        leftEnable = false;
+        rightEnable = false;
+        acceleratorEnable = false;
         allToggle = false;
+
+        // consume any button presses that occured while disabled before teleop enable
+        Robot.manipCtrl.getRawButtonPressed(Manip.kHopperLeftToggle);
+        Robot.manipCtrl.getRawButtonPressed(Manip.kHopperRightToggle);
+        Robot.manipCtrl.getRawButtonPressed(Manip.kAcceleratorToggle);
+        Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle);
     }
 
     public void teleopPeriodic() {
-        // hopper and accel toggles
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperLeftToggle)) {
-            leftToggle = !leftToggle;
-        }
-
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperRightToggle)) {
-            rightToggle = !rightToggle;
-        }
-
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kAcceleratorToggle)) {
-            acceleratorToggle = !acceleratorToggle;
-        }
-
-        // overall go or toggle
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle)) {
-            allToggle = !allToggle;
-            if (allToggle) {
-                acceleratorToggle = true;
-                rightToggle = true;
-                leftToggle = true;
-            } else {
-                acceleratorToggle = false;
-                rightToggle = false;
-                leftToggle = false;
+        // manual buttons
+        checkToggles();
+        
+        // shooting check to make sure shooter and accelerator are spun up before it loads
+        if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 && Robot.shooter.readyToShoot()) {
+            acceleratorEnable = true;
+            if (acceleratorFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity) {
+                rightEnable = true;
+                leftEnable = true;
             }
         }
 
-        // set motor values
-        if (leftToggle || Robot.manipCtrl.getRawAxis(Manip.kAllFeederGo) > 0.9) {
+        // set motor values based on enables
+        if (leftEnable) {
             lSideFX.set(ControlMode.PercentOutput, RPMLeft);
         } else {
             lSideFX.set(ControlMode.PercentOutput, 0);
         }
-        if (rightToggle || Robot.manipCtrl.getRawAxis(Manip.kAllFeederGo) > 0.9) {
+        if (rightEnable) {
             rSideFX.set(ControlMode.PercentOutput, RPMRight);
         } else {
             rSideFX.set(ControlMode.PercentOutput, 0);
         }
-        if (acceleratorToggle || Robot.manipCtrl.getRawAxis(Manip.kAllFeederGo) > 0.9) {
+        if (acceleratorEnable) {
             acceleratorFX.set(ControlMode.PercentOutput, RPMaccelerator);
         } else {
             acceleratorFX.set(ControlMode.PercentOutput, 0);
         }
-
     }
 
     public void disabledInit() {
@@ -153,6 +149,65 @@ public class Hopper {
         acceleratorFX.set(ControlMode.PercentOutput, 0);
         lSideFX.set(ControlMode.PercentOutput, 0);
         rSideFX.set(ControlMode.PercentOutput, 0);
+    }
 
+    private boolean checkToggles() {
+        boolean ret = false;
+        // hopper and accel toggles
+        if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperLeftToggle)) {
+            // leftEnable = !leftEnable;
+            if (lSideFX.getMotorOutputPercent() == 0 ){
+                leftEnable = true;
+            } else {
+                leftEnable = false;
+            }
+            ret = true;
+        }
+
+        if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperRightToggle)) {
+            // rightEnable = !rightEnable;
+            if (rSideFX.getMotorOutputPercent() == 0 ){
+                rightEnable = true;
+            } else {
+                rightEnable = false;
+            }
+            ret = true;
+        }
+
+        if (Robot.manipCtrl.getRawButtonPressed(Manip.kAcceleratorToggle)) {
+            // acceleratorEnable = !acceleratorEnable;
+            if (acceleratorFX.getMotorOutputPercent() == 0 ){
+                acceleratorEnable = true;
+            } else {
+                acceleratorEnable = false;
+            }
+            ret = true;
+        }
+
+        // overall go or toggle
+        if (Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle)) {
+            // allToggle = !allToggle;
+            // if (allToggle) {
+            //     acceleratorEnable = true;
+            //     rightEnable = true;
+            //     leftEnable = true;
+            // } else {
+            //     acceleratorEnable = false;
+            //     rightEnable = false;
+            //     leftEnable = false;
+            // }
+            if (leftEnable || rightEnable || acceleratorEnable) {
+                leftEnable = false;
+                rightEnable = false;
+                acceleratorEnable = false;
+            } else {
+                leftEnable = true;
+                rightEnable = true;
+                acceleratorEnable = true;
+            }
+            ret = true;
+        }
+
+        return ret;
     }
 }

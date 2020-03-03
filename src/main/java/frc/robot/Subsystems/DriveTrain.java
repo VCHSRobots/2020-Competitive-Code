@@ -102,6 +102,7 @@ public class DriveTrain {
 
         valueX = 0.5 * Math.copySign(valueX * valueX, valueX);
         valueY = 0.7 * Math.copySign(valueY * valueY, valueY);
+        
         // -------Drive Equation----------- left side = y+x right side = y-x
         leftSidePower = valueY + valueX;
         rightSidePower = valueY - valueX;

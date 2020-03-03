@@ -57,11 +57,13 @@ public class Climber {
       // Apply Break
       brakerSolenoid.set(DoubleSolenoid.Value.kForward);
     }
+
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.kBrake_OFF)) {
       Robot.brake_is_enabled = false;
       // Release Break
       brakerSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
+
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.TetherEngage)) {
       Robot.tether_is_enabled = true;
       Robot.climb_is_enabled = true;
@@ -72,19 +74,24 @@ public class Climber {
         shifterSolenoid.set(DoubleSolenoid.Value.kForward);
       }
     }
+
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.kResetClimbMode)) {
       Robot.climb_is_enabled = false;
 
     }
+
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.LeftSide_UP)) {
       leftArmSolenoid.set(DoubleSolenoid.Value.kForward);
     }
+
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.LeftSide_DOWN)) {
       leftArmSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
+
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_UP)) {
       rightArmSolenoid.set(DoubleSolenoid.Value.kForward);
     }
+    
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_DOWN)) {
       rightArmSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
