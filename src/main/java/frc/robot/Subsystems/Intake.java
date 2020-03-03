@@ -2,7 +2,7 @@ package frc.robot.Subsystems;
 
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
+import frc.robot.RobotMap.IntakeMap;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -15,11 +15,10 @@ public class Intake {
   WPI_TalonSRX intakeProtoMotor; // for protoype intake
 
   // motors
-  WPI_TalonSRX intakeBagMotor = new WPI_TalonSRX(RobotMap.IntakeMap.kIntakeBagMotor);
+  WPI_TalonSRX intakeBagMotor = new WPI_TalonSRX(IntakeMap.kIntakeBagMotor);
 
-  DoubleSolenoid intakeSolenoidTop = new DoubleSolenoid(RobotMap.IntakeMap.kTopForward, RobotMap.IntakeMap.kTopReverse);
-  DoubleSolenoid intakeSolenoidBottom = new DoubleSolenoid(RobotMap.IntakeMap.kBottomForward,
-      RobotMap.IntakeMap.kBottomReverse);
+  DoubleSolenoid intakeSolenoidTop = new DoubleSolenoid(IntakeMap.kPCM, IntakeMap.kTopForward, IntakeMap.kTopReverse);
+  DoubleSolenoid intakeSolenoidBottom = new DoubleSolenoid(IntakeMap.kPCM, IntakeMap.kBottomForward, IntakeMap.kBottomReverse);
 
   public static enum intakePosition {
     STOWED, MID, LOW

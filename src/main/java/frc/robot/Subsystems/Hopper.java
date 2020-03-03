@@ -111,13 +111,13 @@ public class Hopper {
         checkToggles();
         
         // shooting check to make sure shooter and accelerator are spun up before it loads
-        if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 && Robot.shooter.readyToShoot()) {
-            acceleratorEnable = true;
-            if (acceleratorFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity) {
-                rightEnable = true;
-                leftEnable = true;
-            }
-        }
+        // if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 && Robot.shooter.readyToShoot()) {
+        //     acceleratorEnable = true;
+        //     if (acceleratorFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity) {
+        //         rightEnable = true;
+        //         leftEnable = true;
+        //     }
+        // }
 
         // set motor values based on enables
         if (leftEnable) {

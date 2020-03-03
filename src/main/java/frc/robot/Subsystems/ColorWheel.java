@@ -7,12 +7,13 @@
 
 package frc.robot.Subsystems;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
 import frc.robot.Robot;
-import frc.robot.RobotMap;
+import frc.robot.RobotMap.ColorWheelMap;
 import frc.robot.util.FMSData;
 import frc.robot.ControllerMap;
 
@@ -23,6 +24,7 @@ import com.revrobotics.ColorMatch;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 /**
  * This is a simple example to show how the REV Color Sensor V3 can be used to
@@ -31,21 +33,23 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class ColorWheel {
 
-    TalonFX falcon;
+    private WPI_TalonSRX spinMotor;
+    private DoubleSolenoid colorWheelSolenoid = new DoubleSolenoid(ColorWheelMap.kPCM, ColorWheelMap.kcolorSolenoidForward, ColorWheelMap.kcolorSolenoidReverse);
+
 
     int blueCount, redCount, yellowCount, greenCount;
     int controlPanelRotationTicks = 49152;
 
     double RPM = 0;
 
-    boolean colorCheck = false;
-    boolean rotateDisk = false;
-    boolean bNearestColor;
-    boolean bRotationMode;
+    private boolean colorCheck = false;
+    private boolean rotateDisk = false;
+    private boolean bNearestColor;
+    private boolean bRotationMode; 
 
-    String colorString = "Unknown";
-    String firstColor = "Unknown";
-    String fmsColorString;
+    private String colorString = "Unknown";
+    private String firstColor = "Unknown";
+    private String fmsColorString;
 
     private FMSData fmsColor = new FMSData();
     private ColorSensorV3 m_colorSensor;
@@ -55,8 +59,9 @@ public class ColorWheel {
     private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
     private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+
     Color detectedColor;
-    private ColorMatchResult match;
+    ColorMatchResult match;
 
     public void robotInit() {
 
@@ -65,10 +70,11 @@ public class ColorWheel {
         m_colorMatcher.addColorMatch(kRedTarget);
         m_colorMatcher.addColorMatch(kYellowTarget);
 
-        falcon = new TalonFX(RobotMap.ColorWheelMap.kcontrolPanelWheel);
-        falcon.setNeutralMode(NeutralMode.Brake);
-        falcon.setSelectedSensorPosition(0);
+        spinMotor = new WPI_TalonSRX(ColorWheelMap.kcontrolPanelWheel);
+        spinMotor.setNeutralMode(NeutralMode.Brake);
+        spinMotor.setSelectedSensorPosition(0);
 
+        // joystick buttons
         bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
         bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
 
@@ -77,23 +83,28 @@ public class ColorWheel {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+        SmartDashboard.putBoolean("ColorWheelSolenoid", true);
+
     }
 
     public void robotPeriodic() {
+
         detectedColor = ColorMatch.makeColor(0.0, 0.0, 0.0);
         try {
-            detectedColor = m_colorSensor.getColor();
+            m_colorSensor.getColor();
         } catch (Exception e) {
-            
+
         }
         match = m_colorMatcher.matchClosestColor(detectedColor);
-        SmartDashboard.putNumber("encoder", falcon.getSelectedSensorPosition());
+        SmartDashboard.putNumber("encoder", spinMotor.getSelectedSensorPosition());
         SmartDashboard.putNumber("Red", detectedColor.red);
         SmartDashboard.putNumber("Green", detectedColor.green);
         SmartDashboard.putNumber("Blue", detectedColor.blue);
         SmartDashboard.putNumber("Confidence", match.confidence);
         SmartDashboard.putString("Detected Color", colorString);
         SmartDashboard.putNumber("RPM", 0);
+
     }
 
     public void autonomousInit() {
@@ -109,6 +120,11 @@ public class ColorWheel {
     }
 
     public void teleopPeriodic() {
+        if (SmartDashboard.getBoolean("ColorWheelSolenoid", false)) {
+            colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
+        } else {
+            colorWheelSolenoid.set(DoubleSolenoid.Value.kReverse);
+        }
 
         if (fmsColor.toString() != null) {
             fmsColorString = fmsColor.toString();
@@ -116,7 +132,7 @@ public class ColorWheel {
         RPM = SmartDashboard.getNumber("RPM", 0);
 
         Double velocityPer100Milliseconds = RPM * 4096 / 600;
-        int encoderTicks = falcon.getSelectedSensorPosition();
+        int encoderTicks = spinMotor.getSelectedSensorPosition();
         Color detectedColor = m_colorSensor.getColor();
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
@@ -140,14 +156,14 @@ public class ColorWheel {
         // control to rotate disk three times
         if (bRotationMode) {
             rotateDisk = true;
-            falcon.setSelectedSensorPosition(controlPanelRotationTicks);
+            spinMotor.setSelectedSensorPosition(controlPanelRotationTicks);
             return;
         } else if (rotateDisk) {
             if (encoderTicks >= 0) {
-                falcon.set(ControlMode.Velocity, -velocityPer100Milliseconds);
+                spinMotor.set(ControlMode.Velocity, -velocityPer100Milliseconds);
                 return;
             } else {
-                falcon.set(ControlMode.Velocity, 0);
+                spinMotor.set(ControlMode.Velocity, 0);
                 rotateDisk = false;
             }
         }
@@ -156,26 +172,26 @@ public class ColorWheel {
         if (bNearestColor) {
             // if fmsColor is blue and colorString isnt red then move until then
             if (fmsColorString == "blue" && colorString != "Red") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
                 return;
                 // if fmsColor is green and colorString isnt yellow then move until then
             } else if (fmsColorString == "green" && colorString != "Yellow") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
                 return;
                 // if fmsColor is red and colorString isnt blue then move until then
             } else if (fmsColorString == "red" && colorString != "Blue") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
                 return;
                 // if fmsColor is yellow and colorString isnt green then move until then
             } else if (fmsColorString == "yellow" && colorString != "Green") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds);
+                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
                 return;
                 // if colorString is unknown then move the motor a small portion
             } else if (colorString == "Unknown") {
-                falcon.set(ControlMode.Velocity, velocityPer100Milliseconds / 2);
+                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds / 2);
                 return;
             } else {
-                falcon.set(ControlMode.Velocity, 0);
+                spinMotor.set(ControlMode.Velocity, 0);
                 return;
             }
         }
