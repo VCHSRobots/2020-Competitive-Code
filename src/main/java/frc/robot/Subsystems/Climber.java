@@ -4,7 +4,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
+import frc.robot.RobotMap.GearboxBrakeMap;
+import frc.robot.RobotMap.ShifterMap;
+import frc.robot.RobotMap.ClimberMap;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Climber {
@@ -17,10 +19,10 @@ public class Climber {
   private DoubleSolenoid rightArmSolenoid;
 
   public void robotInit() {
-    brakerSolenoid = new DoubleSolenoid(RobotMap.BreakerMap.kBrakeModeOn, RobotMap.BreakerMap.kBrakeModeOff);
-    shifterSolenoid = new DoubleSolenoid(RobotMap.ShifterMap.kShiftModeClimb, RobotMap.ShifterMap.kShiftModeDrive);
-    leftArmSolenoid = new DoubleSolenoid(RobotMap.ClimberMap.kLeftArm_Up, RobotMap.ClimberMap.kLeftArm_Dn);
-    rightArmSolenoid = new DoubleSolenoid(RobotMap.ClimberMap.kRightArm_Up, RobotMap.ClimberMap.kRightArm_Dn);
+    brakerSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, GearboxBrakeMap.kBrakeModeOn, GearboxBrakeMap.kBrakeModeOff);
+    shifterSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, ShifterMap.kShiftModeClimb, ShifterMap.kShiftModeDrive);
+    leftArmSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, ClimberMap.kLeftArm_Up, ClimberMap.kLeftArm_Dn);
+    rightArmSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, ClimberMap.kRightArm_Up, ClimberMap.kRightArm_Dn);
 
   }
 
