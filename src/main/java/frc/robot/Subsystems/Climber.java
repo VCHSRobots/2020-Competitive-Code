@@ -19,7 +19,8 @@ public class Climber {
   private DoubleSolenoid rightArmSolenoid;
 
   public void robotInit() {
-    brakerSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, GearboxBrakeMap.kBrakeModeOn, GearboxBrakeMap.kBrakeModeOff);
+    brakerSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, GearboxBrakeMap.kBrakeModeOn,
+        GearboxBrakeMap.kBrakeModeOff);
     shifterSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, ShifterMap.kShiftModeClimb, ShifterMap.kShiftModeDrive);
     leftArmSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, ClimberMap.kLeftArm_Up, ClimberMap.kLeftArm_Dn);
     rightArmSolenoid = new DoubleSolenoid(GearboxBrakeMap.kPCM, ClimberMap.kRightArm_Up, ClimberMap.kRightArm_Dn);
@@ -91,16 +92,16 @@ public class Climber {
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_UP)) {
       rightArmSolenoid.set(DoubleSolenoid.Value.kForward);
     }
-    
+
     if (Robot.climbCtrl.getRawButton(ControllerMap.climbjoy.RightSide_DOWN)) {
       rightArmSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
     // If the break is engaged, turn off motors, do nothing else.
-    // if (Robot.brake_is_enabled) {
-    // Robot.driveTrain.ExternalMotorControl(0.0, 0.0);
-    // return;
-    // }
+    if (Robot.brake_is_enabled) {
+      Robot.driveTrain.ExternalMotorControl(0.0, 0.0);
+      return;
+    }
     // IF the tehter is engaged, control motors.
     if (Robot.tether_is_enabled) {
       boolean mainpull_is_zero = false;

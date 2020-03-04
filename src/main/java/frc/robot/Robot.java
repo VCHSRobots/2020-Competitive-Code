@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
 
   public static Intake intake = new Intake();
   public static DriveTrain driveTrain = new DriveTrain();
-  // public static ColorWheel colorWheel = new ColorWheel();
+  public static ColorWheel colorWheel = new ColorWheel();
   public static Shooter shooter = new Shooter();
   public static Climber climber = new Climber();
   public static Hopper hopper = new Hopper();
@@ -48,6 +48,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     compressor.setClosedLoopControl(true);
+    //compressor.stop();
     
     // -------------------------Controllers------------------------------
     driveCtrl = new XboxController(RobotMap.Controllers.kDriveCtrl);
@@ -59,7 +60,7 @@ public class Robot extends TimedRobot {
     driveTrain.robotInit();
     shooter.robotInit();
     hopper.robotInit();
-    // colorWheel.robotInit();
+    colorWheel.robotInit();
     limelight.robotInit();
   }
 
@@ -71,7 +72,7 @@ public class Robot extends TimedRobot {
     intake.robotPeriodic();
     driveTrain.robotPeriodic();
     shooter.robotPeriodic();
-    // colorWheel.robotPeriodic();
+    colorWheel.robotPeriodic();
     hopper.robotPeriodic();
     limelight.robotPeriodic();
   }
@@ -103,6 +104,7 @@ public class Robot extends TimedRobot {
     intake.teleopInit();
     shooter.teleopInit();
     hopper.teleopInit();
+    colorWheel.teleopInit();
   }
 
   @Override
@@ -111,7 +113,7 @@ public class Robot extends TimedRobot {
     intake.teleopPeriodic();
     driveTrain.teleopPeriodic();
     shooter.teleopPeriodic();
-    //colorWheel.teleopPeriodic();
+    colorWheel.teleopPeriodic();
     hopper.teleopPeriodic();
   }
 
@@ -127,7 +129,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     climber.disabledInit();
-    // ColorWheel.disabledInit();
+    colorWheel.disabledInit();
     driveTrain.disabledInit();
     hopper.disabledInit();
     intake.disabledInit();

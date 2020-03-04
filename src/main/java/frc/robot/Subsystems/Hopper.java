@@ -20,194 +20,207 @@ import frc.robot.ControllerMap;
 import frc.robot.Robot;
 
 public class Hopper {
-    private enum Mode {
-        TOGGLES, STOPPED, SHOOTING
-    }
-    Mode mode = Mode.TOGGLES;
+  private enum Mode {
+    TOGGLES, STOPPED, SHOOTING
+  }
 
-    TalonFX rSideFX, lSideFX, acceleratorFX;
+  Mode mode = Mode.TOGGLES;
 
-    TalonFXConfiguration m_config = new TalonFXConfiguration();
+  TalonFX rSideFX, lSideFX, acceleratorFX;
 
-    boolean rightEnable = false;
-    boolean leftEnable = false;
-    boolean acceleratorEnable = false;
-    boolean allToggle = false;
+  TalonFXConfiguration m_config = new TalonFXConfiguration();
 
-    double RPMRight = 0.2;
-    double RPMLeft = 0.2;
-    double RPMaccelerator = 0.2;
+  boolean rightEnable = false;
+  boolean leftEnable = false;
+  boolean acceleratorEnable = false;
+  boolean allToggle = false;
 
-    public void robotInit() {
+  double percentRight = 0.3;
+  double percentLeft = 0.7;
+  double percentLAccel = 1.0;
 
-        m_config.voltageCompSaturation = 11;
-        m_config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 15, 15, 0.2);
-        m_config.openloopRamp = 0.03;
-        m_config.forwardSoftLimitEnable = false;
-        m_config.reverseSoftLimitEnable = false;
-        m_config.neutralDeadband = 0.03;
-        m_config.nominalOutputForward = 0;
-        m_config.nominalOutputReverse = 0;
-        m_config.peakOutputForward = 1;
-        m_config.peakOutputReverse = -1;
-        m_config.closedloopRamp = 0.03;
-        m_config.slot0.allowableClosedloopError = 0;
-        m_config.slot0.closedLoopPeakOutput = 1.0;
-        m_config.slot0.closedLoopPeriod = 2;
-        m_config.slot0.integralZone = 0;
-        m_config.slot0.kP = 0;
-        m_config.slot0.kI = 0;
-        m_config.slot0.kD = 0;
-        m_config.slot0.kF = 0.04;
+  public void robotInit() {
 
-        rSideFX = new TalonFX(HopperMap.krightFX);
-        rSideFX.configAllSettings(m_config);
+    m_config.voltageCompSaturation = 11;
+    m_config.supplyCurrLimit = new SupplyCurrentLimitConfiguration(true, 15, 15, 0.2);
+    m_config.openloopRamp = 0.03;
+    m_config.forwardSoftLimitEnable = false;
+    m_config.reverseSoftLimitEnable = false;
+    m_config.neutralDeadband = 0.03;
+    m_config.nominalOutputForward = 0;
+    m_config.nominalOutputReverse = 0;
+    m_config.peakOutputForward = 1;
+    m_config.peakOutputReverse = -1;
+    m_config.closedloopRamp = 0.03;
+    m_config.slot0.allowableClosedloopError = 0;
+    m_config.slot0.closedLoopPeakOutput = 1.0;
+    m_config.slot0.closedLoopPeriod = 2;
+    m_config.slot0.integralZone = 0;
+    m_config.slot0.kP = 0;
+    m_config.slot0.kI = 0;
+    m_config.slot0.kD = 0;
+    m_config.slot0.kF = 0.04;
 
-        lSideFX = new TalonFX(HopperMap.kleftFX);
-        lSideFX.configAllSettings(m_config);
-        lSideFX.setInverted(true);
+    rSideFX = new TalonFX(HopperMap.krightFX);
+    rSideFX.configAllSettings(m_config);
+    rSideFX.setInverted(false);
 
-        acceleratorFX = new TalonFX(HopperMap.kAcceleratorFX);
-        acceleratorFX.configAllSettings(m_config);
+    lSideFX = new TalonFX(HopperMap.kleftFX);
+    lSideFX.configAllSettings(m_config);
+    lSideFX.setInverted(true);
 
-        SmartDashboard.putNumber("% of left", RPMLeft);
-        SmartDashboard.putNumber("% of right", RPMRight);
-        SmartDashboard.putNumber("% of Accel", RPMaccelerator);
+    acceleratorFX = new TalonFX(HopperMap.kAcceleratorFX);
+    m_config.slot0.kP = 0;
+    m_config.slot0.kI = 0;
+    m_config.slot0.kD = 0.004;
+    m_config.slot0.kF = 0.04;
+    acceleratorFX.configAllSettings(m_config);
 
-    }
+    SmartDashboard.putNumber("% of left", percentLeft);
+    SmartDashboard.putNumber("% of right", percentRight);
+    SmartDashboard.putNumber("% of Accel", percentLAccel);
 
-    public void robotPeriodic() {
-        RPMLeft = SmartDashboard.getNumber("% of left", 0);
-        RPMRight = SmartDashboard.getNumber("% of right", 0);
-        RPMaccelerator = SmartDashboard.getNumber("% of Accel", 0);
-    }
+  }
 
-    public void autonomousInit() {
+  public void robotPeriodic() {
+    percentLeft = SmartDashboard.getNumber("% of left", 0);
+    percentRight = SmartDashboard.getNumber("% of right", 0);
+    percentLAccel = SmartDashboard.getNumber("% of Accel", 0);
+  }
 
-    }
+  public void autonomousInit() {
 
-    public void autonomousPeriodic() {
+  }
 
-    }
+  public void autonomousPeriodic() {
 
-    public void teleopInit() {
-        acceleratorFX.set(ControlMode.PercentOutput, 0);
-        lSideFX.set(ControlMode.PercentOutput, 0);
-        rSideFX.set(ControlMode.PercentOutput, 0);
-        leftEnable = false;
-        rightEnable = false;
-        acceleratorEnable = false;
-        allToggle = false;
+  }
 
-        // consume any button presses that occured while disabled before teleop enable
-        Robot.manipCtrl.getRawButtonPressed(Manip.kHopperLeftToggle);
-        Robot.manipCtrl.getRawButtonPressed(Manip.kHopperRightToggle);
-        Robot.manipCtrl.getRawButtonPressed(Manip.kAcceleratorToggle);
-        Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle);
-    }
+  public void teleopInit() {
+    acceleratorFX.set(ControlMode.PercentOutput, 0);
+    lSideFX.set(ControlMode.PercentOutput, 0);
+    rSideFX.set(ControlMode.PercentOutput, 0);
+    leftEnable = false;
+    rightEnable = false;
+    acceleratorEnable = false;
+    allToggle = false;
 
-    public void teleopPeriodic() {
-        // manual buttons
+    // consume any button presses that occured while disabled before teleop enable
+    Robot.manipCtrl.getRawButtonPressed(Manip.kHopperLeftToggle);
+    Robot.manipCtrl.getRawButtonPressed(Manip.kHopperRightToggle);
+    Robot.manipCtrl.getRawButtonPressed(Manip.kAcceleratorToggle);
+    Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle);
+  }
+
+  private boolean autoShoot = false;
+  public void teleopPeriodic() {
+        // manual buttons check
         checkToggles();
         
         // shooting check to make sure shooter and accelerator are spun up before it loads
-        // if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 && Robot.shooter.readyToShoot()) {
-        //     acceleratorEnable = true;
-        //     if (acceleratorFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity) {
-        //         rightEnable = true;
-        //         leftEnable = true;
-        //     }
-        // }
+        if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 && Robot.shooter.readyToShoot()) {
+          autoShoot = true;
+          acceleratorEnable = true;
+          if (acceleratorFX.getMotorOutputPercent() > 0) {
+              rightEnable = true;
+              leftEnable = true;
+          }
+        } else if (autoShoot) {
+          autoShoot = false;
+          rightEnable = false;
+          leftEnable = false;
+          acceleratorEnable = false;
+        }
 
         // set motor values based on enables
         if (leftEnable) {
-            lSideFX.set(ControlMode.PercentOutput, RPMLeft);
+            lSideFX.set(ControlMode.PercentOutput, percentLeft);
         } else {
             lSideFX.set(ControlMode.PercentOutput, 0);
         }
         if (rightEnable) {
-            rSideFX.set(ControlMode.PercentOutput, RPMRight);
+            rSideFX.set(ControlMode.PercentOutput, percentRight);
         } else {
             rSideFX.set(ControlMode.PercentOutput, 0);
         }
         if (acceleratorEnable) {
-            acceleratorFX.set(ControlMode.PercentOutput, RPMaccelerator);
+            acceleratorFX.set(ControlMode.PercentOutput, percentLAccel);
         } else {
             acceleratorFX.set(ControlMode.PercentOutput, 0);
         }
     }
 
-    public void disabledInit() {
-        stopMotors();
+  public void disabledInit() {
+    stopMotors();
+  }
+
+  public void disabledPeriodic() {
+
+  }
+
+  public void stopMotors() {
+    acceleratorFX.set(ControlMode.PercentOutput, 0);
+    lSideFX.set(ControlMode.PercentOutput, 0);
+    rSideFX.set(ControlMode.PercentOutput, 0);
+  }
+
+  private boolean checkToggles() {
+    boolean ret = false;
+    // hopper and accel toggles
+    if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperLeftToggle)) {
+      // leftEnable = !leftEnable;
+      if (lSideFX.getMotorOutputPercent() == 0) {
+        leftEnable = true;
+      } else {
+        leftEnable = false;
+      }
+      ret = true;
     }
 
-    public void disabledPeriodic() {
-
+    if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperRightToggle)) {
+      // rightEnable = !rightEnable;
+      if (rSideFX.getMotorOutputPercent() == 0) {
+        rightEnable = true;
+      } else {
+        rightEnable = false;
+      }
+      ret = true;
     }
 
-    public void stopMotors() {
-        acceleratorFX.set(ControlMode.PercentOutput, 0);
-        lSideFX.set(ControlMode.PercentOutput, 0);
-        rSideFX.set(ControlMode.PercentOutput, 0);
+    if (Robot.manipCtrl.getRawButtonPressed(Manip.kAcceleratorToggle)) {
+      // acceleratorEnable = !acceleratorEnable;
+      if (acceleratorFX.getMotorOutputPercent() == 0) {
+        acceleratorEnable = true;
+      } else {
+        acceleratorEnable = false;
+      }
+      ret = true;
     }
 
-    private boolean checkToggles() {
-        boolean ret = false;
-        // hopper and accel toggles
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperLeftToggle)) {
-            // leftEnable = !leftEnable;
-            if (lSideFX.getMotorOutputPercent() == 0 ){
-                leftEnable = true;
-            } else {
-                leftEnable = false;
-            }
-            ret = true;
-        }
-
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kHopperRightToggle)) {
-            // rightEnable = !rightEnable;
-            if (rSideFX.getMotorOutputPercent() == 0 ){
-                rightEnable = true;
-            } else {
-                rightEnable = false;
-            }
-            ret = true;
-        }
-
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kAcceleratorToggle)) {
-            // acceleratorEnable = !acceleratorEnable;
-            if (acceleratorFX.getMotorOutputPercent() == 0 ){
-                acceleratorEnable = true;
-            } else {
-                acceleratorEnable = false;
-            }
-            ret = true;
-        }
-
-        // overall go or toggle
-        if (Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle)) {
-            // allToggle = !allToggle;
-            // if (allToggle) {
-            //     acceleratorEnable = true;
-            //     rightEnable = true;
-            //     leftEnable = true;
-            // } else {
-            //     acceleratorEnable = false;
-            //     rightEnable = false;
-            //     leftEnable = false;
-            // }
-            if (leftEnable || rightEnable || acceleratorEnable) {
-                leftEnable = false;
-                rightEnable = false;
-                acceleratorEnable = false;
-            } else {
-                leftEnable = true;
-                rightEnable = true;
-                acceleratorEnable = true;
-            }
-            ret = true;
-        }
-
-        return ret;
+    // overall go or toggle
+    if (Robot.manipCtrl.getRawButtonPressed(Manip.kAllFeederToggle)) {
+      // allToggle = !allToggle;
+      // if (allToggle) {
+      // acceleratorEnable = true;
+      // rightEnable = true;
+      // leftEnable = true;
+      // } else {
+      // acceleratorEnable = false;
+      // rightEnable = false;
+      // leftEnable = false;
+      // }
+      if (leftEnable || rightEnable || acceleratorEnable) {
+        leftEnable = false;
+        rightEnable = false;
+        acceleratorEnable = false;
+      } else {
+        leftEnable = true;
+        rightEnable = true;
+        acceleratorEnable = true;
+      }
+      ret = true;
     }
+
+    return ret;
+  }
 }

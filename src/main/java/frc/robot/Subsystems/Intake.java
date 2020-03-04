@@ -19,10 +19,6 @@ public class Intake {
   DoubleSolenoid intakeSolenoidTop = new DoubleSolenoid(IntakeMap.kPCM, IntakeMap.kTopForward, IntakeMap.kTopReverse);
   DoubleSolenoid intakeSolenoidBottom = new DoubleSolenoid(IntakeMap.kPCM, IntakeMap.kBottomForward, IntakeMap.kBottomReverse);
 
-  public static enum intakePosition {
-    STOWED, MID, LOW
-  }
-
   boolean intakeToggle = false;
 
   String pneumaticTopValue = new String();
@@ -30,15 +26,17 @@ public class Intake {
   DoubleSolenoid.Value top;
   DoubleSolenoid.Value bottom;
 
-  double intakeSpeed;
+  double intakeSpeed = 0.5;
 
   public void robotInit() {
-    intakeSolenoidTop.set(DoubleSolenoid.Value.kForward);
-    intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
-    top = DoubleSolenoid.Value.kForward;
-    bottom = DoubleSolenoid.Value.kForward;
+    intakeBagMotor.setInverted(true);
 
-    SmartDashboard.putNumber("Motor Speed", 0);
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kReverse);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kReverse);
+    top = DoubleSolenoid.Value.kReverse;
+    bottom = DoubleSolenoid.Value.kReverse;
+
+    SmartDashboard.putNumber("Intake Speed", intakeSpeed);
 
   }
 
@@ -46,7 +44,7 @@ public class Intake {
     // sends pneumatic state to the smart dashboard
     SmartDashboard.putString("Intake Top", pneumaticTopValue);
     SmartDashboard.putString("Intake Bottom", pneumaticBottomValue);
-    intakeSpeed = SmartDashboard.getNumber("Motor Speed", 0);
+    intakeSpeed = SmartDashboard.getNumber("Intake Speed", 0);
 
   }
 
@@ -60,13 +58,13 @@ public class Intake {
 
   public void teleopInit() {
     intakeToggle = false;
-    intakeSolenoidTop.set(DoubleSolenoid.Value.kForward);
-    intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kReverse);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kReverse);
   }
 
   public void teleopPeriodic() {
     // intake turns on
-    if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeMotorToggle) {
+    if (Robot.manipCtrl.getRawButtonPressed(9)) {
       intakeToggle = !intakeToggle;
     }
 

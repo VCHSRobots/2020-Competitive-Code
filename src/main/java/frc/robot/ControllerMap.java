@@ -25,8 +25,8 @@ public class ControllerMap {
         public static final int kShootAndAllFeederGo = 3;
         // ----- buttons -----
         public static final int kAllFeederToggle =      1;
-        public static final int kHopperLeftToggle =     2;
-        public static final int kHopperRightToggle =    3;
+        public static final int kHopperRightToggle =    2;
+        public static final int kHopperLeftToggle =     3;
         public static final int kAcceleratorToggle =    4;
         public static final int kColorWheelPneumatic =  5;
         public static final int kShooterToggle =        6;

@@ -21,8 +21,8 @@ import frc.robot.util.DeadbandMaker;
 
 public class Shooter {
   // member variables for Shooter control
-  private double m_top_RPM = 1200;
-  private double m_bottom_RPM = 2000;
+  private double m_top_RPM = 1400;
+  private double m_bottom_RPM = 4000;
   private double m_turnTable_Max_Speed = 0.2;
   private boolean m_isRunning = false;
   private boolean m_wheelsEnable = false;
@@ -30,7 +30,7 @@ public class Shooter {
 
   private int turntable_starting_position;
   private int turretPosition;
-  private int turret_center_offset = 24500;
+  private int turret_center_offset = 0;
   private int turret_low_limit = -50000;
   private int turret_high_limit = 50000;
   private int direction = 1;
@@ -74,10 +74,10 @@ public class Shooter {
     m_talon_config.slot0.closedLoopPeakOutput = 1.0;
     m_talon_config.slot0.closedLoopPeriod = 2;
     m_talon_config.slot0.integralZone = 0;
-    m_talon_config.slot0.kP = 0.01;
+    m_talon_config.slot0.kP = 0.012;
     m_talon_config.slot0.kI = 0;
     m_talon_config.slot0.kD = 3.0;
-    m_talon_config.slot0.kF = 0.05;
+    m_talon_config.slot0.kF = 0.052;
 
     upperWheelsFX.configAllSettings(m_talon_config);
     upperWheelsFX.setNeutralMode(NeutralMode.Coast);
@@ -195,7 +195,7 @@ public class Shooter {
     }
 
     // pull manip xbox trigger
-    if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.5) {
+    if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.3) {
       m_wheelsEnable = true;
     } else {
       m_wheelsEnable = false;
@@ -258,7 +258,8 @@ public class Shooter {
     }
     // Turntable set with left joystick on manip controller. Max speed is set by
     // SmartDashboard Variable
-    turnTableFX.set(ControlMode.PercentOutput, turret_speed);
+    // turnTableFX.set(ControlMode.PercentOutput, turret_speed);
+    turnTableFX.set(ControlMode.PercentOutput, 0);
   }
 
   public void disabledInit() {

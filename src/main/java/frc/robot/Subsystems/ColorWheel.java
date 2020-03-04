@@ -36,6 +36,7 @@ public class ColorWheel {
     private WPI_TalonSRX spinMotor;
     private DoubleSolenoid colorWheelSolenoid = new DoubleSolenoid(ColorWheelMap.kPCM, ColorWheelMap.kcolorSolenoidForward, ColorWheelMap.kcolorSolenoidReverse);
 
+    private boolean colorwheel_toggle = false;
 
     int blueCount, redCount, yellowCount, greenCount;
     int controlPanelRotationTicks = 49152;
@@ -65,26 +66,29 @@ public class ColorWheel {
 
     public void robotInit() {
 
-        m_colorMatcher.addColorMatch(kBlueTarget);
-        m_colorMatcher.addColorMatch(kGreenTarget);
-        m_colorMatcher.addColorMatch(kRedTarget);
-        m_colorMatcher.addColorMatch(kYellowTarget);
+      colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
+      colorwheel_toggle = false;  
 
-        spinMotor = new WPI_TalonSRX(ColorWheelMap.kcontrolPanelWheel);
-        spinMotor.setNeutralMode(NeutralMode.Brake);
-        spinMotor.setSelectedSensorPosition(0);
+      m_colorMatcher.addColorMatch(kBlueTarget);
+      m_colorMatcher.addColorMatch(kGreenTarget);
+      m_colorMatcher.addColorMatch(kRedTarget);
+      m_colorMatcher.addColorMatch(kYellowTarget);
 
-        // joystick buttons
-        bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
-        bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
+      spinMotor = new WPI_TalonSRX(ColorWheelMap.kcontrolPanelWheel);
+      spinMotor.setNeutralMode(NeutralMode.Brake);
+      spinMotor.setSelectedSensorPosition(0);
 
-        try {
-            m_colorSensor = new ColorSensorV3(i2cPort);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+      // joystick buttons
+      bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
+      bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
 
-        SmartDashboard.putBoolean("ColorWheelSolenoid", true);
+      try {
+          m_colorSensor = new ColorSensorV3(i2cPort);
+      } catch (Exception ex) {
+          ex.printStackTrace();
+      }
+
+      SmartDashboard.putBoolean("ColorWheelSolenoid", true);
 
     }
 
@@ -104,6 +108,7 @@ public class ColorWheel {
         SmartDashboard.putNumber("Confidence", match.confidence);
         SmartDashboard.putString("Detected Color", colorString);
         SmartDashboard.putNumber("RPM", 0);
+        SmartDashboard.putBoolean("ColorWheelSolenoid", false);
 
     }
 
@@ -116,14 +121,20 @@ public class ColorWheel {
     }
 
     public void teleopInit() {
-
+      colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
+      colorwheel_toggle = false;  
     }
 
     public void teleopPeriodic() {
-        if (SmartDashboard.getBoolean("ColorWheelSolenoid", false)) {
-            colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
-        } else {
+        if ( Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kColorWheelPneumatic) ) {
+          colorwheel_toggle = !colorwheel_toggle;
+        }
+
+        if (colorwheel_toggle) {
             colorWheelSolenoid.set(DoubleSolenoid.Value.kReverse);
+
+        } else {
+            colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
         }
 
         if (fmsColor.toString() != null) {

@@ -15,37 +15,34 @@ public class RobotMap {
 
         // solenoids
         public static final int kPCM = 1;
-        public static final int kcolorSolenoidForward = 4;
-        public static final int kcolorSolenoidReverse = 5;
+        public static final int kcolorSolenoidForward = 5;
+        public static final int kcolorSolenoidReverse = 4;
     }
 
     public static class IntakeMap {
         // motors
         public static final int kIntakeBagMotor = 22;
 
-        // solenoids
+        // pneumatics PCM ID and solenoids
         public static final int kPCM = 1;
         public static final int kBottomForward = 0;
         public static final int kBottomReverse = 1;
         public static final int kTopForward = 2;
         public static final int kTopReverse = 3;
-
-        // compressor? why/
-        public static final int kComp = 25;
     }
 
     public static class GearboxBrakeMap{
         // pneumatics PCM ID and solenoids
         public static final int kPCM = 0;    
-        public static final int kBrakeModeOn = 0;
-        public static final int kBrakeModeOff = 1;  //
+        public static final int kBrakeModeOn = 3;
+        public static final int kBrakeModeOff = 2; 
     }
 
     public static class ShifterMap{
         // pneumatics PCM ID and solenoids
         public static final int kPCM = 0;    
-        public static final int kShiftModeDrive = 5;
-        public static final int kShiftModeClimb = 4; 
+        public static final int kShiftModeDrive = 1;
+        public static final int kShiftModeClimb = 0; 
     }
 
     public static class ShooterMap {
@@ -69,13 +66,13 @@ public class RobotMap {
         public static final int kPCM = 0;    
         public static final int kRightArm_Up = 6;
         public static final int kRightArm_Dn = 7;
-        public static final int kLeftArm_Up = 2;
-        public static final int kLeftArm_Dn = 3;
+        public static final int kLeftArm_Up = 4;
+        public static final int kLeftArm_Dn = 5;
     }
     
     public static class HopperMap {
-        public static final int kleftFX = 41;
-        public static final int krightFX = 42;
+        public static final int kleftFX = 42;
+        public static final int krightFX = 41;
         public static final int kAcceleratorFX = 43;
 
         public static final int kProxSensor_1 = 0;
