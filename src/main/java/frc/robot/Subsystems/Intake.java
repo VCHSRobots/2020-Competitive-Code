@@ -50,6 +50,7 @@ public class Intake {
     m_config.slot0.kD = 0;
     m_config.slot0.kF = 0.0;
     intakeMotor = new WPI_TalonSRX(IntakeMap.kIntakeBagMotor);
+    intakeMotor.configFactoryDefault();
     intakeMotor.configAllSettings(m_config);
     intakeMotor.setInverted(true);
 
@@ -90,12 +91,12 @@ public class Intake {
       intakeToggle = !intakeToggle;
     }
 
-    // if (intakeToggle) {
-    //   intakeMotor.set(intakeSpeed);
-    // } else {
-    //   intakeMotor.set(0);
-    // }
-    intakeMotor.set(ControlMode.PercentOutput, intakeSpeed); // for prototype intake
+    if (intakeToggle) {
+      intakeMotor.set(intakeSpeed);
+    } else {
+      intakeMotor.set(0);
+    }
+    // intakeMotor.set(ControlMode.PercentOutput, intakeSpeed); // for prototype intake
 
     // pneumatic position
 

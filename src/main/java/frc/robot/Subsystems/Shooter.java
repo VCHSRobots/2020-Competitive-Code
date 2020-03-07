@@ -26,7 +26,7 @@ public class Shooter {
   private double m_turnTable_Max_Speed = 0.2;
   private boolean m_isRunning = false;
   private boolean m_wheelsEnable = false;
-  private DigitalInput DI_turntableLimit = new DigitalInput(8);
+  private DigitalInput DI_turntableLimit = new DigitalInput(7);
 
   private int turntable_starting_position;
   private int turretPosition;
