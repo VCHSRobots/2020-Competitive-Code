@@ -7,6 +7,7 @@
 
 package frc.robot.Subsystems;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -41,9 +42,12 @@ public class ColorWheel {
     boolean rotateDisk = false;
     boolean bNearestColor;
     boolean bRotationMode;
+    boolean bPnuematic;
 
     String currentColor = "Unknown";
     String fmsColorString;
+
+    DoubleSolenoid colorSolenoid;
 
     private FMSData fmsColor = new FMSData();
     private ColorSensorV3 m_colorSensor;
@@ -65,8 +69,11 @@ public class ColorWheel {
         WheelMotor.setNeutralMode(NeutralMode.Brake);
         WheelMotor.setSelectedSensorPosition(0);
 
+        bPnuematic = Robot.manipCtrl.getRawButton(ControllerMap.Manip.kColorWheelPneumatic);
         bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
         bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
+
+        colorSolenoid = new DoubleSolenoid(RobotMap.ColorWheelMap.kcolorSolenoidForward, RobotMap.ColorWheelMap.kcolorSolenoidReverse);
 
         try {
             m_colorSensor = new ColorSensorV3(i2cPort);
@@ -131,6 +138,12 @@ public class ColorWheel {
             currentColor = "Yellow";
         } else {
             currentColor = "Unknown";
+        }
+
+        if (colorSolenoid.get() == DoubleSolenoid.Value.kForward && bPnuematic) {
+            colorSolenoid.set(DoubleSolenoid.Value.kReverse);
+        } else if (colorSolenoid.get() == DoubleSolenoid.Value.kReverse && bPnuematic) {
+            colorSolenoid.set(DoubleSolenoid.Value.kForward);
         }
 
         // control to rotate disk three times
