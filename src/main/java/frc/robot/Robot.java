@@ -9,6 +9,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Subsystems.Intake;
 import frc.robot.Subsystems.Limelight;
 import frc.robot.Subsystems.DriveTrain;
@@ -17,11 +19,18 @@ import frc.robot.Subsystems.Shooter;
 import frc.robot.Subsystems.ColorWheel;
 import frc.robot.Subsystems.Climber;
 import frc.robot.util.FMSData;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.cscore.MjpegServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 
 public class Robot extends TimedRobot {
   Compressor compressor = new Compressor();
+  UsbCamera camera1;
+  MjpegServer server;
 
   // ---------Subsystems---------------
   public static FMSData fmsData = new FMSData();
@@ -45,8 +54,26 @@ public class Robot extends TimedRobot {
   static public Boolean tether_is_enabled = false;
   static public Boolean climb_is_enabled = false;
 
+  ShuffleboardTab camera = Shuffleboard.getTab("Camera Addresses");
+  NetworkTableEntry addressEntry = camera.add("Server Address", "NULL")
+                                         .getEntry();
+  NetworkTableEntry portEntry = camera.add("Server Port", 0)
+                                      .getEntry();  
+
   @Override
   public void robotInit() {
+
+    camera1 = CameraServer.getInstance().startAutomaticCapture(0);
+    camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    camera1.setResolution(50, 37);
+    camera1.setFPS(15);
+
+    server = CameraServer.getInstance().addServer("Camera Stream", 5800);
+    server.setSource(camera1);
+    addressEntry.setString(server.getListenAddress());
+    portEntry.setNumber(server.getPort());
+
+
     compressor.setClosedLoopControl(true);
     //compressor.stop();
     
@@ -72,7 +99,7 @@ public class Robot extends TimedRobot {
     intake.robotPeriodic();
     driveTrain.robotPeriodic();
     shooter.robotPeriodic();
-    colorWheel.robotPeriodic();
+    // colorWheel.robotPeriodic();
     hopper.robotPeriodic();
     limelight.robotPeriodic();
   }
@@ -113,7 +140,7 @@ public class Robot extends TimedRobot {
     intake.teleopPeriodic();
     driveTrain.teleopPeriodic();
     shooter.teleopPeriodic();
-    colorWheel.teleopPeriodic();
+    // colorWheel.teleopPeriodic();
     hopper.teleopPeriodic();
   }
 

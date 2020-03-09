@@ -22,11 +22,11 @@ import frc.robot.util.DeadbandMaker;
 public class Shooter {
   // member variables for Shooter control
   private double m_top_RPM = 1400;
-  private double m_bottom_RPM = 4000;
+  private double m_bottom_RPM = 3900;
   private double m_turnTable_Max_Speed = 0.2;
   private boolean m_isRunning = false;
   private boolean m_wheelsEnable = false;
-  private DigitalInput DI_turntableLimit = new DigitalInput(7);
+  private DigitalInput DI_turntableLimit = new DigitalInput(0);
 
   private int turntable_starting_position;
   private int turretPosition;

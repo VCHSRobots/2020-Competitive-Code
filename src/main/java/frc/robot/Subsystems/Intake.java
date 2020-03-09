@@ -28,7 +28,7 @@ public class Intake {
   DoubleSolenoid.Value top;
   DoubleSolenoid.Value bottom;
 
-  double intakeSpeed = 0.5;
+  double intakeSpeed = 0.3;
 
   public void robotInit() {
     m_config.voltageCompSaturation = Constants.kvoltageComp;

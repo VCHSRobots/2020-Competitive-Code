@@ -42,7 +42,7 @@ public class Climber {
   public void teleopInit() {
     // Move this to robot init once it works.
     brakerSolenoid.set(DoubleSolenoid.Value.kReverse);
-    shifterSolenoid.set(DoubleSolenoid.Value.kReverse);
+    shifterSolenoid.set(DoubleSolenoid.Value.kForward);
     leftArmSolenoid.set(DoubleSolenoid.Value.kReverse);
     rightArmSolenoid.set(DoubleSolenoid.Value.kReverse);
     Robot.climb_is_enabled = false;
