@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.HopperMap;
+import frc.robot.ControllerMap.Drive;
 import frc.robot.ControllerMap.Manip;
 import frc.robot.Constants;
 import frc.robot.ControllerMap;
@@ -35,7 +36,7 @@ public class Hopper {
   boolean acceleratorEnable = false;
   boolean allToggle = false;
 
-  double percentRight = 0.3;
+  double percentRight = 0.2;
   double percentLeft = 0.7;
   double percentLAccel = 1.0;
 
@@ -118,7 +119,8 @@ public class Hopper {
         checkToggles();
         
         // shooting check to make sure shooter and accelerator are spun up before it loads
-        if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 && Robot.shooter.readyToShoot()) {
+        if ( (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 || Robot.driveCtrl.getRawAxis(Drive.kShootFullSend) > 0.8)
+              && Robot.shooter.readyToShoot()) {
           autoShoot = true;
           acceleratorEnable = true;
           if (acceleratorFX.getMotorOutputPercent() > 0) {

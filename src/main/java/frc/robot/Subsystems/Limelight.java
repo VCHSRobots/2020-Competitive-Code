@@ -37,7 +37,7 @@ public class Limelight {
 
     public void SmartDashboardSend() {
         SmartDashboard.putNumber("LimeLight X", getX());
-        SmartDashboard.putNumber("Limelight Distance", getDistance());
+        SmartDashboard.putNumber("Limelight Distance", getAngleDistance());
         limelightOnOff = SmartDashboard.getBoolean("Limelight On/Off", false);
     }
 
@@ -54,12 +54,18 @@ public class Limelight {
         horizontal = table.getEntry("thor");
         vertical = table.getEntry("tvert");
         camtran = table.getEntry("camtran");
-
+      SmartDashboard.putBoolean("LL tv", tv.getBoolean(false));
         if (limelightOnOff) {
             turnOnLights();
         } else {
             turnOffLights();
         }
+
+
+        // SmartDash
+        SmartDashboard.putNumber("LimeLight X", getX());
+        SmartDashboard.putNumber("Limelight Distance", getAngleDistance());
+        limelightOnOff = SmartDashboard.getBoolean("Limelight On/Off", false);
     }
 
     public void turnOnLights() {
@@ -79,7 +85,7 @@ public class Limelight {
     /*
      * return the estimated distance to the goal
      */
-    public double getDistance() {
+    public double getAreaDistance() {
         // gets the limelight's distance from the target based on the target's scaled
         // area
         double currentArea;
@@ -89,7 +95,7 @@ public class Limelight {
         double aspectRatio;
         double adjustedHorizontal;
         double distance;
-        if (tv.getBoolean(false)) {
+        if  (table.getEntry("tv").getDouble(0.0) == 1.0) {
             currentHorizontal = horizontal.getDouble(0);
             currentVertical = vertical.getDouble(0);
             currentArea = currentHorizontal * currentVertical;
@@ -109,13 +115,25 @@ public class Limelight {
         }
     }
 
+    public double getAngleDistance() {
+      double h2_goalReflectionTarget = 6.0*12.0 + 11.75;
+      double h1_limelightHeight = 21.26;
+      double a1_cameraViewToHorizontal = 24.6; 
+      double a2_cameraViewToTarget = ty.getDouble(0.0);
+
+      double distance = (h2_goalReflectionTarget - h1_limelightHeight) 
+                          / Math.tan(Math.toRadians(a1_cameraViewToHorizontal + a2_cameraViewToTarget));
+              
+      return distance;
+    }
+
     /*
      * return a value of [-1.0,1.0] based on where the center of the goal is in the
      * frame
      */
     public double getX() {
         double x = 0;
-        if (!tv.getBoolean(false)) {
+        if (table.getEntry("tv").getDouble(0.0) == 1.0) {
             // normalizes degree values to a [-1.0, 1.0] range
             // for (int i = 0; i < tx_values.length-1; i++) {
             // tx_values[i] = tx_values[i+1];
@@ -128,5 +146,9 @@ public class Limelight {
         } else {
             return Double.NaN;
         }
+    }
+
+    public boolean isTargetValid() {
+      return table.getEntry("tv").getDouble(0.0) == 1.0;
     }
 }

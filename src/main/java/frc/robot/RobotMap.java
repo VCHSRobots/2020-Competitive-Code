@@ -4,7 +4,7 @@ public class RobotMap {
 
     public static class Controllers {
         public static final int kDriveCtrl = 0; // These are port numbers
-        public static final int kManipCtrl = 0;
+        public static final int kManipCtrl = 1;
         public static final int kClimberCtrl = 2;
         public static final int kConsole = 3;
     }
@@ -50,6 +50,7 @@ public class RobotMap {
         public static final int kupperWheelsFX = 31;
         public static final int klowerWheelsFX = 32;
         public static final int kturnTableFX = 33;
+        public static final int kPrimeSensor = 0;
     }
 
     public static class DriveTrainMap {

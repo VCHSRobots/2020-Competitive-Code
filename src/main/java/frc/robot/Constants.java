@@ -20,4 +20,6 @@ public class Constants {
     public static final double kDriveWheelCircumference = kDriveWheelDiameter * Math.PI;
     
     public static final double kvoltageComp = 11;
+
+    public static final double kPulsesPerDegreeOnTurret = 204.8;  //  (180.0/40.0)*(64/8)*2048.0/360.0  = 4.5 * 8 * 2048 / 360
 }

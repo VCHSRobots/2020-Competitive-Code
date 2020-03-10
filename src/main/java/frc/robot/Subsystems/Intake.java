@@ -28,7 +28,7 @@ public class Intake {
   DoubleSolenoid.Value top;
   DoubleSolenoid.Value bottom;
 
-  double intakeSpeed = 0.3;
+  double intakeSpeed = 0.5;
 
   public void robotInit() {
     m_config.voltageCompSaturation = Constants.kvoltageComp;
@@ -68,6 +68,7 @@ public class Intake {
     SmartDashboard.putString("Intake Top", pneumaticTopValue);
     SmartDashboard.putString("Intake Bottom", pneumaticBottomValue);
     intakeSpeed = SmartDashboard.getNumber("Intake Speed", 0);
+    SmartDashboard.putNumber("Left Trigger Driver", Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kIntakeDownAndGo));
 
   }
 
@@ -90,6 +91,19 @@ public class Intake {
     if (Robot.manipCtrl.getRawButtonPressed(9)) {
       intakeToggle = !intakeToggle;
     }
+
+    // driver control
+    if (Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kIntakeDownAndGo) > 0.7) {
+      intakeToggle = true;
+      top = DoubleSolenoid.Value.kForward;
+      bottom = DoubleSolenoid.Value.kForward;
+    }
+    if (Robot.driveCtrl.getRawButtonPressed(ControllerMap.Drive.kIntakeUpAndStop)) {
+      intakeToggle = false;
+      top = DoubleSolenoid.Value.kForward;
+      bottom = DoubleSolenoid.Value.kReverse;
+    }
+
 
     if (intakeToggle) {
       intakeMotor.set(intakeSpeed);
