@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
 
   // ---------AUTO-----------
   SendableChooser<Integer> selectedAuto;
+  int autoState = 0;
 
   // ---------Subsystems---------------
   public static FMSData fmsData = new FMSData();
@@ -47,22 +48,20 @@ public class Robot extends TimedRobot {
   public static Hopper hopper = new Hopper();
 
   public static Limelight limelight = new Limelight();
-  
+
   // ---------Controller--------------
   public static XboxController driveCtrl;
   public static XboxController manipCtrl;
   public static Joystick climbCtrl;
-  
+
   // ------- Global Variables
   static public Boolean brake_is_enabled = false;
   static public Boolean tether_is_enabled = false;
   static public Boolean climb_is_enabled = false;
 
   ShuffleboardTab camera = Shuffleboard.getTab("Camera Addresses");
-  NetworkTableEntry addressEntry = camera.add("Server Address", "NULL")
-                                         .getEntry();
-  NetworkTableEntry portEntry = camera.add("Server Port", 0)
-                                      .getEntry();  
+  NetworkTableEntry addressEntry = camera.add("Server Address", "NULL").getEntry();
+  NetworkTableEntry portEntry = camera.add("Server Port", 0).getEntry();
 
   @Override
   public void robotInit() {
@@ -79,10 +78,9 @@ public class Robot extends TimedRobot {
     addressEntry.setString(server.getListenAddress());
     portEntry.setNumber(server.getPort());
 
-
     compressor.setClosedLoopControl(true);
-    //compressor.stop();
-    
+    // compressor.stop();
+
     // -------------------------Controllers------------------------------
     driveCtrl = new XboxController(RobotMap.Controllers.kDriveCtrl);
     manipCtrl = new XboxController(RobotMap.Controllers.kManipCtrl);
@@ -99,7 +97,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    //--------------FMS SmartDashboard Send----------------
+    // --------------FMS SmartDashboard Send----------------
     fmsData.smartDashSend(); // edit in FMSData
     climber.robotPeriodic();
     intake.robotPeriodic();
@@ -112,11 +110,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    switch(selectedAuto.getSelected()) {
-      case 0:
-        
-      case 1:
-      }
+    autoState = 0;
+    driveTrain.resetDriveEncoders();
+    switch (selectedAuto.getSelected()) {
+    case 0:
+    
+    case 1:
+    }
 
     // limelight.ResetOverride();
     // limelight.Enable();
@@ -130,6 +130,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    switch (selectedAuto.getSelected()) {
+    case 0:
+      if (driveTrain.getAVGDriveEncoders() == 0 && autoState == 0) {
+        driveTrain.ExternalMotorControl(-0.3, -0.3);
+      } else if (driveTrain.getAVGDriveEncoders() < -5000) {
+        driveTrain.ExternalMotorControl(0, 0);
+        autoState = 1;
+      }
+      if (autoState == 1) {
+        shooter.scanForTarget();
+      }
+    case 1:
+    }
     // climber.autonomousPeriodic();
     // intake.autonomousPeriodic();
     // driveTrain.autonomousPeriodic();
@@ -162,7 +175,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    
+
   }
 
   @Override

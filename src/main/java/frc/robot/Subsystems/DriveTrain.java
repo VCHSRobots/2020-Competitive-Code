@@ -149,5 +149,11 @@ public class DriveTrain {
             
         }
     }
-    
+    public void resetDriveEncoders() {
+      rFrontFX_master.setSelectedSensorPosition(0);
+      lFrontFX_master.setSelectedSensorPosition(0);
+    }
+    public double getAVGDriveEncoders() {
+      return driveAVGEncoderTicks;
+    }
 }

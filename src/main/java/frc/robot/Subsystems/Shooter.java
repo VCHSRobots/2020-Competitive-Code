@@ -25,6 +25,7 @@ public class Shooter {
   enum shooterZone {
     FRONT, BACK, CROSSING
   };
+
   // member variables for Shooter control
   private double m_top_RPM = ShooterRPM.GetTopRPM(18.0);
   private double m_bottom_RPM = ShooterRPM.GetBottomRPM(18.0);
@@ -149,20 +150,20 @@ public class Shooter {
     m_limelightX = Robot.limelight.getX();
     m_targetValid = Robot.limelight.isTargetValid();
     turretPosition = turnTableFX.getSelectedSensorPosition();
- 
+
     // --------------- Ball Sensors -------------------------
     m_ballLoaded = !m_ballLoadedSensor.get();
-    m_ballShot  = !m_ballShotSensor.get();
+    m_ballShot = !m_ballShotSensor.get();
     if (m_ballShot != m_lastBallShot) {
-      if(m_lastBallShot) {
+      if (m_lastBallShot) {
         m_ballShotCounter++;
       }
     }
     m_lastBallShot = m_ballShot;
 
     // ----------------- Range Calculations ------------------
-    if(m_AutoRangeEnable) {
-      if(m_targetValid && Robot.limelight.IsEnabled()) {
+    if (m_AutoRangeEnable) {
+      if (m_targetValid && Robot.limelight.IsEnabled()) {
         m_rangeToUse = m_limelightDistance;
       }
     } else {
@@ -188,7 +189,8 @@ public class Shooter {
     SmartDashboard.putBoolean("istargetvalid", Robot.limelight.isTargetValid());
     SmartDashboard.putNumber("LL Distance (ft)", m_limelightDistance);
     SmartDashboard.putNumber("Turet LLErr", turnTableFX.getClosedLoopError());
-    //SmartDashboard.putNumber("Turntable Closed Loop Target", turnTableFX.getClosedLoopTarget());  // Causing a repeated log msg error
+    // SmartDashboard.putNumber("Turntable Closed Loop Target",
+    // turnTableFX.getClosedLoopTarget()); // Causing a repeated log msg error
     SmartDashboard.putBoolean("Ball In Loaded Position", m_ballLoaded);
     SmartDashboard.putBoolean("Ball Shot", m_ballShot);
     SmartDashboard.putNumber("Ball Shot Counter", m_ballShotCounter);
@@ -209,12 +211,12 @@ public class Shooter {
     // }
 
     // smartdash gets
-    //m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
-    //m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
+    // m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
+    // m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
 
     // clamp range checks
-    //m_top_RPM = MathUtil.clamp(m_top_RPM, -1400.0, 7000.0);
-    //m_bottom_RPM = MathUtil.clamp(m_bottom_RPM, -1400.0, 7000.0);
+    // m_top_RPM = MathUtil.clamp(m_top_RPM, -1400.0, 7000.0);
+    // m_bottom_RPM = MathUtil.clamp(m_bottom_RPM, -1400.0, 7000.0);
 
     // smartdash puts
     // SmartDashboard.putNumber("Top RPM", m_top_RPM);
@@ -255,10 +257,22 @@ public class Shooter {
       m_wheelsEnable = false;
     }
     // Range Select:
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeFar) {m_manualRange = 18; m_AutoRangeEnable = false; }
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeMid) {m_manualRange = 12; m_AutoRangeEnable = false; }
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeNear) {m_manualRange = 8; m_AutoRangeEnable = false; }
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeAuto) {m_manualRange = 18; m_AutoRangeEnable = true; }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeFar) {
+      m_manualRange = 18;
+      m_AutoRangeEnable = false;
+    }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeMid) {
+      m_manualRange = 12;
+      m_AutoRangeEnable = false;
+    }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeNear) {
+      m_manualRange = 8;
+      m_AutoRangeEnable = false;
+    }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeAuto) {
+      m_manualRange = 18;
+      m_AutoRangeEnable = true;
+    }
 
     // full send button
     // -- check button press, full send five balls, automatically stop after
@@ -282,20 +296,20 @@ public class Shooter {
     if (Robot.manipCtrl.getRawAxis(Manip.kManualMode) < -0.7) {
       m_manualModeToggle = true;
     }
-    if(Robot.manipCtrl.getRawAxis(Manip.kManualMode) > 0.7) {
+    if (Robot.manipCtrl.getRawAxis(Manip.kManualMode) > 0.7) {
       m_manualModeToggle = false;
     }
     double adjSpeed = 0.0;
-    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) > 0.6) {
+    if (Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) > 0.6) {
       adjSpeed = 0.03;
     }
-    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) > 0.9) {
+    if (Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) > 0.9) {
       adjSpeed = 0.05;
     }
-    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) < -0.6) {
-      adjSpeed =-0.03;
+    if (Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) < -0.6) {
+      adjSpeed = -0.03;
     }
-    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) < -0.9) {
+    if (Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) < -0.9) {
       adjSpeed = -0.05;
     }
     if (Robot.manipCtrl.getRawAxis(Manip.kShooterZone) > 0.7) {
@@ -305,13 +319,13 @@ public class Shooter {
       m_desiredZone = shooterZone.FRONT;
     }
 
-   // Are we in the correct zone? If not, just move toward the zone we want, and
+    // Are we in the correct zone? If not, just move toward the zone we want, and
     // don't do anything else.
     if (m_desiredZone != GetZoneFromAngle(m_currentAngle)) {
       if (m_desiredZone == shooterZone.FRONT) {
-         setTuretAngle(-120.43);                      //turnTableFX.set(ControlMode.Position, -24665.0);
+        turnTableFX.set(ControlMode.Position, -24665.0);
       } else {
-        setTuretAngle(-62.38);                        //turnTableFX.set(ControlMode.Position, -12776);
+        turnTableFX.set(ControlMode.Position, -12776);
       }
     } else {
       // Here, we are in the correct zone, so now try to seek to the target if
@@ -320,22 +334,21 @@ public class Shooter {
         Robot.limelight.Enable();
         if (m_targetValid) {
           double offset = Robot.limelight.getTX() + m_currentAngle;
-          setTuretAngle(offset);
-          //int targetPosition =  (int)offset * (int)Constants.kPulsesPerDegreeOnTurret;
-          //turnTableFX.set(ControlMode.Position, targetPosition);
+          // setTuretAngle(offset);
+          int targetPosition = (int) offset * (int) Constants.kPulsesPerDegreeOnTurret;
+          turnTableFX.set(ControlMode.Position, targetPosition);
         } else {
           if (m_desiredZone == shooterZone.BACK) {
-            if(m_currentAngle > 61.0) {                     // } if (turnTableFX.getSelectedSensorPosition() > 12500) {
-              setTuretAngle(-62.38);                        //       turnTableFX.set(ControlMode.Position, -12776);
-            } else if (m_currentAngle < -61.0) {            // }) else if (turnTableFX.getSelectedSensorPosition() < -12500) {
-              setTuretAngle(62.38);                         // turnTableFX.set(ControlMode.Position, 12776);
+            if (turnTableFX.getSelectedSensorPosition() > 12500) {
+              turnTableFX.set(ControlMode.Position, -12776);
+            } else if (turnTableFX.getSelectedSensorPosition() < -12500) {
+              turnTableFX.set(ControlMode.Position, 12776);
             }
           } else if (m_desiredZone == shooterZone.FRONT) {
-            if (m_currentAngle > -121.09) {                 // if (turnTableFX.getSelectedSensorPosition() > -24800)
-              setTuretAngle(-239.56);                       // turnTableFX.set(ControlMode.Position, -49063);
-            } else if (m_currentAngle < -238.28) {          // (turnTableFX.getSelectedSensorPosition() < -48800) {
-              setTuretAngle(-120.43);                       // turnTableFX.set(ControlMode.Position, -24665);
-            }
+            if (turnTableFX.getSelectedSensorPosition() > -24800)
+              turnTableFX.set(ControlMode.Position, -49063);
+          } else if (turnTableFX.getSelectedSensorPosition() < -48800) {
+            turnTableFX.set(ControlMode.Position, -24665);
           }
         }
 
@@ -375,8 +388,31 @@ public class Shooter {
   }
 
   public boolean readyToShoot() {
-    return (lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTicksVelocityToRPM > 100) 
-          && (lowerWheelsFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity);
+    return (lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTicksVelocityToRPM > 100)
+        && (lowerWheelsFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity);
+  }
+
+  public void scanForTarget() {
+    Robot.limelight.Enable();
+    if (m_targetValid) {
+      double offset = Robot.limelight.getTX() + m_currentAngle;
+      // setTuretAngle(offset);
+      int targetPosition = (int) offset * (int) Constants.kPulsesPerDegreeOnTurret;
+      turnTableFX.set(ControlMode.Position, targetPosition);
+    } else {
+      if (m_desiredZone == shooterZone.BACK) {
+        if (turnTableFX.getSelectedSensorPosition() > 12500) {
+          turnTableFX.set(ControlMode.Position, -12776);
+        } else if (turnTableFX.getSelectedSensorPosition() < -12500) {
+          turnTableFX.set(ControlMode.Position, 12776);
+        }
+      } else if (m_desiredZone == shooterZone.FRONT) {
+        if (turnTableFX.getSelectedSensorPosition() > -24800)
+          turnTableFX.set(ControlMode.Position, -49063);
+      } else if (turnTableFX.getSelectedSensorPosition() < -48800) {
+        turnTableFX.set(ControlMode.Position, -24665);
+      }
+    }
   }
 
   // Local Routines
