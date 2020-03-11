@@ -33,13 +33,13 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class ColorWheel {
 
-    private WPI_TalonSRX spinMotor;
-    private DoubleSolenoid colorWheelSolenoid = new DoubleSolenoid(ColorWheelMap.kPCM, ColorWheelMap.kcolorSolenoidForward, ColorWheelMap.kcolorSolenoidReverse);
-
-    private boolean colorwheel_toggle = false;
+    private WPI_TalonSRX m_spinMotor;
+    private DoubleSolenoid m_colorWheelSolenoid = new DoubleSolenoid(ColorWheelMap.kPCM, ColorWheelMap.kcolorSolenoidForward, ColorWheelMap.kcolorSolenoidReverse);
+    private boolean m_colorwheel_toggle = false;  // Color wheel system is off if this is false.
+    private int m_direction = 1;                  // Direction of spin, under manual control.
 
     int blueCount, redCount, yellowCount, greenCount;
-    int controlPanelRotationTicks = 49152;
+    int controlPanelRotationTicks = 49152;  
 
     double RPM = 0;
 
@@ -66,19 +66,20 @@ public class ColorWheel {
 
     public void robotInit() {
 
-      colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
-      colorwheel_toggle = false;  
+      m_colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
+      m_colorwheel_toggle = false;  
 
       m_colorMatcher.addColorMatch(kBlueTarget);
       m_colorMatcher.addColorMatch(kGreenTarget);
       m_colorMatcher.addColorMatch(kRedTarget);
       m_colorMatcher.addColorMatch(kYellowTarget);
 
-      spinMotor = new WPI_TalonSRX(ColorWheelMap.kcontrolPanelWheel);
-      spinMotor.setNeutralMode(NeutralMode.Brake);
-      spinMotor.setSelectedSensorPosition(0);
+      m_spinMotor = new WPI_TalonSRX(ColorWheelMap.kcontrolPanelWheel);
+      m_spinMotor.setNeutralMode(NeutralMode.Brake);
+      m_spinMotor.setSelectedSensorPosition(0);
 
       // joystick buttons
+      // ?? Why is this here?
       bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
       bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
 
@@ -88,27 +89,27 @@ public class ColorWheel {
           ex.printStackTrace();
       }
 
+      // ?? What is the point of this?
       SmartDashboard.putBoolean("ColorWheelSolenoid", true);
 
     }
 
     public void robotPeriodic() {
 
-        detectedColor = ColorMatch.makeColor(0.0, 0.0, 0.0);
-        try {
-            m_colorSensor.getColor();
-        } catch (Exception e) {
-
-        }
-        match = m_colorMatcher.matchClosestColor(detectedColor);
-        SmartDashboard.putNumber("encoder", spinMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Red", detectedColor.red);
-        SmartDashboard.putNumber("Green", detectedColor.green);
-        SmartDashboard.putNumber("Blue", detectedColor.blue);
-        SmartDashboard.putNumber("Confidence", match.confidence);
-        SmartDashboard.putString("Detected Color", colorString);
-        SmartDashboard.putNumber("RPM", 0);
-        SmartDashboard.putBoolean("ColorWheelSolenoid", false);
+        // detectedColor = ColorMatch.makeColor(0.0, 0.0, 0.0);
+        // try {
+        //     m_colorSensor.getColor();
+        // } catch (Exception e) {
+        // }
+        // match = m_colorMatcher.matchClosestColor(detectedColor);
+        // SmartDashboard.putNumber("encoder", spinMotor.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Red", detectedColor.red);
+        // SmartDashboard.putNumber("Green", detectedColor.green);
+        // SmartDashboard.putNumber("Blue", detectedColor.blue);
+        // SmartDashboard.putNumber("Confidence", match.confidence);
+        // SmartDashboard.putString("Detected Color", colorString);
+        // SmartDashboard.putNumber("RPM", 0);
+        // SmartDashboard.putBoolean("ColorWheelSolenoid", false);
 
     }
 
@@ -121,91 +122,109 @@ public class ColorWheel {
     }
 
     public void teleopInit() {
-      colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
-      colorwheel_toggle = false;  
+      m_colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
+      m_colorwheel_toggle = false;  
+      m_spinMotor.set(0.0);
     }
 
     public void teleopPeriodic() {
-        if ( Robot.manipCtrl.getRawButtonPressed(ControllerMap.Manip.kColorWheelPneumatic) ) {
-          colorwheel_toggle = !colorwheel_toggle;
+        if ( Robot.driveCtrl.getRawButtonPressed(ControllerMap.Drive.kColorWheelPneumatic) ) {
+          m_colorwheel_toggle = !m_colorwheel_toggle;
         }
-
-        if (colorwheel_toggle) {
-            colorWheelSolenoid.set(DoubleSolenoid.Value.kReverse);
-
+        if (m_colorwheel_toggle) {
+            m_colorWheelSolenoid.set(DoubleSolenoid.Value.kReverse);
         } else {
-            colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
+            m_colorWheelSolenoid.set(DoubleSolenoid.Value.kForward);
+            m_spinMotor.set(0.0);
         }
 
-        if (fmsColor.toString() != null) {
-            fmsColorString = fmsColor.toString();
-        }
-        RPM = SmartDashboard.getNumber("RPM", 0);
+        // RETURN here if the system is OFF, so to save loop time.
+        if (!m_colorwheel_toggle) return;
 
-        Double velocityPer100Milliseconds = RPM * 4096 / 600;
-        int encoderTicks = spinMotor.getSelectedSensorPosition();
-        Color detectedColor = m_colorSensor.getColor();
-        ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+        // Okay, the system is ON... For now lets just work on controlling the motor manually.
+        // If we have more development time, we can work on the color selector.
 
-        if (match.color == kBlueTarget) {
-            colorString = "Blue";
-        } else if (match.color == kGreenTarget) {
-            colorString = "Green";
-        } else if (match.color == kRedTarget) {
-            colorString = "Red";
-        } else if (match.color == kYellowTarget && match.confidence >= 0.94) {
-            colorString = "Yellow";
-        } else {
-            colorString = "Unknown";
+        // Determine the direction of the motor.
+        if (Robot.driveCtrl.getRawButtonPressed(ControllerMap.Drive.kColorWheelForward)) {
+          m_direction = 1;
         }
+        if (Robot.driveCtrl.getRawButtonPressed(ControllerMap.Drive.kColorWheelReverse)) {
+          m_direction = -1;
+        }
+        // Now get motor speed
+        double speed = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kColorSpinAxis);
+        // Set Motor Speed.
+        m_spinMotor.set(speed * m_direction);
 
-        if (!colorCheck) {
-            colorCheck = true;
-            firstColor = colorString;
-        }
+        // if (fmsColor.toString() != null) {
+        //     fmsColorString = fmsColor.toString();
+        // }
+        // RPM = SmartDashboard.getNumber("RPM", 0);
 
-        // control to rotate disk three times
-        if (bRotationMode) {
-            rotateDisk = true;
-            spinMotor.setSelectedSensorPosition(controlPanelRotationTicks);
-            return;
-        } else if (rotateDisk) {
-            if (encoderTicks >= 0) {
-                spinMotor.set(ControlMode.Velocity, -velocityPer100Milliseconds);
-                return;
-            } else {
-                spinMotor.set(ControlMode.Velocity, 0);
-                rotateDisk = false;
-            }
-        }
+        // Double velocityPer100Milliseconds = RPM * 4096 / 600;
+        // int encoderTicks = m_spinMotor.getSelectedSensorPosition();
+        // Color detectedColor = m_colorSensor.getColor();
+        // ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
-        // Enters Finding the Color Mode through FMS
-        if (bNearestColor) {
-            // if fmsColor is blue and colorString isnt red then move until then
-            if (fmsColorString == "blue" && colorString != "Red") {
-                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
-                return;
-                // if fmsColor is green and colorString isnt yellow then move until then
-            } else if (fmsColorString == "green" && colorString != "Yellow") {
-                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
-                return;
-                // if fmsColor is red and colorString isnt blue then move until then
-            } else if (fmsColorString == "red" && colorString != "Blue") {
-                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
-                return;
-                // if fmsColor is yellow and colorString isnt green then move until then
-            } else if (fmsColorString == "yellow" && colorString != "Green") {
-                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
-                return;
-                // if colorString is unknown then move the motor a small portion
-            } else if (colorString == "Unknown") {
-                spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds / 2);
-                return;
-            } else {
-                spinMotor.set(ControlMode.Velocity, 0);
-                return;
-            }
-        }
+        // if (match.color == kBlueTarget) {
+        //     colorString = "Blue";
+        // } else if (match.color == kGreenTarget) {
+        //     colorString = "Green";
+        // } else if (match.color == kRedTarget) {
+        //     colorString = "Red";
+        // } else if (match.color == kYellowTarget && match.confidence >= 0.94) {
+        //     colorString = "Yellow";
+        // } else {
+        //     colorString = "Unknown";
+        // }
+
+        // if (!colorCheck) {
+        //     colorCheck = true;
+        //     firstColor = colorString;
+        // }
+
+        // // control to rotate disk three times
+        // if (bRotationMode) {
+        //     rotateDisk = true;
+        //     m_spinMotor.setSelectedSensorPosition(controlPanelRotationTicks);
+        //     return;
+        // } else if (rotateDisk) {
+        //     if (encoderTicks >= 0) {
+        //         m_spinMotor.set(ControlMode.Velocity, -velocityPer100Milliseconds);
+        //         return;
+        //     } else {
+        //         m_spinMotor.set(ControlMode.Velocity, 0);
+        //         rotateDisk = false;
+        //     }
+        // }
+
+        // // Enters Finding the Color Mode through FMS
+        // if (bNearestColor) {
+        //     // if fmsColor is blue and colorString isnt red then move until then
+        //     if (fmsColorString == "blue" && colorString != "Red") {
+        //         m_spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
+        //         return;
+        //         // if fmsColor is green and colorString isnt yellow then move until then
+        //     } else if (fmsColorString == "green" && colorString != "Yellow") {
+        //         m_spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
+        //         return;
+        //         // if fmsColor is red and colorString isnt blue then move until then
+        //     } else if (fmsColorString == "red" && colorString != "Blue") {
+        //         m_spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
+        //         return;
+        //         // if fmsColor is yellow and colorString isnt green then move until then
+        //     } else if (fmsColorString == "yellow" && colorString != "Green") {
+        //         m_spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds);
+        //         return;
+        //         // if colorString is unknown then move the motor a small portion
+        //     } else if (colorString == "Unknown") {
+        //         m_spinMotor.set(ControlMode.Velocity, velocityPer100Milliseconds / 2);
+        //         return;
+        //     } else {
+        //         m_spinMotor.set(ControlMode.Velocity, 0);
+        //         return;
+        //     }
+        // }
     }
 
     public void disabledInit() {

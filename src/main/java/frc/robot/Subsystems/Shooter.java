@@ -26,8 +26,8 @@ public class Shooter {
   };
 
   // member variables for Shooter control
-  private double m_top_RPM = 1400;
-  private double m_bottom_RPM = 3900;
+  private double m_top_RPM = 1300;
+  private double m_bottom_RPM = 3800;
   private boolean m_isRunning = false;
   private boolean m_wheelsEnable = false;
   private DigitalInput m_primeSensor = new DigitalInput(RobotMap.ShooterMap.kPrimeSensor);
@@ -35,19 +35,16 @@ public class Shooter {
   private double m_currentAngle = 0.0;
   private boolean m_seekModeEnabled = false;
   private shooterZone m_desiredZone = shooterZone.BACK;
+  private double m_turret_speed = 0.0;
+  private boolean m_manualModeToggle = false;
+  private int m_POVToggleCount = 0;
 
-  private int turntable_starting_position;
   private int turretPosition;
-  private int turret_center_offset = 0;
-  private int turret_low_limit = -50000;
-  private int turret_high_limit = 50000;
+  
   private int direction = 1;
-  private boolean turretLowCalibrated = false;
-  private boolean turretHighCalibrated = false;
-  // private boolean attemptGoAroundForTarget = false;
+  private int turntable_starting_position = 0;
   private boolean goRightInstead = false;
   private boolean goLeftInstead = false;
-  private boolean findingTxTarget = false;
 
   private double m_limelightDistance = 0;
   private double m_limelightX = 0;
@@ -74,7 +71,7 @@ public class Shooter {
     m_talon_config.reverseSoftLimitEnable = false;
     // m_talon_config.peakCurrentLimit = 50;
     // m_talon_config.peakCurrentDuration = 20;
-    m_talon_config.neutralDeadband = 0.01;
+    m_talon_config.neutralDeadband = 0.005;
     m_talon_config.nominalOutputForward = 0;
     m_talon_config.nominalOutputReverse = 0;
     m_talon_config.peakOutputForward = 1;
@@ -102,9 +99,9 @@ public class Shooter {
     m_talon_config.peakOutputForward = 0.1;
     m_talon_config.peakOutputReverse = -0.1;
     m_talon_config.openloopRamp = 0.1;
-    m_talon_config.forwardSoftLimitEnable = true;
+    m_talon_config.forwardSoftLimitEnable = false;
     m_talon_config.forwardSoftLimitThreshold = 9900;
-    m_talon_config.reverseSoftLimitEnable = true;
+    m_talon_config.reverseSoftLimitEnable = false;
     m_talon_config.reverseSoftLimitThreshold = -4900;
     m_talon_config.closedloopRamp = 0.05;
     m_talon_config.slot0.allowableClosedloopError = 0;
@@ -169,6 +166,7 @@ public class Shooter {
     SmartDashboard.putNumber("Shooter currentAngle", m_currentAngle);
     SmartDashboard.putString("Shooter Zone", m_desiredZone.toString());
     SmartDashboard.putNumber("turntable percent out", turnTableFX.getMotorOutputPercent());
+    SmartDashboard.putNumber("Desired turntable out", m_turret_speed);
     SmartDashboard.putBoolean("istargetvalid", Robot.limelight.isTargetValid());
     SmartDashboard.putNumber("LL Distance", m_limelightDistance);
 
@@ -205,6 +203,11 @@ public class Shooter {
   }
 
   public void teleopInit() {
+    // Reset Angle Sensor on every teleop Startup if at prime position.
+    if (!m_primeSensor.get()) {
+      turnTableFX.setSelectedSensorPosition(0);
+      m_primed = true;
+    }
     m_isRunning = false;
     turnTableFX.setNeutralMode(NeutralMode.Brake);
   }
@@ -216,7 +219,7 @@ public class Shooter {
       m_isRunning = !m_isRunning;
     }
     // pull manip xbox trigger
-    if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.3 || Robot.driveCtrl.getRawAxis(Drive.kShootFullSend) > 0.2) {
+    if (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.3) {
       m_wheelsEnable = true;
     } else {
       m_wheelsEnable = false;
@@ -234,12 +237,20 @@ public class Shooter {
     }
 
     // ------------------- TURNTABLE CODE ------------------------
-    double turret_speed = 0.0;
-    // Debug
+
     if (Robot.manipCtrl.getRawAxis(Manip.kSeekModeActive) > 0.7) {
       m_seekModeEnabled = true;
     } else {
       m_seekModeEnabled = false;
+    }
+
+    if (Robot.manipCtrl.getPOV() == Manip.kLimelightOnOff) {
+      m_POVToggleCount++;
+    } else {
+      m_POVToggleCount = 0;
+    }
+    if (m_POVToggleCount == 1) {
+      m_manualModeToggle = !m_manualModeToggle;
     }
 
     if (Robot.manipCtrl.getRawAxis(Manip.kShooterZone) > 0.7) {
@@ -249,16 +260,29 @@ public class Shooter {
       m_desiredZone = shooterZone.FRONT;
     }
 
-    if (m_seekModeEnabled) {
-      if (GetZoneFromAngle(m_currentAngle) == m_desiredZone) {
+    
+
+    // Are we in the correct zone?  If not, just move toward the zone we want, and don't
+    // do anything else.
+    if(m_desiredZone !=  GetZoneFromAngle(m_currentAngle)) {
+        if (m_desiredZone == shooterZone.FRONT) {
+          direction = -1;
+        } else {
+          direction = 1;
+        }
+        m_turret_speed = direction * 1.0;
+    } else {
+      // Here, we are in the correct zone, so now try to seek to the target if
+      // the user wants.
+      if (m_seekModeEnabled) {
+        Robot.limelight.Enable();
         if (GetZoneFromAngle(m_currentAngle) == shooterZone.BACK) {
           // Can we see the target????
           // if target is seen go toward it
           // if not continue sweeping
-
           // sees valid target
           if (m_targetValid) {
-            turret_speed = m_limelightX * 0.8;
+            m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6, m_limelightX);
           } else {
             // scan
             if (m_currentAngle > 50) {
@@ -267,47 +291,49 @@ public class Shooter {
             if (m_currentAngle < -50) {
               direction = 1;
             }
-            turret_speed = direction * 1.0;
+            m_turret_speed = direction * 1.0;
           }
         }
         if (GetZoneFromAngle(m_currentAngle) == shooterZone.FRONT) {
           if (m_targetValid) {
-            turret_speed = m_limelightX * 1.0;
+            m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6, m_limelightX);
           } else {
+            // Scan
             if (m_currentAngle > -120) {
               direction = -1;
             }
             if (m_currentAngle < -210) {
               direction = 1;
             }
-            turret_speed = direction * 1.0;
+            m_turret_speed = direction * 1.0;
           }
         }
-      } else {
-        // We need to switch zones...
-        if (m_desiredZone == shooterZone.FRONT) {
-          direction = -1;
+      } else if (m_manualModeToggle) {
+        Robot.limelight.Enable();
+        if (Robot.manipCtrl.getPOV() == Manip.kTurretLeft) {
+          m_turret_speed = -0.03;
+        } else if (Robot.manipCtrl.getPOV() == Manip.kTurretRight) {
+          m_turret_speed = 0.03;
         } else {
-          direction = 1;
+          m_turret_speed = 0;
         }
-        turret_speed = direction * 1.0;
+      } else {
+        // We are not seeking... Turn off everything.
+        Robot.limelight.Disable();
+        m_turret_speed = 0;
       }
-    } else {
-      turret_speed = 0;
     }
 
-    // desired speed is positive, position is more than soft limit, therefore speed
-    // 0
-    // Turntable set with left joystick on manip controller. Max speed is set by
-    // SmartDashboard Variable
-    // turnTableFX.set(ControlMode.PercentOutput, turret_speed);
-    if (turret_speed > 0 && m_currentAngle > 55) {
-      turret_speed = 0;
+    // HERE we apply soft limits in case the code above produces values that
+    // are outside our turning range.  Note, max speed is set by a
+    // SmartDashboard Variable. 
+    if (m_turret_speed > 0 && m_currentAngle > 55) {
+      m_turret_speed = 0;
     }
-    if (turret_speed < 0 && m_currentAngle < -215) {
-      turret_speed = 0;
+    if (m_turret_speed < 0 && m_currentAngle < -215) {
+      m_turret_speed = 0;
     }
-    turnTableFX.set(ControlMode.PercentOutput, turret_speed);
+    turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
   }
 
   public void disabledInit() {

@@ -15,12 +15,23 @@ public class ControllerMap {
     // ----- axis -----
     public static int kLeftStickYAxis = 1;
     public static final int kIntakeDownAndGo = 2;
-    public static final int kShootFullSend = 3;
+    public static final int kColorSpinAxis = 3;
     public static int kRightStickXAxis = 4;
     public static int kRightStickYAxis = 5;
 
     // ----- buttons -----
+    public static final int kColorWheelAuto = 1;  // Not implemented yet.
+    public static final int kColorWheelForward = 2;
+    public static final int kColorWheelReverse = 3;
+    public static final int kColorWheelPneumatic = 4;
     public static final int kIntakeUpAndStop = 5;
+    public static final int kintakeToggle = 9;
+
+    // ----- DPAD -----
+    public static final int kIntakeStowed = 0;
+    public static final int kIntakeMid = 90;
+    public static final int kIntakeLow = 180;
+    public static final int kIntakeMotorToggle = 270;
   }
 
   public static class Manip {
@@ -34,19 +45,17 @@ public class ControllerMap {
     public static final int kHopperRightToggle = 2;
     public static final int kHopperLeftToggle = 3;
     public static final int kAcceleratorToggle = 4;
-    public static final int kSpare1 = 5;
+    //public static final int kSpare1 = 5;
 
-    public static final int kColorWheelPneumatic = 25; // Fix This !!!
     public static final int kShooterToggle = 6;
     public static final int knearestColor = 7;
     public static final int krotateButton = 8;
-    public static final int kintakeToggle = 9;
 
     // ----- DPAD -----
-    public static final int kIntakeStowed = 0;
-    public static final int kIntakeMid = 90;
-    public static final int kIntakeLow = 180;
-    public static final int kIntakeMotorToggle = 270;
+    public static final int kLimelightOnOff = 0;
+    public static final int kTurretRight = 90;
+    public static final int kTurretLeft = 270;
+
   }
 
   public static class climbjoy {

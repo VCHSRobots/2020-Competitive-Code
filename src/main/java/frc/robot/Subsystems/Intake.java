@@ -88,7 +88,7 @@ public class Intake {
 
   public void teleopPeriodic() {
     // intake turns on
-    if (Robot.manipCtrl.getRawButtonPressed(9)) {
+    if (Robot.driveCtrl.getRawButtonPressed(ControllerMap.Drive.kintakeToggle)) {
       intakeToggle = !intakeToggle;
     }
 
@@ -104,7 +104,6 @@ public class Intake {
       bottom = DoubleSolenoid.Value.kReverse;
     }
 
-
     if (intakeToggle) {
       intakeMotor.set(intakeSpeed);
     } else {
@@ -114,13 +113,13 @@ public class Intake {
 
     // pneumatic position
 
-    if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeLow) {
+    if (Robot.driveCtrl.getPOV() == ControllerMap.Drive.kIntakeLow) {
       top = DoubleSolenoid.Value.kForward;
       bottom = DoubleSolenoid.Value.kForward;
-    } else if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeMid) {
+    } else if (Robot.driveCtrl.getPOV() == ControllerMap.Drive.kIntakeMid) {
       top = DoubleSolenoid.Value.kReverse;
       bottom = DoubleSolenoid.Value.kForward;
-    } else if (Robot.manipCtrl.getPOV() == ControllerMap.Manip.kIntakeStowed) {
+    } else if (Robot.driveCtrl.getPOV() == ControllerMap.Drive.kIntakeStowed) {
       top = DoubleSolenoid.Value.kReverse;
       bottom = DoubleSolenoid.Value.kReverse;
     }

@@ -32,18 +32,19 @@ public class Limelight {
     private double normalArea = regularHorizontal * regularVertical;
     private double[] defaultCamtran = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-    static double offset = 0.0;
-    private boolean limelightOnOff = false;
+    static double m_offset = -0.04;
+    private boolean m_limelightOnOff = false;
+    private boolean m_controlOverride = false;
 
     public void SmartDashboardSend() {
         SmartDashboard.putNumber("LimeLight X", getX());
         SmartDashboard.putNumber("Limelight Distance", getAngleDistance());
-        limelightOnOff = SmartDashboard.getBoolean("Limelight On/Off", false);
+        m_limelightOnOff = SmartDashboard.getBoolean("Limelight On/Off", false);
     }
 
     public void robotInit() {
         choosePipeline(0);
-        SmartDashboard.putBoolean("Limelight On/Off", limelightOnOff);
+        SmartDashboard.putBoolean("Limelight On/Off", m_limelightOnOff);
     }
 
     public void robotPeriodic() {
@@ -54,18 +55,33 @@ public class Limelight {
         horizontal = table.getEntry("thor");
         vertical = table.getEntry("tvert");
         camtran = table.getEntry("camtran");
-      SmartDashboard.putBoolean("LL tv", tv.getBoolean(false));
-        if (limelightOnOff) {
-            turnOnLights();
-        } else {
-            turnOffLights();
-        }
-
+        SmartDashboard.putBoolean("LL tv", tv.getBoolean(false));
 
         // SmartDash
         SmartDashboard.putNumber("LimeLight X", getX());
         SmartDashboard.putNumber("Limelight Distance", getAngleDistance());
-        limelightOnOff = SmartDashboard.getBoolean("Limelight On/Off", false);
+        if (!m_controlOverride) {
+          m_limelightOnOff = SmartDashboard.getBoolean("Limelight On/Off", false);
+        }
+        if (m_limelightOnOff) {
+          turnOnLights();
+      } else {
+          turnOffLights();
+      }
+    }
+
+    public void Enable() {
+      m_limelightOnOff = true;
+      m_controlOverride = true;
+    }
+
+    public void Disable() {
+      m_limelightOnOff = false;
+      m_controlOverride = false;
+    }
+
+    public void ResetOverride() {
+      m_controlOverride = false;
     }
 
     public void turnOnLights() {
@@ -142,7 +158,7 @@ public class Limelight {
             // tx_values[tx_values.length-1] = tx.getDouble(0);
             // x += tx_values[tx_values.length-1];
             // return x/(29.8 + tx_values.length);
-            return tx.getDouble(0) / 29.8 - offset;
+            return tx.getDouble(0) / 29.8 - m_offset;
         } else {
             return Double.NaN;
         }

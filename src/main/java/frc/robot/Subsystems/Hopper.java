@@ -119,7 +119,7 @@ public class Hopper {
         checkToggles();
         
         // shooting check to make sure shooter and accelerator are spun up before it loads
-        if ( (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8 || Robot.driveCtrl.getRawAxis(Drive.kShootFullSend) > 0.8)
+        if ( (Robot.manipCtrl.getRawAxis(Manip.kShootAndAllFeederGo) > 0.8)
               && Robot.shooter.readyToShoot()) {
           autoShoot = true;
           acceleratorEnable = true;

@@ -99,13 +99,15 @@ public class Robot extends TimedRobot {
     intake.robotPeriodic();
     driveTrain.robotPeriodic();
     shooter.robotPeriodic();
-    // colorWheel.robotPeriodic();
+    colorWheel.robotPeriodic();
     hopper.robotPeriodic();
     limelight.robotPeriodic();
   }
 
   @Override
   public void autonomousInit() {
+    limelight.ResetOverride();
+    limelight.Enable();
     // climber.autonomousInit();
     // intake.autonomousInit();
     driveTrain.autonomousInit();
@@ -126,6 +128,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    limelight.ResetOverride();
+    limelight.Disable();
     climber.teleopInit();
     driveTrain.teleopInit();
     intake.teleopInit();
@@ -140,7 +144,7 @@ public class Robot extends TimedRobot {
     intake.teleopPeriodic();
     driveTrain.teleopPeriodic();
     shooter.teleopPeriodic();
-    // colorWheel.teleopPeriodic();
+    colorWheel.teleopPeriodic();
     hopper.teleopPeriodic();
   }
 

@@ -97,11 +97,11 @@ public class DriveTrain {
         valueY = Robot.driveCtrl.getRawAxis(ControllerMap.Drive.kLeftStickYAxis) * -1; // Multiplied by -1 because Y
                                                                                        // axis is inverted
 
-        valueX = DeadbandMaker.linear1d(valueX, 0.04);
+        valueX = DeadbandMaker.linear1d(valueX, 0.02);
         valueY = DeadbandMaker.linear1d(valueY, 0.04);
 
-        valueX = 0.7 * Math.copySign(valueX * valueX, valueX);
-        valueY = 0.7 * Math.copySign(valueY * valueY, valueY);
+        valueX = 0.9 * Math.copySign(valueX * valueX, valueX);
+        valueY = 1.0 * Math.copySign(valueY * valueY, valueY);
         
         // -------Drive Equation----------- left side = y+x right side = y-x
         leftSidePower = valueY + valueX;
