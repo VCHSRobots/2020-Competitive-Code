@@ -50,7 +50,11 @@ public class RobotMap {
         public static final int kupperWheelsFX = 31;
         public static final int klowerWheelsFX = 32;
         public static final int kturnTableFX = 33;
+        // Sensors
         public static final int kPrimeSensor = 0;
+        public static final int kBallShot    = 1;
+        public static final int kBallLoaded  = 2;
+
     }
 
     public static class DriveTrainMap {

@@ -19,29 +19,34 @@ import frc.robot.ControllerMap.Drive;
 import frc.robot.ControllerMap.Manip;
 import frc.robot.util.BaseFXConfig;
 import frc.robot.util.DeadbandMaker;
+import frc.robot.util.ShooterRPM;
 
 public class Shooter {
   enum shooterZone {
     FRONT, BACK, CROSSING
   };
-
   // member variables for Shooter control
-  private double m_top_RPM = 1300;
-  private double m_bottom_RPM = 3800;
+  private double m_top_RPM = ShooterRPM.GetTopRPM(18.0);
+  private double m_bottom_RPM = ShooterRPM.GetBottomRPM(18.0);
   private boolean m_isRunning = false;
   private boolean m_wheelsEnable = false;
   private DigitalInput m_primeSensor = new DigitalInput(RobotMap.ShooterMap.kPrimeSensor);
+  private DigitalInput m_ballLoadedSensor = new DigitalInput(RobotMap.ShooterMap.kBallLoaded);
+  private DigitalInput m_ballShotSensor = new DigitalInput(RobotMap.ShooterMap.kBallShot);
+  private boolean m_ballShot = false;
+  private boolean m_lastBallShot = false;
+  private int m_ballShotCounter = 0;
+  private boolean m_ballLoaded = false;
   private boolean m_primed = false;
   private double m_currentAngle = 0.0;
   private boolean m_seekModeEnabled = false;
   private shooterZone m_desiredZone = shooterZone.BACK;
   private double m_turret_speed = 0.0;
   private boolean m_manualModeToggle = false;
-  private int m_POVToggleCount = 0;
-  private int m_ydir = 0;
-
+  private boolean m_AutoRangeEnable = false;
+  private double m_manualRange = 18.0;
+  private double m_rangeToUse = 18.0;
   private int turretPosition;
-
   private boolean m_turretClockwise = true;
 
   private int direction = 1;
@@ -143,18 +148,28 @@ public class Shooter {
     m_limelightDistance = Robot.limelight.getAngleDistance();
     m_limelightX = Robot.limelight.getX();
     m_targetValid = Robot.limelight.isTargetValid();
-
     turretPosition = turnTableFX.getSelectedSensorPosition();
-    // if (DI_turntableLimit.get() == false) {
-    // if (!turretLowCalibrated && turretPosition < turntable_starting_position) {
-    // turret_low_limit = turretPosition + 2000;
-    // turretLowCalibrated = true;
-    // } else if (!turretHighCalibrated && turretPosition >
-    // turntable_starting_position) {
-    // turret_high_limit = turretPosition - 2000;
-    // turretHighCalibrated = true;
-    // }
-    // }
+ 
+    // --------------- Ball Sensors -------------------------
+    m_ballLoaded = !m_ballLoadedSensor.get();
+    m_ballShot  = !m_ballShotSensor.get();
+    if (m_ballShot != m_lastBallShot) {
+      if(m_lastBallShot) {
+        m_ballShotCounter++;
+      }
+    }
+    m_lastBallShot = m_ballShot;
+
+    // ----------------- Range Calculations ------------------
+    if(m_AutoRangeEnable) {
+      if(m_targetValid && Robot.limelight.IsEnabled()) {
+        m_rangeToUse = m_limelightDistance;
+      }
+    } else {
+      m_rangeToUse = m_manualRange;
+    }
+    m_top_RPM = ShooterRPM.GetTopRPM(m_rangeToUse);
+    m_bottom_RPM = ShooterRPM.GetBottomRPM(m_rangeToUse);
 
     // smartdash set statuses
     SmartDashboard.putNumber("Actual Top RPM",
@@ -171,9 +186,17 @@ public class Shooter {
     SmartDashboard.putNumber("turntable percent out", turnTableFX.getMotorOutputPercent());
     SmartDashboard.putNumber("Desired turntable out", m_turret_speed);
     SmartDashboard.putBoolean("istargetvalid", Robot.limelight.isTargetValid());
-    SmartDashboard.putNumber("LL Distance", m_limelightDistance);
+    SmartDashboard.putNumber("LL Distance (ft)", m_limelightDistance);
     SmartDashboard.putNumber("Turet LLErr", turnTableFX.getClosedLoopError());
-    SmartDashboard.putNumber("Turntable Closed Loop Target", turnTableFX.getClosedLoopTarget());
+    //SmartDashboard.putNumber("Turntable Closed Loop Target", turnTableFX.getClosedLoopTarget());  // Causing a repeated log msg error
+    SmartDashboard.putBoolean("Ball In Loaded Position", m_ballLoaded);
+    SmartDashboard.putBoolean("Ball Shot", m_ballShot);
+    SmartDashboard.putNumber("Ball Shot Counter", m_ballShotCounter);
+    SmartDashboard.putNumber("Manual Range", m_manualRange);
+    SmartDashboard.putNumber("Range To USe", m_rangeToUse);
+    SmartDashboard.putBoolean("Auto Range Enabled", m_AutoRangeEnable);
+    SmartDashboard.putNumber("Top RPM", m_top_RPM);
+    SmartDashboard.putNumber("Bot RPM", m_bottom_RPM);
 
     // resetTurnTableEncoder = SmartDashboard.getBoolean("Reset Turntable Encoder",
     // false);
@@ -186,16 +209,16 @@ public class Shooter {
     // }
 
     // smartdash gets
-    m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
-    m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
+    //m_top_RPM = SmartDashboard.getNumber("Top RPM", 0);
+    //m_bottom_RPM = SmartDashboard.getNumber("Bot RPM", 0);
 
     // clamp range checks
-    m_top_RPM = MathUtil.clamp(m_top_RPM, -1400.0, 7000.0);
-    m_bottom_RPM = MathUtil.clamp(m_bottom_RPM, -1400.0, 7000.0);
+    //m_top_RPM = MathUtil.clamp(m_top_RPM, -1400.0, 7000.0);
+    //m_bottom_RPM = MathUtil.clamp(m_bottom_RPM, -1400.0, 7000.0);
 
     // smartdash puts
-    SmartDashboard.putNumber("Top RPM", m_top_RPM);
-    SmartDashboard.getNumber("Bot RPM", m_bottom_RPM);
+    // SmartDashboard.putNumber("Top RPM", m_top_RPM);
+    // SmartDashboard.getNumber("Bot RPM", m_bottom_RPM);
 
   }
 
@@ -215,6 +238,8 @@ public class Shooter {
     }
     m_isRunning = false;
     turnTableFX.setNeutralMode(NeutralMode.Brake);
+    m_AutoRangeEnable = true;
+    m_manualRange = 18;
   }
 
   public void teleopPeriodic() {
@@ -229,6 +254,11 @@ public class Shooter {
     } else {
       m_wheelsEnable = false;
     }
+    // Range Select:
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeFar) {m_manualRange = 18; m_AutoRangeEnable = false; }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeMid) {m_manualRange = 12; m_AutoRangeEnable = false; }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeNear) {m_manualRange = 8; m_AutoRangeEnable = false; }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeAuto) {m_manualRange = 18; m_AutoRangeEnable = true; }
 
     // full send button
     // -- check button press, full send five balls, automatically stop after
@@ -249,15 +279,25 @@ public class Shooter {
       m_seekModeEnabled = false;
     }
 
-    if (Robot.manipCtrl.getPOV() == Manip.kLimelightOnOff) {
-      m_POVToggleCount++;
-    } else {
-      m_POVToggleCount = 0;
+    if (Robot.manipCtrl.getRawAxis(Manip.kManualMode) < -0.7) {
+      m_manualModeToggle = true;
     }
-    if (m_POVToggleCount == 1) {
-      m_manualModeToggle = !m_manualModeToggle;
+    if(Robot.manipCtrl.getRawAxis(Manip.kManualMode) > 0.7) {
+      m_manualModeToggle = false;
     }
-
+    double adjSpeed = 0.0;
+    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) > 0.6) {
+      adjSpeed = 0.03;
+    }
+    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) > 0.9) {
+      adjSpeed = 0.05;
+    }
+    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) < -0.6) {
+      adjSpeed =-0.03;
+    }
+    if(Robot.manipCtrl.getRawAxis(Manip.kTuretAdjust) < -0.9) {
+      adjSpeed = -0.05;
+    }
     if (Robot.manipCtrl.getRawAxis(Manip.kShooterZone) > 0.7) {
       m_desiredZone = shooterZone.BACK;
     }
@@ -265,19 +305,14 @@ public class Shooter {
       m_desiredZone = shooterZone.FRONT;
     }
 
-    // Are we in the correct zone? If not, just move toward the zone we want, and
-    // don't
-    // do anything else.
+   // Are we in the correct zone? If not, just move toward the zone we want, and
+    // don't do anything else.
     if (m_desiredZone != GetZoneFromAngle(m_currentAngle)) {
       if (m_desiredZone == shooterZone.FRONT) {
-        // direction = -1;
-        turnTableFX.set(ControlMode.Position, -24665.0);
+         setTuretAngle(-120.43);                      //turnTableFX.set(ControlMode.Position, -24665.0);
       } else {
-        // direction = 1;
-        turnTableFX.set(ControlMode.Position, -12776);
+        setTuretAngle(-62.38);                        //turnTableFX.set(ControlMode.Position, -12776);
       }
-      // m_turret_speed = direction * 1.0;
-      // turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
     } else {
       // Here, we are in the correct zone, so now try to seek to the target if
       // the user wants.
@@ -285,123 +320,34 @@ public class Shooter {
         Robot.limelight.Enable();
         if (m_targetValid) {
           double offset = Robot.limelight.getTX() + m_currentAngle;
-          int targetPosition =  (int)offset * (int)Constants.kPulsesPerDegreeOnTurret;
-          turnTableFX.set(ControlMode.Position, targetPosition);
+          setTuretAngle(offset);
+          //int targetPosition =  (int)offset * (int)Constants.kPulsesPerDegreeOnTurret;
+          //turnTableFX.set(ControlMode.Position, targetPosition);
         } else {
           if (m_desiredZone == shooterZone.BACK) {
-            if (turnTableFX.getSelectedSensorPosition() > 12500) {
-              turnTableFX.set(ControlMode.Position, -12776);
-            } else if (turnTableFX.getSelectedSensorPosition() < -12500) {
-              turnTableFX.set(ControlMode.Position, 12776);
+            if(m_currentAngle > 61.0) {                     // } if (turnTableFX.getSelectedSensorPosition() > 12500) {
+              setTuretAngle(-62.38);                        //       turnTableFX.set(ControlMode.Position, -12776);
+            } else if (m_currentAngle < -61.0) {            // }) else if (turnTableFX.getSelectedSensorPosition() < -12500) {
+              setTuretAngle(62.38);                         // turnTableFX.set(ControlMode.Position, 12776);
             }
-            // if (turnTableFX.getClosedLoopError() < 200.0) {
-            //   if (turnTableFX.getClosedLoopTarget() == 12776.0) {
-            //     turnTableFX.set(ControlMode.Position, -12776.0);
-            //   } else if (turnTableFX.getClosedLoopTarget() == -12776.0) {
-            //     turnTableFX.set(ControlMode.Position, 12776.0);
-            //   }
-            // } 
           } else if (m_desiredZone == shooterZone.FRONT) {
-            if (turnTableFX.getSelectedSensorPosition() > -24800) {
-              turnTableFX.set(ControlMode.Position, -49063);
-            } else if (turnTableFX.getSelectedSensorPosition() < -48800) {
-              turnTableFX.set(ControlMode.Position, -24665);
+            if (m_currentAngle > -121.09) {                 // if (turnTableFX.getSelectedSensorPosition() > -24800)
+              setTuretAngle(-239.56);                       // turnTableFX.set(ControlMode.Position, -49063);
+            } else if (m_currentAngle < -238.28) {          // (turnTableFX.getSelectedSensorPosition() < -48800) {
+              setTuretAngle(-120.43);                       // turnTableFX.set(ControlMode.Position, -24665);
             }
-            // if (turnTableFX.getClosedLoopError() < 200.0) {
-            //   if (turnTableFX.getClosedLoopTarget() == -24665.0) {
-            //     turnTableFX.set(ControlMode.Position, -49063.0);
-            //   } else if (turnTableFX.getClosedLoopTarget() == -49063.0) {
-            //     turnTableFX.set(ControlMode.Position, -24665.0);
-            //   }
-            // } 
           }
         }
 
       } else if (m_manualModeToggle) {
         Robot.limelight.Enable();
-        if (Robot.manipCtrl.getPOV() == Manip.kTurretLeft) {
-        m_turret_speed = -0.03;
-        turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
-        } else if (Robot.manipCtrl.getPOV() == Manip.kTurretRight) {
-        m_turret_speed = 0.03;
-        turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
-        } else {
-          turnTableFX.set(0.0);
-          
-        }
-        } else {
+        turnTableFX.set(ControlMode.PercentOutput, adjSpeed);
+      } else {
         // We are not seeking... Turn off everything.
         Robot.limelight.Disable();
         turnTableFX.set(0.0);
-        }
-
-      // if(m_ydir == 0) {
-      // m_ydir = 1;
-      // turnTableFX.set(ControlMode.Position, -2048.0);
-      // }
-      // if(m_ydir == -1 && Math.abs(turnTableFX.getSelectedSensorPosition() - 2048) <
-      // 50.0) {
-      // m_ydir = 1;
-      // turnTableFX.set(ControlMode.Position, -2048.0);
-      // }
-      // if(m_ydir == 1 && Math.abs(turnTableFX.getSelectedSensorPosition() + 2048) <
-      // 50.0) {
-      // m_ydir = -1;
-      // turnTableFX.set(ControlMode.Position, 2048.0);
-      // }
-      // } else {
-      // turnTableFX.set(0.0);
-      // m_ydir = 0;
-      // }
+      }
     }
-
-    // Robot.limelight.Enable();
-    // if (GetZoneFromAngle(m_currentAngle) == shooterZone.BACK) {
-    // // Can we see the target????
-    // // if target is seen go toward it
-    // // if not continue sweeping
-    // // sees valid target
-    // if (m_targetValid) {
-    // m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6,
-    // m_limelightX);
-    // } else {
-    // // scan
-    // if (m_currentAngle > 50) {
-    // direction = -1;
-    // }
-    // if (m_currentAngle < -50) {
-    // direction = 1;
-    // }
-    // m_turret_speed = direction * 1.0;
-    // }
-    // }
-    // if (GetZoneFromAngle(m_currentAngle) == shooterZone.FRONT) {
-    // if (m_targetValid) {
-    // m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6,
-    // m_limelightX);
-    // } else {
-    // // Scan
-    // if (m_currentAngle > -120) {
-    // direction = -1;
-    // }
-    // if (m_currentAngle < -210) {
-    // direction = 1;
-    // }
-    // m_turret_speed = direction * 1.0;
-    // }
-    // }
-    // } 
-
-    // HERE we apply soft limits in case the code above produces values that
-    // are outside our turning range. Note, max speed is set by a
-    // SmartDashboard Variable.
-    // if (m_turret_speed > 0 && m_currentAngle > 55) {
-    // m_turret_speed = 0;
-    // }
-    // if (m_turret_speed < 0 && m_currentAngle < -215) {
-    // m_turret_speed = 0;
-    // }
-    // turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
   }
 
   public void disabledInit() {
@@ -410,7 +356,17 @@ public class Shooter {
   }
 
   public void disabledPeriodic() {
+    Robot.limelight.Disable();
+  }
 
+  private void setTuretAngle(double angle) {
+    double pulseloc = Constants.kPulsesPerDegreeOnTurret * angle;
+    turnTableFX.set(ControlMode.Position, pulseloc);
+  }
+
+  private double getTuretAngle() {
+    double angle = turnTableFX.getSelectedSensorPosition() / Constants.kPulsesPerDegreeOnTurret;
+    return angle;
   }
 
   private void stopMotors() {

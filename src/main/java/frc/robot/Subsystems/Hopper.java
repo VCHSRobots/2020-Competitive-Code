@@ -27,6 +27,7 @@ public class Hopper {
 
   Mode mode = Mode.TOGGLES;
 
+
   TalonFX rSideFX, lSideFX, acceleratorFX;
 
   TalonFXConfiguration m_config = new TalonFXConfiguration();
@@ -35,6 +36,7 @@ public class Hopper {
   boolean leftEnable = false;
   boolean acceleratorEnable = false;
   boolean allToggle = false;
+  boolean m_ejectWasActive = false;
 
   double percentRight = 0.2;
   double percentLeft = 0.7;
@@ -115,6 +117,20 @@ public class Hopper {
 
   private boolean autoShoot = false;
   public void teleopPeriodic() {
+        if ( Robot.manipCtrl.getRawButton(Manip.kEject)) {
+          // This is an emegency.  Override everything else, and reverse motors.
+          acceleratorFX.set(ControlMode.PercentOutput, -1.0);
+          lSideFX.set(ControlMode.PercentOutput, -1.0);
+          rSideFX.set(ControlMode.PercentOutput, -1.0);
+          m_ejectWasActive = true;
+          // Don't do anything else.
+          return;
+        }
+        if (m_ejectWasActive) {
+          m_ejectWasActive = false;
+          stopMotors();
+        }
+
         // manual buttons check
         checkToggles();
         

@@ -39,6 +39,8 @@ public class ControllerMap {
     public static final int kShooterZone = 1;
     public static final int kSeekModeActive = 2;
     public static final int kShootAndAllFeederGo = 3;
+    public static final int kTuretAdjust = 4;
+    public static final int kManualMode = 5;
 
     // ----- buttons -----
     public static final int kAllFeederToggle = 1;
@@ -46,16 +48,17 @@ public class ControllerMap {
     public static final int kHopperLeftToggle = 3;
     public static final int kAcceleratorToggle = 4;
   
-    public static final int kTest = 5;
 
     public static final int kShooterToggle = 6;
-    public static final int knearestColor = 7;
-    public static final int krotateButton = 8;
+    public static final int kLowGoal = 7;
+    public static final int kEject = 8;
+
 
     // ----- DPAD -----
-    public static final int kLimelightOnOff = 0;
-    public static final int kTurretRight = 90;
-    public static final int kTurretLeft = 270;
+    public static final int kRangeFar = 0;
+    public static final int kRangeMid = 90;
+    public static final int kRangeNear = 180;
+    public static final int kRangeAuto = 270;
 
   }
 

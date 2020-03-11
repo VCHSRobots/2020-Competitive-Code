@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Subsystems.Intake;
 import frc.robot.Subsystems.Limelight;
 import frc.robot.Subsystems.DriveTrain;
@@ -31,6 +32,9 @@ public class Robot extends TimedRobot {
   Compressor compressor = new Compressor();
   UsbCamera camera1;
   MjpegServer server;
+
+  // ---------AUTO-----------
+  SendableChooser<Integer> selectedAuto;
 
   // ---------Subsystems---------------
   public static FMSData fmsData = new FMSData();
@@ -62,6 +66,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    selectedAuto.addDefault("Back up and shoot", 0);
+    selectedAuto.addOption("Trench Run", 1);
 
     camera1 = CameraServer.getInstance().startAutomaticCapture(0);
     camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -106,14 +112,20 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    limelight.ResetOverride();
-    limelight.Enable();
-    // climber.autonomousInit();
-    // intake.autonomousInit();
-    driveTrain.autonomousInit();
-    shooter.autonomousInit();
-    //colorWheel.autonomousInit();
-    hopper.autonomousInit();
+    switch(selectedAuto.getSelected()) {
+      case 0:
+        
+      case 1:
+      }
+
+    // limelight.ResetOverride();
+    // limelight.Enable();
+    // // climber.autonomousInit();
+    // // intake.autonomousInit();
+    // driveTrain.autonomousInit();
+    // shooter.autonomousInit();
+    // //colorWheel.autonomousInit();
+    // hopper.autonomousInit();
   }
 
   @Override

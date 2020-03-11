@@ -80,8 +80,8 @@ public class ColorWheel {
 
       // joystick buttons
       // ?? Why is this here?
-      bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
-      bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
+      //bNearestColor = Robot.manipCtrl.getRawButton(ControllerMap.Manip.knearestColor);
+      //bRotationMode = Robot.manipCtrl.getRawButton(ControllerMap.Manip.krotateButton);
 
       try {
           m_colorSensor = new ColorSensorV3(i2cPort);

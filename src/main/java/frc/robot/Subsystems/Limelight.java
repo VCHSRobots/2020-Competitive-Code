@@ -36,6 +36,7 @@ public class Limelight {
     private double m_angleOffset = -2.0;
     private boolean m_limelightOnOff = false;
     private boolean m_controlOverride = false;
+    private boolean m_isEnabled = false;
 
     public void SmartDashboardSend() {
         SmartDashboard.putNumber("LimeLight X", getX());
@@ -66,8 +67,10 @@ public class Limelight {
         }
         if (m_limelightOnOff) {
           turnOnLights();
+          m_isEnabled = true;
       } else {
           turnOffLights();
+          m_isEnabled = false;
       }
     }
 
@@ -81,13 +84,16 @@ public class Limelight {
       m_controlOverride = false;
     }
 
+    public boolean IsEnabled() {
+      return m_isEnabled;
+    }
+
     public void ResetOverride() {
       m_controlOverride = false;
     }
 
     public void turnOnLights() {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
-
     }
 
     public void turnOffLights() {
@@ -132,6 +138,9 @@ public class Limelight {
         }
     }
 
+    // Returns the distance to the target, in feet, IF the target is valid.
+    // THis distance seems to be valid if the shot is straight in or up to 45 degrees
+    // off center.  The constant to used to convert to feet was found by experimentation.
     public double getAngleDistance() {
       double h2_goalReflectionTarget = 6.0*12.0 + 11.75;
       double h1_limelightHeight = 21.26;
@@ -141,7 +150,7 @@ public class Limelight {
       double distance = (h2_goalReflectionTarget - h1_limelightHeight) 
                           / Math.tan(Math.toRadians(a1_cameraViewToHorizontal + a2_cameraViewToTarget));
               
-      return distance;
+      return distance / 12.67;  // Constant found by experimenting.
     }
 
     /*
