@@ -45,7 +45,8 @@ public class ControllerMap {
     public static final int kHopperRightToggle = 2;
     public static final int kHopperLeftToggle = 3;
     public static final int kAcceleratorToggle = 4;
-    //public static final int kSpare1 = 5;
+  
+    public static final int kTest = 5;
 
     public static final int kShooterToggle = 6;
     public static final int knearestColor = 7;

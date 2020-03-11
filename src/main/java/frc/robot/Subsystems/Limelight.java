@@ -33,6 +33,7 @@ public class Limelight {
     private double[] defaultCamtran = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
     static double m_offset = -0.04;
+    private double m_angleOffset = -2.0;
     private boolean m_limelightOnOff = false;
     private boolean m_controlOverride = false;
 
@@ -158,10 +159,14 @@ public class Limelight {
             // tx_values[tx_values.length-1] = tx.getDouble(0);
             // x += tx_values[tx_values.length-1];
             // return x/(29.8 + tx_values.length);
-            return tx.getDouble(0) / 29.8 - m_offset;
+            return tx.getDouble(0) / 29.8 + m_offset;
         } else {
             return Double.NaN;
         }
+    }
+
+    public double getTX() {
+      return tx.getDouble(0.0) + m_angleOffset;
     }
 
     public boolean isTargetValid() {

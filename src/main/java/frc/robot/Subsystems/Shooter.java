@@ -38,9 +38,12 @@ public class Shooter {
   private double m_turret_speed = 0.0;
   private boolean m_manualModeToggle = false;
   private int m_POVToggleCount = 0;
+  private int m_ydir = 0;
 
   private int turretPosition;
-  
+
+  private boolean m_turretClockwise = true;
+
   private int direction = 1;
   private int turntable_starting_position = 0;
   private boolean goRightInstead = false;
@@ -99,19 +102,19 @@ public class Shooter {
     m_talon_config.peakOutputForward = 0.1;
     m_talon_config.peakOutputReverse = -0.1;
     m_talon_config.openloopRamp = 0.1;
-    m_talon_config.forwardSoftLimitEnable = false;
-    m_talon_config.forwardSoftLimitThreshold = 9900;
-    m_talon_config.reverseSoftLimitEnable = false;
-    m_talon_config.reverseSoftLimitThreshold = -4900;
+    m_talon_config.forwardSoftLimitEnable = true;
+    m_talon_config.forwardSoftLimitThreshold = 12776;
+    m_talon_config.reverseSoftLimitEnable = true;
+    m_talon_config.reverseSoftLimitThreshold = -49063;
     m_talon_config.closedloopRamp = 0.05;
     m_talon_config.slot0.allowableClosedloopError = 0;
-    m_talon_config.slot0.closedLoopPeakOutput = 0.06;
+    m_talon_config.slot0.closedLoopPeakOutput = 1.0;
     m_talon_config.slot0.closedLoopPeriod = 2;
     m_talon_config.slot0.integralZone = 0;
-    m_talon_config.slot0.kP = 0;
-    m_talon_config.slot0.kI = 0;
+    m_talon_config.slot0.kP = 0.25;
+    m_talon_config.slot0.kI = 0.000;
     m_talon_config.slot0.kD = 0;
-    m_talon_config.slot0.kF = 0;
+    m_talon_config.slot0.kF = 0.0;
 
     turnTableFX.configAllSettings(m_talon_config);
     turnTableFX.setNeutralMode(NeutralMode.Brake);
@@ -169,6 +172,8 @@ public class Shooter {
     SmartDashboard.putNumber("Desired turntable out", m_turret_speed);
     SmartDashboard.putBoolean("istargetvalid", Robot.limelight.isTargetValid());
     SmartDashboard.putNumber("LL Distance", m_limelightDistance);
+    SmartDashboard.putNumber("Turet LLErr", turnTableFX.getClosedLoopError());
+    SmartDashboard.putNumber("Turntable Closed Loop Target", turnTableFX.getClosedLoopTarget());
 
     // resetTurnTableEncoder = SmartDashboard.getBoolean("Reset Turntable Encoder",
     // false);
@@ -260,80 +265,143 @@ public class Shooter {
       m_desiredZone = shooterZone.FRONT;
     }
 
-    
-
-    // Are we in the correct zone?  If not, just move toward the zone we want, and don't
+    // Are we in the correct zone? If not, just move toward the zone we want, and
+    // don't
     // do anything else.
-    if(m_desiredZone !=  GetZoneFromAngle(m_currentAngle)) {
-        if (m_desiredZone == shooterZone.FRONT) {
-          direction = -1;
-        } else {
-          direction = 1;
-        }
-        m_turret_speed = direction * 1.0;
+    if (m_desiredZone != GetZoneFromAngle(m_currentAngle)) {
+      if (m_desiredZone == shooterZone.FRONT) {
+        // direction = -1;
+        turnTableFX.set(ControlMode.Position, -24665.0);
+      } else {
+        // direction = 1;
+        turnTableFX.set(ControlMode.Position, -12776);
+      }
+      // m_turret_speed = direction * 1.0;
+      // turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
     } else {
       // Here, we are in the correct zone, so now try to seek to the target if
       // the user wants.
       if (m_seekModeEnabled) {
         Robot.limelight.Enable();
-        if (GetZoneFromAngle(m_currentAngle) == shooterZone.BACK) {
-          // Can we see the target????
-          // if target is seen go toward it
-          // if not continue sweeping
-          // sees valid target
-          if (m_targetValid) {
-            m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6, m_limelightX);
-          } else {
-            // scan
-            if (m_currentAngle > 50) {
-              direction = -1;
+        if (m_targetValid) {
+          double offset = Robot.limelight.getTX() + m_currentAngle;
+          int targetPosition =  (int)offset * (int)Constants.kPulsesPerDegreeOnTurret;
+          turnTableFX.set(ControlMode.Position, targetPosition);
+        } else {
+          if (m_desiredZone == shooterZone.BACK) {
+            if (turnTableFX.getSelectedSensorPosition() > 12500) {
+              turnTableFX.set(ControlMode.Position, -12776);
+            } else if (turnTableFX.getSelectedSensorPosition() < -12500) {
+              turnTableFX.set(ControlMode.Position, 12776);
             }
-            if (m_currentAngle < -50) {
-              direction = 1;
+            // if (turnTableFX.getClosedLoopError() < 200.0) {
+            //   if (turnTableFX.getClosedLoopTarget() == 12776.0) {
+            //     turnTableFX.set(ControlMode.Position, -12776.0);
+            //   } else if (turnTableFX.getClosedLoopTarget() == -12776.0) {
+            //     turnTableFX.set(ControlMode.Position, 12776.0);
+            //   }
+            // } 
+          } else if (m_desiredZone == shooterZone.FRONT) {
+            if (turnTableFX.getSelectedSensorPosition() > -24800) {
+              turnTableFX.set(ControlMode.Position, -49063);
+            } else if (turnTableFX.getSelectedSensorPosition() < -48800) {
+              turnTableFX.set(ControlMode.Position, -24665);
             }
-            m_turret_speed = direction * 1.0;
+            // if (turnTableFX.getClosedLoopError() < 200.0) {
+            //   if (turnTableFX.getClosedLoopTarget() == -24665.0) {
+            //     turnTableFX.set(ControlMode.Position, -49063.0);
+            //   } else if (turnTableFX.getClosedLoopTarget() == -49063.0) {
+            //     turnTableFX.set(ControlMode.Position, -24665.0);
+            //   }
+            // } 
           }
         }
-        if (GetZoneFromAngle(m_currentAngle) == shooterZone.FRONT) {
-          if (m_targetValid) {
-            m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6, m_limelightX);
-          } else {
-            // Scan
-            if (m_currentAngle > -120) {
-              direction = -1;
-            }
-            if (m_currentAngle < -210) {
-              direction = 1;
-            }
-            m_turret_speed = direction * 1.0;
-          }
-        }
+
       } else if (m_manualModeToggle) {
         Robot.limelight.Enable();
         if (Robot.manipCtrl.getPOV() == Manip.kTurretLeft) {
-          m_turret_speed = -0.03;
+        m_turret_speed = -0.03;
+        turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
         } else if (Robot.manipCtrl.getPOV() == Manip.kTurretRight) {
-          m_turret_speed = 0.03;
+        m_turret_speed = 0.03;
+        turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
         } else {
-          m_turret_speed = 0;
+          turnTableFX.set(0.0);
+          
         }
-      } else {
+        } else {
         // We are not seeking... Turn off everything.
         Robot.limelight.Disable();
-        m_turret_speed = 0;
-      }
+        turnTableFX.set(0.0);
+        }
+
+      // if(m_ydir == 0) {
+      // m_ydir = 1;
+      // turnTableFX.set(ControlMode.Position, -2048.0);
+      // }
+      // if(m_ydir == -1 && Math.abs(turnTableFX.getSelectedSensorPosition() - 2048) <
+      // 50.0) {
+      // m_ydir = 1;
+      // turnTableFX.set(ControlMode.Position, -2048.0);
+      // }
+      // if(m_ydir == 1 && Math.abs(turnTableFX.getSelectedSensorPosition() + 2048) <
+      // 50.0) {
+      // m_ydir = -1;
+      // turnTableFX.set(ControlMode.Position, 2048.0);
+      // }
+      // } else {
+      // turnTableFX.set(0.0);
+      // m_ydir = 0;
+      // }
     }
 
+    // Robot.limelight.Enable();
+    // if (GetZoneFromAngle(m_currentAngle) == shooterZone.BACK) {
+    // // Can we see the target????
+    // // if target is seen go toward it
+    // // if not continue sweeping
+    // // sees valid target
+    // if (m_targetValid) {
+    // m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6,
+    // m_limelightX);
+    // } else {
+    // // scan
+    // if (m_currentAngle > 50) {
+    // direction = -1;
+    // }
+    // if (m_currentAngle < -50) {
+    // direction = 1;
+    // }
+    // m_turret_speed = direction * 1.0;
+    // }
+    // }
+    // if (GetZoneFromAngle(m_currentAngle) == shooterZone.FRONT) {
+    // if (m_targetValid) {
+    // m_turret_speed = Math.copySign(m_limelightX * m_limelightX * 0.6,
+    // m_limelightX);
+    // } else {
+    // // Scan
+    // if (m_currentAngle > -120) {
+    // direction = -1;
+    // }
+    // if (m_currentAngle < -210) {
+    // direction = 1;
+    // }
+    // m_turret_speed = direction * 1.0;
+    // }
+    // }
+    // } 
+
     // HERE we apply soft limits in case the code above produces values that
-    // are outside our turning range.  Note, max speed is set by a
-    // SmartDashboard Variable. 
-    if (m_turret_speed > 0 && m_currentAngle > 55) {
-      m_turret_speed = 0;
-    }
-    if (m_turret_speed < 0 && m_currentAngle < -215) {
-      m_turret_speed = 0;
-    }
-    turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
+    // are outside our turning range. Note, max speed is set by a
+    // SmartDashboard Variable.
+    // if (m_turret_speed > 0 && m_currentAngle > 55) {
+    // m_turret_speed = 0;
+    // }
+    // if (m_turret_speed < 0 && m_currentAngle < -215) {
+    // m_turret_speed = 0;
+    // }
+    // turnTableFX.set(ControlMode.PercentOutput, m_turret_speed);
   }
 
   public void disabledInit() {
@@ -351,15 +419,16 @@ public class Shooter {
   }
 
   public boolean readyToShoot() {
-    return (lowerWheelsFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity);
+    return (lowerWheelsFX.getSelectedSensorVelocity() * Constants.kCTREEncoderTicksVelocityToRPM > 100) 
+          && (lowerWheelsFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity);
   }
 
   // Local Routines
   private shooterZone GetZoneFromAngle(double currentAngle) {
-    if (currentAngle > -60.0 && currentAngle < 60.0) {
+    if (currentAngle > -70.0 && currentAngle < 70.0) {
       return shooterZone.BACK;
     }
-    if (currentAngle > -230.0 && currentAngle < -108.0) {
+    if (currentAngle > -245.0 && currentAngle < -115.0) {
       return shooterZone.FRONT;
     }
     return shooterZone.CROSSING;
