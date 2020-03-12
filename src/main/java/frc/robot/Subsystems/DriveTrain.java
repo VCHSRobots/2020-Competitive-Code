@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.ControllerMap;
 import frc.robot.Robot;
@@ -66,7 +67,7 @@ public class DriveTrain {
     public void robotPeriodic() {
         // velocitydrive = SmartDashboard.getBoolean("Velocity Drive", velocitydrive);
         driveAVGEncoderTicks = (rFrontFX_master.getSelectedSensorPosition() + lFrontFX_master.getSelectedSensorPosition())/2;
-
+        SmartDashboard.putNumber("DrivePosition", getDistance());
     }
 
     public void autonomousInit() {
@@ -136,7 +137,7 @@ public class DriveTrain {
 
     public void goDistance(double targetDistance) {
         if (stateGoDistance == 1) {
-            targetDistance = driveAVGEncoderTicks + ((targetDistance/Constants.kDriveWheelCircumference)*2047.0);
+            targetDistance = driveAVGEncoderTicks + ((targetDistance/Constants.kDriveWheelCircumference)*2048.0*Constants.kDirveToWheelRatio);
             stateGoDistance = 2;
             return;
         }
@@ -149,6 +150,12 @@ public class DriveTrain {
             
         }
     }
+
+    public double getDistance() {
+      double d = driveAVGEncoderTicks * Constants.kDriveWheelCircumference / (2048.0 * Constants.kDirveToWheelRatio);
+      return d;
+    }
+
     public void resetDriveEncoders() {
       rFrontFX_master.setSelectedSensorPosition(0);
       lFrontFX_master.setSelectedSensorPosition(0);

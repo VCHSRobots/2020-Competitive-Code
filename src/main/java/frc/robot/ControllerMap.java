@@ -25,6 +25,7 @@ public class ControllerMap {
     public static final int kColorWheelReverse = 3;
     public static final int kColorWheelPneumatic = 4;
     public static final int kIntakeUpAndStop = 5;
+    public static final int kEject = 8;
     public static final int kintakeToggle = 9;
 
     // ----- DPAD -----

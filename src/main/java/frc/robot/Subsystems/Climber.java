@@ -32,7 +32,13 @@ public class Climber {
   }
 
   public void autonomousInit() {
-
+    brakerSolenoid.set(DoubleSolenoid.Value.kReverse);
+    shifterSolenoid.set(DoubleSolenoid.Value.kForward);
+    leftArmSolenoid.set(DoubleSolenoid.Value.kReverse);
+    rightArmSolenoid.set(DoubleSolenoid.Value.kReverse);
+    Robot.climb_is_enabled = false;
+    Robot.brake_is_enabled = false;
+    Robot.tether_is_enabled = false;
   }
 
   public void autonomousPeriodic() {

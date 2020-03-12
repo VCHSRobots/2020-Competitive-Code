@@ -29,6 +29,7 @@ public class Intake {
   DoubleSolenoid.Value bottom;
 
   double intakeSpeed = 0.5;
+  boolean m_ejectWasActive = false;
 
   public void robotInit() {
     m_config.voltageCompSaturation = Constants.kvoltageComp;
@@ -73,7 +74,9 @@ public class Intake {
   }
 
   public void autonomousInit() {
-
+    intakeToggle = false;
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kReverse);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kReverse);
   }
 
   public void autonomousPeriodic() {
@@ -81,12 +84,24 @@ public class Intake {
   }
 
   public void teleopInit() {
-    intakeToggle = false;
-    intakeSolenoidTop.set(DoubleSolenoid.Value.kReverse);
-    intakeSolenoidBottom.set(DoubleSolenoid.Value.kReverse);
+    // intakeToggle = false;
+    // intakeSolenoidTop.set(DoubleSolenoid.Value.kForward);
+    // intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
   }
 
   public void teleopPeriodic() {
+    if ( Robot.driveCtrl.getRawButton(ControllerMap.Drive.kEject)) {
+      // This is an emegency.  Override everything else, and reverse motors.
+      intakeMotor.set(ControlMode.PercentOutput, -1.0);
+      m_ejectWasActive = true;
+      // Don't do anything else.
+      return;
+    }
+    if (m_ejectWasActive) {
+      m_ejectWasActive = false;
+      intakeMotor.set(ControlMode.PercentOutput, 0.0);
+    }
+
     // intake turns on
     if (Robot.driveCtrl.getRawButtonPressed(ControllerMap.Drive.kintakeToggle)) {
       intakeToggle = !intakeToggle;
@@ -135,6 +150,29 @@ public class Intake {
 
   public void disabledPeriodic() {
 
+  }
+
+  public void setIntakeToDown() {
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kForward);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
+  }
+
+  public void setIntakeToMid() {
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kReverse);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kForward);
+  }
+
+  public void setIntakeToUp() {
+    intakeSolenoidTop.set(DoubleSolenoid.Value.kReverse);
+    intakeSolenoidBottom.set(DoubleSolenoid.Value.kReverse);
+  }
+
+  public void turnOnIntakeMotor() {
+    intakeMotor.set(intakeSpeed);
+  }
+
+  public void turnOffIntakeMotor() {
+    intakeMotor.set(0.0);
   }
 
 }

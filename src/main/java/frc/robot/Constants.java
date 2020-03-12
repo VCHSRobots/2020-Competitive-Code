@@ -18,6 +18,7 @@ public class Constants {
 
     public static final int kDriveWheelDiameter = 6;
     public static final double kDriveWheelCircumference = kDriveWheelDiameter * Math.PI;
+    public static final double kDirveToWheelRatio = 8.5;
     
     public static final double kvoltageComp = 11;
 

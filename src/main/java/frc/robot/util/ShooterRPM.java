@@ -6,8 +6,8 @@ public class ShooterRPM {
 
   //                                                                      Good
   private static double[] g_range = new double[]  { 0.0,   4.0,     8.0,   12.0,  14.0,   18.0,  24.0};
-  private static double[] g_botrpm = new double[] { 500, 1000.0, 3500.0, 1700.0, 1700.0, 1500.0, 1600.0};
-  private static double[] g_toprpm = new double[] { 500, 2400.0, 1200.0, 3400.0, 3400.0, 3700.0, 3800.0};
+  private static double[] g_botrpm = new double[] { 500, 1500.0, 1500.0, 1700.0, 1700.0, 1500.0, 1600.0};
+  private static double[] g_toprpm = new double[] { 500, 3400.0, 3400.0, 3400.0, 3400.0, 3700.0, 3800.0};
 
   public static double GetBottomRPM(double range) {
     return findrpm(range, g_botrpm);

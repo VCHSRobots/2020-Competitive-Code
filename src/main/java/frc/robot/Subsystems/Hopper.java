@@ -241,4 +241,20 @@ public class Hopper {
 
     return ret;
   }
+
+  // Used in Auto, turns off the hopper.
+  public void turnOff() {
+      lSideFX.set(ControlMode.PercentOutput, 0);
+      rSideFX.set(ControlMode.PercentOutput, 0);
+      acceleratorFX.set(ControlMode.PercentOutput, 0);
+  }
+
+  // Used in Auto, turns on the hopper.  Should only be 
+  // turned on if shooter is ready.
+  public void turnOn() {
+      lSideFX.set(ControlMode.PercentOutput, percentLeft);
+      rSideFX.set(ControlMode.PercentOutput, percentRight);
+      acceleratorFX.set(ControlMode.PercentOutput, percentLAccel);
+  }
+
 }

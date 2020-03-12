@@ -22,7 +22,7 @@ import frc.robot.util.DeadbandMaker;
 import frc.robot.util.ShooterRPM;
 
 public class Shooter {
-  enum shooterZone {
+  public enum shooterZone {
     FRONT, BACK, CROSSING
   };
 
@@ -225,7 +225,15 @@ public class Shooter {
   }
 
   public void autonomousInit() {
-
+    // Reset Angle Sensor on every teleop Startup if at prime position.
+    if (!m_primeSensor.get()) {
+      turnTableFX.setSelectedSensorPosition(0);
+      m_primed = true;
+    }
+    m_isRunning = false;
+    turnTableFX.setNeutralMode(NeutralMode.Brake);
+    m_AutoRangeEnable = true;
+    m_manualRange = 10;
   }
 
   public void autonomousPeriodic() {
@@ -257,22 +265,10 @@ public class Shooter {
       m_wheelsEnable = false;
     }
     // Range Select:
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeFar) {
-      m_manualRange = 18;
-      m_AutoRangeEnable = false;
-    }
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeMid) {
-      m_manualRange = 12;
-      m_AutoRangeEnable = false;
-    }
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeNear) {
-      m_manualRange = 8;
-      m_AutoRangeEnable = false;
-    }
-    if (Robot.manipCtrl.getPOV() == Manip.kRangeAuto) {
-      m_manualRange = 18;
-      m_AutoRangeEnable = true;
-    }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeFar) {m_manualRange = 18; m_AutoRangeEnable = false; }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeMid) {m_manualRange = 12; m_AutoRangeEnable = false; }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeNear) {m_manualRange = 8; m_AutoRangeEnable = false; }
+    if (Robot.manipCtrl.getPOV() == Manip.kRangeAuto) {m_manualRange = 18; m_AutoRangeEnable = true; }
 
     // full send button
     // -- check button press, full send five balls, automatically stop after
@@ -319,13 +315,13 @@ public class Shooter {
       m_desiredZone = shooterZone.FRONT;
     }
 
-    // Are we in the correct zone? If not, just move toward the zone we want, and
+   // Are we in the correct zone? If not, just move toward the zone we want, and
     // don't do anything else.
     if (m_desiredZone != GetZoneFromAngle(m_currentAngle)) {
       if (m_desiredZone == shooterZone.FRONT) {
-        turnTableFX.set(ControlMode.Position, -24665.0);
+         setTuretAngle(-120.43);                      //turnTableFX.set(ControlMode.Position, -24665.0);
       } else {
-        turnTableFX.set(ControlMode.Position, -12776);
+        setTuretAngle(-62.38);                        //turnTableFX.set(ControlMode.Position, -12776);
       }
     } else {
       // Here, we are in the correct zone, so now try to seek to the target if
@@ -334,21 +330,20 @@ public class Shooter {
         Robot.limelight.Enable();
         if (m_targetValid) {
           double offset = Robot.limelight.getTX() + m_currentAngle;
-          // setTuretAngle(offset);
-          int targetPosition = (int) offset * (int) Constants.kPulsesPerDegreeOnTurret;
-          turnTableFX.set(ControlMode.Position, targetPosition);
+          setTuretAngle(offset);
         } else {
           if (m_desiredZone == shooterZone.BACK) {
-            if (turnTableFX.getSelectedSensorPosition() > 12500) {
-              turnTableFX.set(ControlMode.Position, -12776);
-            } else if (turnTableFX.getSelectedSensorPosition() < -12500) {
-              turnTableFX.set(ControlMode.Position, 12776);
+            if(m_currentAngle > 61.0) {                     // } if (turnTableFX.getSelectedSensorPosition() > 12500) {
+              setTuretAngle(-62.38);                        //       turnTableFX.set(ControlMode.Position, -12776);
+            } else if (m_currentAngle < -61.0) {            // }) else if (turnTableFX.getSelectedSensorPosition() < -12500) {
+              setTuretAngle(62.38);                         // turnTableFX.set(ControlMode.Position, 12776);
             }
           } else if (m_desiredZone == shooterZone.FRONT) {
-            if (turnTableFX.getSelectedSensorPosition() > -24800)
-              turnTableFX.set(ControlMode.Position, -49063);
-          } else if (turnTableFX.getSelectedSensorPosition() < -48800) {
-            turnTableFX.set(ControlMode.Position, -24665);
+            if (m_currentAngle > -121.09) {                 // if (turnTableFX.getSelectedSensorPosition() > -24800)
+              setTuretAngle(-239.56);                       // turnTableFX.set(ControlMode.Position, -49063);
+            } else if (m_currentAngle < -238.28) {          // (turnTableFX.getSelectedSensorPosition() < -48800) {
+              setTuretAngle(-120.43);                       // turnTableFX.set(ControlMode.Position, -24665);
+            }
           }
         }
 
@@ -377,14 +372,19 @@ public class Shooter {
     turnTableFX.set(ControlMode.Position, pulseloc);
   }
 
-  private double getTuretAngle() {
+  public double getTuretAngle() {
     double angle = turnTableFX.getSelectedSensorPosition() / Constants.kPulsesPerDegreeOnTurret;
     return angle;
   }
 
-  private void stopMotors() {
+  public void stopMotors() {
     upperWheelsFX.neutralOutput();
     lowerWheelsFX.neutralOutput();
+  }
+
+  public void startMotors() {
+    upperWheelsFX.set(ControlMode.Velocity, m_top_RPM * Constants.kRPMtoCTREEncoderTicksVelocity);
+    lowerWheelsFX.set(ControlMode.Velocity, m_bottom_RPM * Constants.kRPMtoCTREEncoderTicksVelocity);
   }
 
   public boolean readyToShoot() {
@@ -392,27 +392,59 @@ public class Shooter {
         && (lowerWheelsFX.getClosedLoopError() < 20 * Constants.kRPMtoCTREEncoderTicksVelocity);
   }
 
+  // Scans for the target.  To keep scanning happening, this routine must be called each 
+  // loop cycle.  Use this for auto.
   public void scanForTarget() {
     Robot.limelight.Enable();
     if (m_targetValid) {
       double offset = Robot.limelight.getTX() + m_currentAngle;
-      // setTuretAngle(offset);
-      int targetPosition = (int) offset * (int) Constants.kPulsesPerDegreeOnTurret;
-      turnTableFX.set(ControlMode.Position, targetPosition);
+      setTuretAngle(offset);
     } else {
       if (m_desiredZone == shooterZone.BACK) {
-        if (turnTableFX.getSelectedSensorPosition() > 12500) {
-          turnTableFX.set(ControlMode.Position, -12776);
-        } else if (turnTableFX.getSelectedSensorPosition() < -12500) {
-          turnTableFX.set(ControlMode.Position, 12776);
+        if(m_currentAngle > 61.0) {                     // } if (turnTableFX.getSelectedSensorPosition() > 12500) {
+          setTuretAngle(-62.38);                        //       turnTableFX.set(ControlMode.Position, -12776);
+        } else if (m_currentAngle < -61.0) {            // }) else if (turnTableFX.getSelectedSensorPosition() < -12500) {
+          setTuretAngle(62.38);                         // turnTableFX.set(ControlMode.Position, 12776);
         }
       } else if (m_desiredZone == shooterZone.FRONT) {
-        if (turnTableFX.getSelectedSensorPosition() > -24800)
-          turnTableFX.set(ControlMode.Position, -49063);
-      } else if (turnTableFX.getSelectedSensorPosition() < -48800) {
-        turnTableFX.set(ControlMode.Position, -24665);
+        if (m_currentAngle > -121.09) {                 // if (turnTableFX.getSelectedSensorPosition() > -24800)
+          setTuretAngle(-239.56);                       // turnTableFX.set(ControlMode.Position, -49063);
+        } else if (m_currentAngle < -238.28) {          // (turnTableFX.getSelectedSensorPosition() < -48800) {
+          setTuretAngle(-120.43);                       // turnTableFX.set(ControlMode.Position, -24665);
+        }
       }
     }
+  }
+
+
+  public boolean isTargetValid() {
+    return m_targetValid;
+  }
+
+  public void resetBallShotCount() {
+    m_ballShotCounter = 0;
+  }
+
+  public int getBallShotCount() {
+    return m_ballShotCounter;
+  }
+
+  public boolean ballLoaded() {
+    return m_ballLoaded;
+  }
+
+  public void setShooterZone(shooterZone zone) {
+    m_desiredZone = zone;
+  }
+
+  public void setManualRange(double range) {
+    m_AutoRangeEnable = false;
+    m_manualRange = range;
+  }
+
+  public void EnableAutoRange(double range) {
+    m_rangeToUse = range;
+    m_AutoRangeEnable = true;
   }
 
   // Local Routines
