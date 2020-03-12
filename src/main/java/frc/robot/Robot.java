@@ -36,13 +36,14 @@ public class Robot extends TimedRobot {
   MjpegServer server;
 
   // ---------AUTO-----------
-  SendableChooser<Integer> m_selectedAuto;
-  private boolean m_autoTrenchRun = false;          // Set true or false by the selector.
-  private int m_autoStage = 0;                      // Maintains the state of auto
-  private double m_autoT1;                          // Keeps track of the time that a stage started
-  private double m_autoT2;                          // Secondary timer.
-  private boolean m_autoIntakeKick = false;         // Remember if we have kicked the intake during shooting.
-  private double m_dist;                            // Distance to move back to front of trench.
+  String m_selectedAutoString = "NOTHING";
+  SendableChooser<Integer> m_selectedAuto = new SendableChooser<Integer>();
+  private boolean m_autoTrenchRun = false; // Set true or false by the selector.
+  private int m_autoStage = 0; // Maintains the state of auto
+  private double m_autoT1; // Keeps track of the time that a stage started
+  private double m_autoT2; // Secondary timer.
+  private boolean m_autoIntakeKick = false; // Remember if we have kicked the intake during shooting.
+  private double m_dist; // Distance to move back to front of trench.
 
   // ---------Subsystems---------------
   public static FMSData fmsData = new FMSData();
@@ -72,10 +73,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_selectedAuto = new SendableChooser<Integer>();
-    SmartDashboard.putData(m_selectedAuto);
     m_selectedAuto.setDefaultOption("Back up and shoot", 0);
     m_selectedAuto.addOption("Trench Run", 1);
+    SmartDashboard.putData("Auto Select", m_selectedAuto);
 
     camera1 = CameraServer.getInstance().startAutomaticCapture(0);
     camera1.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -116,22 +116,30 @@ public class Robot extends TimedRobot {
     hopper.robotPeriodic();
     limelight.robotPeriodic();
     SmartDashboard.putNumber("m_dist", m_dist);
+    SmartDashboard.putNumber("Selected Auto", m_selectedAuto.getSelected().intValue());
+    SmartDashboard.putBoolean("Trench Run", m_autoTrenchRun);
+    SmartDashboard.putString("Selected Auto INT", m_selectedAutoString);
+    m_selectedAutoString = SmartDashboard.getData("Auto Select").toString();
+
   }
 
   @Override
   public void autonomousInit() {
-    m_autoStage = 0;             // Keeps track of what we are doing in auto.
-    shooter.autonomousInit();    // Normally not needed, but shooter does need it.
-    intake.autonomousInit();     
+    m_autoStage = 0; // Keeps track of what we are doing in auto.
+    shooter.autonomousInit(); // Normally not needed, but shooter does need it.
+    intake.autonomousInit();
     climber.autonomousInit();
     // Get everything in a known state.
     driveTrain.resetDriveEncoders();
     hopper.turnOff();
-    shooter.setShooterZone(Shooter.shooterZone.BACK);  // For auto, always face robot towards away from the target.
+    shooter.setShooterZone(Shooter.shooterZone.BACK); // For auto, always face robot towards away from the target.
 
     switch (m_selectedAuto.getSelected().intValue()) {
+
+    default:
+      m_autoTrenchRun = false;
     case 0:
-      m_autoTrenchRun =false;
+      m_autoTrenchRun = false;
     case 1:
       m_autoTrenchRun = true;
     }
@@ -147,24 +155,57 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    switch(m_autoStage) {
-      case 0: auto_stage0(); return;
-      case 1: auto_stage1(); return;
-      case 2: auto_stage2(); return;
-      case 3: auto_stage3(); return;
-      case 4: auto_stage4(); return;
-      case 5: auto_stage5(); return;
-      case 6: auto_stage6(); return;
-      case 7: auto_stage7(); return;
-      case 8: auto_stage8(); return;
-      case 9: auto_stage9(); return;
-      case 10: auto_stage10(); return;
-      case 11: auto_stage11(); return;
-      case 12: auto_stage12(); return;
-      case 13: auto_stage13(); return;
-      case 14: auto_stage14(); return;
-      case 20: auto_stage20(); return;
-      default: m_autoStage = 99;
+    switch (m_autoStage) {
+    case 0:
+      auto_stage0();
+      return;
+    case 1:
+      auto_stage1();
+      return;
+    case 2:
+      auto_stage2();
+      return;
+    case 3:
+      auto_stage3();
+      return;
+    case 4:
+      auto_stage4();
+      return;
+    case 5:
+      auto_stage5();
+      return;
+    case 6:
+      auto_stage6();
+      return;
+    case 7:
+      auto_stage7();
+      return;
+    case 8:
+      auto_stage8();
+      return;
+    case 9:
+      auto_stage9();
+      return;
+    case 10:
+      auto_stage10();
+      return;
+    case 11:
+      auto_stage11();
+      return;
+    case 12:
+      auto_stage12();
+      return;
+    case 13:
+      auto_stage13();
+      return;
+    case 14:
+      auto_stage14();
+      return;
+    case 20:
+      auto_stage20();
+      return;
+    default:
+      m_autoStage = 99;
     }
   }
 
@@ -179,12 +220,12 @@ public class Robot extends TimedRobot {
 
   private void auto_stage1() {
     shooter.scanForTarget();
-    if(driveTrain.getDistance() > 48.0) {
+    if (driveTrain.getDistance() > 48.0) {
       driveTrain.ExternalMotorControl(0.0, 0.0);
       m_autoStage = 2;
     }
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 5.0) {
+    if (t - m_autoT1 > 5.0) {
       driveTrain.ExternalMotorControl(0.0, 0.0);
       m_autoStage = 2;
     }
@@ -192,7 +233,7 @@ public class Robot extends TimedRobot {
 
   private void auto_stage2() {
     shooter.scanForTarget();
-    if(shooter.isTargetValid()) {
+    if (shooter.isTargetValid()) {
       shooter.setManualRange(12.0);
       shooter.EnableAutoRange(14.0);
       shooter.startMotors();
@@ -202,7 +243,7 @@ public class Robot extends TimedRobot {
 
   private void auto_stage3() {
     shooter.scanForTarget();
-    if(shooter.readyToShoot()) {
+    if (shooter.readyToShoot()) {
       shooter.resetBallShotCount();
       m_autoT1 = Timer.getFPGATimestamp();
       m_autoStage = 4;
@@ -212,7 +253,7 @@ public class Robot extends TimedRobot {
   private void auto_stage4() {
     shooter.scanForTarget();
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 0.5) {
+    if (t - m_autoT1 > 0.5) {
       hopper.turnOn();
       intake.setIntakeToMid();
       m_autoIntakeKick = false;
@@ -222,26 +263,26 @@ public class Robot extends TimedRobot {
   }
 
   private void auto_stage5() {
-    if(shooter.getBallShotCount() >= 3) {
+    if (shooter.getBallShotCount() >= 3) {
       m_autoT1 = Timer.getFPGATimestamp();
       m_autoStage = 6;
     }
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 2.5 && !m_autoIntakeKick) {
-      // Ball is probably caught in the intake.  Juice the intake.
+    if (t - m_autoT1 > 2.5 && !m_autoIntakeKick) {
+      // Ball is probably caught in the intake. Juice the intake.
       intake.turnOnIntakeMotor();
       m_autoT2 = t;
       m_autoStage = 20;
       return;
     }
-    if(t - m_autoT1 > 5.0) {
+    if (t - m_autoT1 > 5.0) {
       m_autoStage = 6;
     }
   }
 
   private void auto_stage20() {
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT2 > 0.25) {
+    if (t - m_autoT2 > 0.25) {
       intake.turnOffIntakeMotor();
       m_autoIntakeKick = true;
       m_autoStage = 5;
@@ -251,7 +292,7 @@ public class Robot extends TimedRobot {
   private void auto_stage6() {
     // Shut down the shooter after a slight delay.
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 0.25) {
+    if (t - m_autoT1 > 0.25) {
       shooter.stopMotors();
       hopper.turnOff();
       if (m_autoTrenchRun) {
@@ -268,7 +309,7 @@ public class Robot extends TimedRobot {
   }
 
   private void auto_stage7() {
-    if(shooter.ballLoaded()  || driveTrain.getDistance() > 80.0) {
+    if (shooter.ballLoaded() || driveTrain.getDistance() > 80.0) {
       m_dist = driveTrain.getDistance();
       intake.setIntakeToUp();
       intake.turnOffIntakeMotor();
@@ -283,27 +324,27 @@ public class Robot extends TimedRobot {
 
   private void auto_stage8() {
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 0.1) {
+    if (t - m_autoT1 > 0.1) {
       m_autoStage = 9;
     }
   }
 
   private void auto_stage9() {
     shooter.scanForTarget();
-    if(driveTrain.getDistance() < -m_dist) {
+    if (driveTrain.getDistance() < -m_dist) {
       driveTrain.ExternalMotorControl(0.0, 0.0);
       m_autoStage = 10;
     }
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 3.0) {
+    if (t - m_autoT1 > 3.0) {
       driveTrain.ExternalMotorControl(0.0, 0.0);
       m_autoStage = 10;
     }
   }
-  
+
   private void auto_stage10() {
     shooter.scanForTarget();
-    if(shooter.isTargetValid()) {
+    if (shooter.isTargetValid()) {
       shooter.setManualRange(19.0);
       shooter.EnableAutoRange(19.0);
       shooter.startMotors();
@@ -312,7 +353,7 @@ public class Robot extends TimedRobot {
   }
 
   private void auto_stage11() {
-    if(shooter.readyToShoot()) {
+    if (shooter.readyToShoot()) {
       shooter.resetBallShotCount();
       m_autoT1 = Timer.getFPGATimestamp();
       m_autoStage = 12;
@@ -321,7 +362,7 @@ public class Robot extends TimedRobot {
 
   private void auto_stage12() {
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 0.2) {
+    if (t - m_autoT1 > 0.2) {
       hopper.turnOn();
       intake.setIntakeToMid();
       m_autoStage = 13;
@@ -330,7 +371,7 @@ public class Robot extends TimedRobot {
   }
 
   private void auto_stage13() {
-    if(shooter.getBallShotCount() >= 1) {
+    if (shooter.getBallShotCount() >= 1) {
       m_autoT1 = Timer.getFPGATimestamp();
       m_autoStage = 14;
     }
@@ -339,7 +380,7 @@ public class Robot extends TimedRobot {
   private void auto_stage14() {
     // Shut down the shooter after a slight delay.
     double t = Timer.getFPGATimestamp();
-    if(t - m_autoT1 > 0.25) {
+    if (t - m_autoT1 > 0.25) {
       shooter.stopMotors();
       hopper.turnOff();
       m_autoStage = 99;
